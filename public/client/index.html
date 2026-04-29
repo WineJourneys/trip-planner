@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Journey — Wine Journeys Client Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --wine:#6b1e2e;--wine-dk:#4a1020;--wine-lt:#f9f0f2;--wine-mid:#8b2d42;
+  --gold:#c9a84c;--gold-lt:#fdf6e3;
+  --cream:#faf8f4;--ivory:#fff;--parchment:#f5f0e8;
+  --charcoal:#1a1512;--slate:#4a3f35;--mist:#9e8e82;
+  --rule:#e2d5c3;--rule2:#c8b89a;
+  --green:#2d5a3d;--glt:#edf3ee;
+  --r:8px;--rl:14px;
+  --sidebar:260px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Jost',sans-serif;font-size:15px;background:var(--cream);color:var(--charcoal);line-height:1.6;min-height:100vh}
+.serif{font-family:'Cormorant Garamond',serif}
+a{text-decoration:none;color:inherit}
+
+/* ACCESS SCREEN */
+#accessScreen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:2rem;background:var(--wine-dk)}
+.access-box{background:var(--ivory);border-radius:var(--rl);padding:2.5rem;max-width:440px;width:100%;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.4)}
+.access-logo{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:700;color:var(--wine);margin-bottom:.25rem}
+.access-sub{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:2rem}
+.access-box h2{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:700;margin-bottom:.5rem}
+.access-box p{font-size:13px;color:var(--slate);margin-bottom:1.5rem;line-height:1.65}
+.access-input{width:100%;padding:11px 14px;border:1.5px solid var(--rule2);border-radius:7px;font-size:14px;font-family:inherit;color:var(--charcoal);background:var(--cream);margin-bottom:.75rem;transition:border-color .15s;text-align:center;letter-spacing:.15em}
+.access-input:focus{outline:none;border-color:var(--wine)}
+.access-btn{width:100%;padding:13px;background:var(--wine);color:#fff;border:none;border-radius:7px;font-size:13px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;transition:all .2s}
+.access-btn:hover{background:var(--wine-dk)}
+.access-err{font-size:12px;color:#c0392b;margin-top:.5rem;display:none}
+.access-err.show{display:block}
+
+/* PORTAL LAYOUT */
+#portal{display:none}
+#portal.open{display:flex;min-height:100vh}
+
+/* SIDEBAR */
+.sidebar{width:var(--sidebar);background:var(--wine-dk);flex-shrink:0;position:fixed;top:0;bottom:0;left:0;overflow-y:auto;display:flex;flex-direction:column}
+.sb-brand{padding:1.5rem 1.25rem 1rem;border-bottom:1px solid rgba(255,255,255,.1)}
+.sb-logo{font-family:'Cormorant Garamond',serif;font-size:1.25rem;font-weight:700;color:#fff}
+.sb-tagline{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+.sb-client{padding:1rem 1.25rem;border-bottom:1px solid rgba(255,255,255,.1)}
+.sb-name{font-size:14px;font-weight:600;color:#fff}
+.sb-tour{font-size:11px;color:rgba(255,255,255,.55);margin-top:2px}
+.sb-nav{flex:1;padding:.75rem 0}
+.sb-item{display:flex;align-items:center;gap:.75rem;padding:.75rem 1.25rem;font-size:13px;color:rgba(255,255,255,.65);cursor:pointer;transition:all .15s;border-left:3px solid transparent}
+.sb-item:hover{color:#fff;background:rgba(255,255,255,.07)}
+.sb-item.active{color:#fff;background:rgba(255,255,255,.1);border-left-color:var(--gold)}
+.sb-item .icon{font-size:18px;width:22px;text-align:center}
+.sb-footer{padding:1rem 1.25rem;border-top:1px solid rgba(255,255,255,.1)}
+.sb-footer a{font-size:11px;color:rgba(255,255,255,.4);display:block}
+.sb-footer a:hover{color:rgba(255,255,255,.75)}
+
+/* MAIN CONTENT */
+.main{margin-left:var(--sidebar);flex:1;min-height:100vh}
+.topbar{background:var(--ivory);border-bottom:1px solid var(--rule);padding:0 2rem;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.topbar-title{font-family:'Cormorant Garamond',serif;font-size:1.25rem;font-weight:700;color:var(--charcoal)}
+.notif-btn{position:relative;width:38px;height:38px;border-radius:50%;background:var(--parchment);border:1px solid var(--rule);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;transition:all .15s}
+.notif-btn:hover{background:var(--wine-lt);border-color:var(--wine)}
+.notif-badge{position:absolute;top:2px;right:2px;width:16px;height:16px;background:var(--wine);color:#fff;border-radius:50%;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;display:none}
+.notif-badge.show{display:flex}
+.content{padding:2rem}
+
+/* SECTION PAGES */
+.sec-page{display:none}
+.sec-page.active{display:block}
+.page-header{margin-bottom:2rem}
+.page-header h1{font-family:'Cormorant Garamond',serif;font-size:1.9rem;font-weight:700;color:var(--charcoal);margin-bottom:.375rem}
+.page-header p{font-size:13px;color:var(--mist)}
+
+/* BOOKING SUMMARY CARD */
+.booking-card{background:var(--ivory);border:1px solid var(--rule);border-radius:var(--rl);overflow:hidden;margin-bottom:1.5rem}
+.bc-hero{height:180px;overflow:hidden;position:relative}
+.bc-hero img{width:100%;height:100%;object-fit:cover}
+.bc-hero-ov{position:absolute;inset:0;background:linear-gradient(to top,rgba(26,21,18,.8) 0%,transparent 60%)}
+.bc-hero-txt{position:absolute;bottom:1.25rem;left:1.5rem;right:1.5rem}
+.bc-badge{display:inline-flex;align-items:center;gap:5px;background:var(--wine);color:#fff;border-radius:20px;padding:3px 12px;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.5rem}
+.bc-title{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:700;color:#fff}
+.bc-sub{font-size:12px;color:rgba(255,255,255,.75)}
+.bc-body{padding:1.5rem}
+.bc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.25rem}
+.bc-stat{text-align:center}
+.bc-stat-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--mist);font-weight:600}
+.bc-stat-val{font-family:'Cormorant Garamond',serif;font-size:1.25rem;font-weight:700;color:var(--charcoal);margin-top:2px}
+.status-pill{display:inline-flex;align-items:center;gap:6px;padding:5px 14px;border-radius:30px;font-size:11px;font-weight:700;letter-spacing:.05em}
+.status-pill.confirmed{background:var(--glt);color:var(--green)}
+.status-pill.pending{background:var(--gold-lt);color:#7a5c1a}
+.status-pill.enquiry{background:var(--wine-lt);color:var(--wine)}
+
+/* PAYMENT SCHEDULE */
+.payment-row{display:flex;align-items:center;gap:1rem;padding:1rem 1.25rem;border-bottom:1px solid var(--rule);transition:background .15s}
+.payment-row:last-child{border-bottom:none}
+.payment-row:hover{background:var(--parchment)}
+.pr-num{width:28px;height:28px;border-radius:50%;background:var(--wine);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
+.pr-num.paid{background:var(--green)}
+.pr-info{flex:1}
+.pr-label{font-size:13px;font-weight:600;color:var(--charcoal)}
+.pr-date{font-size:11px;color:var(--mist);margin-top:1px}
+.pr-amt{font-family:'Cormorant Garamond',serif;font-size:1.25rem;font-weight:700;color:var(--charcoal)}
+.pr-status{padding:4px 12px;border-radius:20px;font-size:10px;font-weight:700}
+.pr-status.paid{background:var(--glt);color:var(--green)}
+.pr-status.due{background:var(--gold-lt);color:#7a5c1a}
+.pr-status.overdue{background:#fef2f2;color:#c0392b}
+.pr-status.upcoming{background:var(--parchment);color:var(--mist)}
+
+/* FORMS */
+.form-section{background:var(--ivory);border:1px solid var(--rule);border-radius:var(--rl);margin-bottom:1.5rem;overflow:hidden}
+.fs-head{padding:1rem 1.5rem;background:var(--parchment);border-bottom:1px solid var(--rule);display:flex;align-items:center;gap:.75rem}
+.fs-icon{font-size:22px}
+.fs-title{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:700;color:var(--charcoal)}
+.fs-body{padding:1.5rem}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+.frow.one{grid-template-columns:1fr}
+.frow.three{grid-template-columns:1fr 1fr 1fr}
+.ffield{display:flex;flex-direction:column;gap:5px}
+.ffield label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--slate)}
+.ffield input,.ffield select,.ffield textarea{padding:9px 12px;border:1.5px solid var(--rule2);border-radius:6px;font-size:13px;font-family:inherit;color:var(--charcoal);background:var(--cream);transition:border-color .15s}
+.ffield input:focus,.ffield select:focus,.ffield textarea:focus{outline:none;border-color:var(--wine)}
+.ffield textarea{resize:vertical;min-height:80px}
+.save-row{display:flex;align-items:center;gap:1rem;padding:1rem 1.5rem;background:var(--parchment);border-top:1px solid var(--rule)}
+.btn-save{padding:10px 28px;background:var(--wine);color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;transition:all .2s}
+.btn-save:hover{background:var(--wine-dk)}
+.save-ok{font-size:12px;color:var(--green);font-weight:600;display:none}
+.save-ok.show{display:block}
+.radio-group{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1rem}
+.radio-opt{display:flex;align-items:center;gap:7px;padding:9px 14px;border:1.5px solid var(--rule2);border-radius:7px;cursor:pointer;font-size:13px;transition:all .15s}
+.radio-opt:hover{border-color:var(--wine)}
+.radio-opt.selected{border-color:var(--wine);background:var(--wine-lt);color:var(--wine);font-weight:600}
+.upload-zone{border:2px dashed var(--rule2);border-radius:8px;padding:2rem;text-align:center;cursor:pointer;transition:all .2s;background:var(--cream)}
+.upload-zone:hover{border-color:var(--wine);background:var(--wine-lt)}
+.upload-zone input{display:none}
+.uz-icon{font-size:32px;margin-bottom:.75rem}
+.uz-lbl{font-size:13px;font-weight:600;color:var(--slate);margin-bottom:3px}
+.uz-hint{font-size:11px;color:var(--mist)}
+.uz-name{font-size:12px;color:var(--green);font-weight:600;margin-top:.75rem}
+.uploaded-file{display:flex;align-items:center;gap.75rem;padding:.75rem 1rem;background:var(--glt);border-radius:7px;margin-top:.75rem;font-size:13px;color:var(--green);font-weight:600}
+
+/* NOTIFICATIONS */
+.notif-item{padding:1rem 1.5rem;border-bottom:1px solid var(--rule);display:flex;gap:1rem;align-items:flex-start}
+.notif-item:last-child{border-bottom:none}
+.notif-item.unread{background:var(--wine-lt)}
+.ni-dot{width:8px;height:8px;border-radius:50%;background:var(--wine);flex-shrink:0;margin-top:6px}
+.ni-dot.read{background:var(--rule2)}
+.ni-body{flex:1}
+.ni-msg{font-size:13px;color:var(--charcoal);line-height:1.6}
+.ni-date{font-size:10px;color:var(--mist);margin-top:3px}
+.notif-empty{text-align:center;padding:3rem;color:var(--mist);font-size:13px}
+
+/* UTILITY */
+.card{background:var(--ivory);border:1px solid var(--rule);border-radius:var(--rl);margin-bottom:1.5rem}
+.card-body{padding:1.5rem}
+.info-banner{background:var(--parchment);border:1px solid var(--rule);border-radius:var(--r);padding:1rem 1.25rem;font-size:12px;color:var(--slate);line-height:1.7;margin-bottom:1.25rem}
+.info-banner strong{color:var(--wine)}
+.section-card{background:var(--ivory);border:1px solid var(--rule);border-radius:var(--rl);overflow:hidden;margin-bottom:1.5rem}
+.progress-bar{height:6px;background:var(--rule);border-radius:3px;overflow:hidden;margin-top:.5rem}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--wine),var(--gold));border-radius:3px;transition:width .5s}
+
+@media(max-width:800px){
+  .sidebar{width:100%;height:auto;position:static}
+  #portal.open{flex-direction:column}
+  .main{margin-left:0}
+  .bc-grid{grid-template-columns:1fr 1fr}
+  .frow,.frow.three{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ACCESS SCREEN -->
+<div id="accessScreen">
+  <div class="access-box">
+    <div class="access-logo serif">Wine Journeys</div>
+    <div class="access-sub">Client Portal</div>
+    <h2>Welcome Back</h2>
+    <p>Enter your 8-character access code to view your booking and travel details. Your code was provided by our team.</p>
+    <input class="access-input" type="text" id="accessCode" placeholder="XXXXXXXX" maxlength="8" oninput="this.value=this.value.toUpperCase()">
+    <button class="access-btn" onclick="checkAccess()">Access My Journey →</button>
+    <div class="access-err" id="accessErr">That code wasn't recognised. Please check and try again, or contact us at <a href="mailto:tours@winejourneys.au" style="color:var(--wine)">tours@winejourneys.au</a></div>
+    <p style="margin-top:1.5rem;font-size:11px;color:var(--mist)">Don't have a code? <a href="mailto:tours@winejourneys.au" style="color:var(--wine)">Contact our team</a></p>
+  </div>
+</div>
+
+<!-- CLIENT PORTAL -->
+<div id="portal">
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="sb-brand">
+      <div class="sb-logo serif">Wine Journeys</div>
+      <div class="sb-tagline">Client Portal</div>
+    </div>
+    <div class="sb-client">
+      <div class="sb-name" id="sbClientName">Loading…</div>
+      <div class="sb-tour" id="sbTourName">—</div>
+    </div>
+    <div class="sb-nav">
+      <div class="sb-item active" onclick="goTo('booking')" data-page="booking"><span class="icon">🗓</span> My Booking</div>
+      <div class="sb-item" onclick="goTo('payments')" data-page="payments"><span class="icon">💳</span> Payments</div>
+      <div class="sb-item" onclick="goTo('details')" data-page="details"><span class="icon">👤</span> My Details</div>
+      <div class="sb-item" onclick="goTo('flights')" data-page="flights"><span class="icon">✈️</span> Flights</div>
+      <div class="sb-item" onclick="goTo('extensions')" data-page="extensions"><span class="icon">🏨</span> Pre / Post Tour</div>
+      <div class="sb-item" onclick="goTo('passport')" data-page="passport"><span class="icon">🛂</span> Passport & Docs</div>
+      <div class="sb-item" onclick="goTo('notifications')" data-page="notifications"><span class="icon">🔔</span> Notifications <span id="sbNotifBadge" style="display:none;margin-left:auto;background:var(--wine);color:#fff;border-radius:10px;padding:1px 7px;font-size:10px;font-weight:700"></span></div>
+    </div>
+    <div class="sb-footer">
+      <a href="mailto:tours@winejourneys.au">📧 tours@winejourneys.au</a>
+      <a href="tel:+61731868488" style="margin-top:.375rem">📞 +61 7 3186 8488</a>
+      <a href="/" style="margin-top:.75rem">← Wine Journeys Website</a>
+    </div>
+  </nav>
+
+  <!-- Main -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-title serif" id="topbarTitle">My Booking</div>
+      <div style="display:flex;align-items:center;gap:.75rem">
+        <div class="notif-btn" onclick="goTo('notifications')" title="Notifications">
+          🔔<span class="notif-badge" id="notifBadge"></span>
+        </div>
+        <div style="font-size:11px;color:var(--mist)">Logged in as <strong id="topbarName" style="color:var(--charcoal)"></strong></div>
+      </div>
+    </div>
+    <div class="content">
+
+      <!-- MY BOOKING -->
+      <div class="sec-page active" id="page-booking">
+        <div class="page-header">
+          <h1 class="serif">My Booking</h1>
+          <p>Your confirmed journey details and booking status.</p>
+        </div>
+        <div id="bookingSummary"></div>
+        <div class="info-banner">
+          ✉️ Questions about your booking? Contact our team at <strong><a href="mailto:tours@winejourneys.au" style="color:var(--wine)">tours@winejourneys.au</a></strong> or call <strong>+61 7 3186 8488</strong>.
+        </div>
+      </div>
+
+      <!-- PAYMENTS -->
+      <div class="sec-page" id="page-payments">
+        <div class="page-header">
+          <h1 class="serif">Payment Schedule</h1>
+          <p>Your payment milestones and current status.</p>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem">
+              <div>
+                <div style="font-size:11px;color:var(--mist);text-transform:uppercase;letter-spacing:.08em">Total Booking Value</div>
+                <div class="serif" style="font-size:2rem;font-weight:700;color:var(--wine)" id="payTotal">—</div>
+                <div style="font-size:11px;color:var(--mist)" id="payPaidNote">—</div>
+              </div>
+              <div style="text-align:right">
+                <div style="font-size:11px;color:var(--mist);margin-bottom:.375rem">Paid to date</div>
+                <div class="progress-bar" style="width:160px"><div class="progress-fill" id="payProgress" style="width:0%"></div></div>
+                <div style="font-size:11px;color:var(--green);margin-top:.375rem;font-weight:600" id="payProgressLbl">0%</div>
+              </div>
+            </div>
+          </div>
+          <div id="paymentList"></div>
+        </div>
+        <div class="info-banner">
+          💳 Payments are processed by our team. To make a payment or discuss your schedule, please contact <strong><a href="mailto:tours@winejourneys.au" style="color:var(--wine)">tours@winejourneys.au</a></strong>.
+        </div>
+      </div>
+
+      <!-- MY DETAILS -->
+      <div class="sec-page" id="page-details">
+        <div class="page-header">
+          <h1 class="serif">My Details</h1>
+          <p>Help us make your journey perfect — please complete all sections.</p>
+        </div>
+
+        <!-- Dietary -->
+        <div class="form-section">
+          <div class="fs-head"><span class="fs-icon">🍽</span><div class="fs-title">Dietary Requirements</div></div>
+          <div class="fs-body">
+            <div class="frow one">
+              <div class="ffield">
+                <label>Dietary needs, allergies or intolerances</label>
+                <textarea id="d_dietary" rows="3" placeholder="e.g. Vegetarian, gluten-free, nut allergy…"></textarea>
+              </div>
+            </div>
+          </div>
+          <div class="save-row">
+            <button class="btn-save" onclick="saveSection('dietary')">Save</button>
+            <span class="save-ok" id="ok-dietary">✓ Saved</span>
+          </div>
+        </div>
+
+        <!-- Mobility -->
+        <div class="form-section">
+          <div class="fs-head"><span class="fs-icon">♿</span><div class="fs-title">Mobility & Accessibility</div></div>
+          <div class="fs-body">
+            <div class="frow one">
+              <div class="ffield">
+                <label>Mobility requirements or accessibility needs</label>
+                <textarea id="d_mobility" rows="3" placeholder="e.g. Can manage stairs with handrail, require ground floor room, use a walking stick…"></textarea>
+              </div>
+            </div>
+          </div>
+          <div class="save-row">
+            <button class="btn-save" onclick="saveSection('mobility')">Save</button>
+            <span class="save-ok" id="ok-mobility">✓ Saved</span>
+          </div>
+        </div>
+
+        <!-- Medical -->
+        <div class="form-section">
+          <div class="fs-head"><span class="fs-icon">🏥</span><div class="fs-title">Medical Information</div></div>
+          <div class="fs-body">
+            <div class="info-banner" style="margin-bottom:1rem">This information is held in strict confidence and only used to ensure your safety and wellbeing throughout the tour.</div>
+            <div class="frow one">
+              <div class="ffield">
+                <label>Medical conditions relevant to travel</label>
+                <textarea id="d_medical" rows="3" placeholder="e.g. Heart condition managed by medication, asthma inhaler carried at all times…"></textarea>
+              </div>
+            </div>
+            <div class="frow one">
+              <div class="ffield">
+                <label>Current medications (optional)</label>
+                <textarea id="d_medications" rows="2" placeholder="e.g. Blood pressure medication, antihistamines…"></textarea>
+              </div>
+            </div>
+          </div>
+          <div class="save-row">
+            <button class="btn-save" onclick="saveSection('medical')">Save</button>
+            <span class="save-ok" id="ok-medical">✓ Saved</span>
+          </div>
+        </div>
+
+        <!-- Emergency Contact -->
+        <div class="form-section">
+          <div class="fs-head"><span class="fs-icon">🆘</span><div class="fs-title">Emergency Contact</div></div>
+          <div class="fs-body">
+            <div class="frow">
+              <div class="ffield"><label>Full Name *</label><input type="text" id="d_ecName" placeholder="Contact's full name"></div>
+              <div class="ffield"><label>Relationship *</label><input type="text" id="d_ecRelation" placeholder="e.g. Spouse, daughter, friend"></div>
+            </div>
+            <div class="frow">
+              <div class="ffield"><label>Phone Number *</label><input type="tel" id="d_ecPhone" placeholder="+61 400 000 000"></div>
+              <div class="ffield"><label>Email Address</label><input type="email" id="d_ecEmail" placeholder="contact@email.com"></div>
+            </div>
+          </div>
+          <div class="save-row">
+            <button class="btn-save" onclick="saveSection('emergency')">Save</button>
+            <span class="save-ok" id="ok-emergency">✓ Saved</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- FLIGHTS -->
+      <div class="sec-page" id="page-flights">
+        <div class="page-header">
+          <h1 class="serif">Flight Details</h1>
+          <p>Add your confirmed flight details or request assistance booking flights.</p>
+        </div>
+        <div class="form-section">
+          <div class="fs-head"><span class="fs-icon">✈️</span><div class="fs-title">Do you need help with flights?</div></div>
+          <div class="fs-body">
+            <div class="radio-group" id="flightHelpGroup">
+              <div class="radio-opt" onclick="selectRadio('flightHelp','yes',this)">✅ Yes — please assist with flights</div>
+              <div class="radio-opt" onclick="selectRadio('flightHelp','no',this)">🎟 No — I'll arrange my own flights</div>
+            </div>
+            <div id="flightHelpNote" class="info-banner" style="display:none">Our team will be in touch to discuss flight options, preferred airlines, and seat preferences. International flights are not included in the tour price.</div>
+          </div>
+          <div class="save-row">
+            <button class="btn-save" onclick="saveSection('flights')">Save Preference</button>
+            <span class="save-ok" id="ok-flights">✓ Saved</span>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="fs-head"><span class="fs-icon">🛫</span><div class="fs-title">Arrival Flight</div></div>
+          <div class="fs-body">
+            <div class="frow">
+              <div class="ffield"><label>Airline & Flight Number</label><input type="text" id="f_arrFlight" placeholder="e.g. QF1 / EK412"></div>
+              <div class="ffield"><label>Arrival Date</label><input type="date" id="f_arrDate"></div>
+            </div>
+            <div class="frow">
+              <div class="ffield"><label>Arriving From (City/Airport)</label><input type="text" id="f_arrFrom" placeholder="e.g. Sydney (SYD)"></div>
+              <div class="ffield"><label>Arrival Time (local)</label><input type="time" id="f_arrTime"></div>
+            </div>
+          </div>
+          <div class="save-row">
+            <button class="btn-save" onclick="saveSection('arrival')">Save</button>
+            <span class="save-ok" id="ok-arrival">✓ Saved</span>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="fs-head"><span class="fs-icon">🛬</span><div class="fs-title">Departure Flight</div></div>
+          <div class="fs-body">
+            <div class="frow">
+              <div class="ffield"><label>Airline & Flight Number</label><input type="text" id="f_depFlight" placeholder="e.g. QF2 / EK413"></div>
+              <div class="ffield"><label>Departure Date</label><input type="date" id="f_depDate"></div>
+            </div>
+            <div class="frow">
+              <div class="ffield"><label>Departing To (City/Airport)</label><input type="text" id="f_depTo" placeholder="e.g. Melbourne (MEL)"></div>
+              <div class="ffield"><label>Departure Time (local)</label><input type="time" id="f_depTime"></div>
+            </div>
+          </div>
+          <div class="save-row">
+            <button class="btn-save" onclick="saveSection('departure')">Save</button>
+            <span class="save-ok" id="ok-departure">✓ Saved</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- PRE / POST TOUR -->
+      <div class="sec-page" id="page-extensions">
+        <div class="page-header">
+          <h1 class="serif">Pre & Post Tour</h1>
+          <p>Extend your journey with additional nights before or after the tour.</p>
+        </div>
+        <div class="form-section">
+          <div class="fs-head"><span class="fs-icon">🌅</span><div class="fs-title">Pre-Tour Extension</div></div>
+          <div class="fs-body">
+            <div class="radio-group" id="preGroup">
+              <div class="radio-opt" onclick="selectRadio('pre','yes',this)">🏨 Yes — I'd like to arrive early</div>
+              <div class="radio-opt" onclick="selectRadio('pre','no',this)">✗ No thanks</div>
+            </div>
+            <div class="frow" id="preDetails" style="display:none">
+              <div class="ffield"><label>Number of extra nights</label><input type="number" id="ext_preNights" min="1" max="14" placeholder="e.g. 2"></div>
+              <div class="ffield"><label>Room preference</label><select id="ext_preRoom"><option>Twin / Double</option><option>Single</option><option>Suite</option></select></div>
+            </div>
+            <div class="frow one" id="preNotes" style="display:none">
+              <div class="ffield"><label>Special requests or notes</label><textarea id="ext_preReq" rows="2" placeholder="Any specific preferences for your pre-tour stay…"></textarea></div>
+            </div>
+          </div>
+          <div class="save-row">
+            <button class="btn-save" onclick="saveSection('pre')">Save</button>
+            <span class="save-ok" id="ok-pre">✓ Saved — our team will be in touch</span>
+          </div>
+        </div>
+        <div class="form-section">
+          <div class="fs-head"><span class="fs-icon">🌇</span><div class="fs-title">Post-Tour Extension</div></div>
+          <div class="fs-body">
+            <div class="radio-group" id="postGroup">
+              <div class="radio-opt" onclick="selectRadio('post','yes',this)">🏨 Yes — I'd like to stay on</div>
+              <div class="radio-opt" onclick="selectRadio('post','no',this)">✗ No thanks</div>
+            </div>
+            <div class="frow" id="postDetails" style="display:none">
+              <div class="ffield"><label>Number of extra nights</label><input type="number" id="ext_postNights" min="1" max="14" placeholder="e.g. 3"></div>
+              <div class="ffield"><label>Room preference</label><select id="ext_postRoom"><option>Twin / Double</option><option>Single</option><option>Suite</option></select></div>
+            </div>
+            <div class="frow one" id="postNotes" style="display:none">
+              <div class="ffield"><label>Special requests or notes</label><textarea id="ext_postReq" rows="2" placeholder="Any specific preferences for your post-tour stay…"></textarea></div>
+            </div>
+          </div>
+          <div class="save-row">
+            <button class="btn-save" onclick="saveSection('post')">Save</button>
+            <span class="save-ok" id="ok-post">✓ Saved — our team will be in touch</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- PASSPORT & DOCS -->
+      <div class="sec-page" id="page-passport">
+        <div class="page-header">
+          <h1 class="serif">Passport & Documents</h1>
+          <p>Please provide your passport details and upload a scan for our records.</p>
+        </div>
+        <div class="form-section">
+          <div class="fs-head"><span class="fs-icon">🛂</span><div class="fs-title">Passport Details</div></div>
+          <div class="fs-body">
+            <div class="frow">
+              <div class="ffield"><label>First Name (as per passport) *</label><input type="text" id="pp_first" placeholder="First name"></div>
+              <div class="ffield"><label>Last Name (as per passport) *</label><input type="text" id="pp_last" placeholder="Last name"></div>
+            </div>
+            <div class="frow three">
+              <div class="ffield"><label>Date of Birth *</label><input type="date" id="pp_dob"></div>
+              <div class="ffield"><label>Passport Number *</label><input type="text" id="pp_number" placeholder="e.g. PA1234567"></div>
+              <div class="ffield"><label>Expiry Date *</label><input type="date" id="pp_expiry"></div>
+            </div>
+            <div class="frow">
+              <div class="ffield"><label>Issuing Country *</label><input type="text" id="pp_country" placeholder="e.g. Australia"></div>
+              <div class="ffield"><label>Nationality</label><input type="text" id="pp_nationality" placeholder="e.g. Australian"></div>
+            </div>
+          </div>
+          <div class="save-row">
+            <button class="btn-save" onclick="saveSection('passport')">Save Details</button>
+            <span class="save-ok" id="ok-passport">✓ Saved</span>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="fs-head"><span class="fs-icon">📄</span><div class="fs-title">Upload Passport Scan</div></div>
+          <div class="fs-body">
+            <div class="info-banner">Please upload a clear scan or photo of your passport photo page. This is stored securely and used for tour documentation only.</div>
+            <label class="upload-zone" id="passportUploadZone">
+              <input type="file" id="passportFile" accept=".pdf,.jpg,.jpeg,.png" onchange="handlePassportUpload(this)">
+              <div class="uz-icon">🛂</div>
+              <div class="uz-lbl">Click to upload passport scan</div>
+              <div class="uz-hint">PDF, JPG or PNG · Max 5MB</div>
+              <div class="uz-name" id="passportFileName"></div>
+            </label>
+            <div id="passportUploaded" style="display:none;margin-top:.75rem">
+              <div class="uploaded-file">✓ <span id="passportUploadedName"></span> — <span style="font-size:11px;font-weight:400;margin-left:.5rem;cursor:pointer;text-decoration:underline" onclick="clearPassport()">Remove</span></div>
+            </div>
+            <div style="margin-top:1rem">
+              <button class="btn-save" onclick="saveSection('passportFile')">Save Upload</button>
+              <span class="save-ok" id="ok-passportFile" style="margin-left:1rem">✓ Saved</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- NOTIFICATIONS -->
+      <div class="sec-page" id="page-notifications">
+        <div class="page-header">
+          <h1 class="serif">Notifications</h1>
+          <p>Updates and messages from the Wine Journeys team.</p>
+        </div>
+        <div class="section-card">
+          <div id="notifList"><div class="notif-empty">🔔 No notifications yet</div></div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /portal -->
+
+<script>
+let CLIENT = null;
+let TOKEN = null;
+
+// ── ACCESS ──
+function checkAccess(){
+  const code = document.getElementById('accessCode').value.trim().toUpperCase();
+  if(code.length < 4){ showErr('Please enter your full access code.'); return; }
+  const data = localStorage.getItem('wj_client_' + code);
+  if(!data){ showErr('That code wasn\'t recognised. Please check and try again, or contact us at tours@winejourneys.au'); return; }
+  try{
+    CLIENT = JSON.parse(data);
+    TOKEN = code;
+    loadPortal();
+  } catch(e){ showErr('Error loading your data. Please contact our team.'); }
+}
+
+function showErr(msg){
+  const el = document.getElementById('accessErr');
+  el.textContent = msg;
+  el.classList.add('show');
+}
+
+document.getElementById('accessCode').addEventListener('keydown', function(e){
+  if(e.key==='Enter') checkAccess();
+});
+
+// Check URL params for auto-login
+(function(){
+  const params = new URLSearchParams(location.search);
+  const t = params.get('token');
+  if(t){ document.getElementById('accessCode').value = t.toUpperCase(); checkAccess(); }
+})();
+
+// ── PORTAL ──
+function loadPortal(){
+  document.getElementById('accessScreen').style.display = 'none';
+  document.getElementById('portal').classList.add('open');
+
+  // Populate header
+  const name = CLIENT.firstName + ' ' + CLIENT.lastName;
+  document.getElementById('sbClientName').textContent = name;
+  document.getElementById('sbTourName').textContent = CLIENT.tourTitle || '—';
+  document.getElementById('topbarName').textContent = CLIENT.firstName;
+
+  loadBookingSummary();
+  loadPayments();
+  loadDetails();
+  loadFlights();
+  loadExtensions();
+  loadPassport();
+  loadNotifications();
+}
+
+// ── BOOKING SUMMARY ──
+function loadBookingSummary(){
+  const c = CLIENT;
+  const statusClass = c.bookingStatus || 'confirmed';
+  const statusLabel = statusClass === 'confirmed' ? 'Confirmed' : statusClass === 'pending' ? 'Pending' : 'Enquiry';
+  document.getElementById('bookingSummary').innerHTML = `
+    <div class="booking-card">
+      <div class="bc-hero">
+        <img src="${c.tourImg||'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=1200&q=80'}" alt="${c.tourTitle}">
+        <div class="bc-hero-ov"></div>
+        <div class="bc-hero-txt">
+          <div class="bc-badge">🏆 ${c.tourCat||'Signature Tour'}</div>
+          <div class="bc-title serif">${c.tourTitle||'Your Journey'}</div>
+          <div class="bc-sub">${c.tourSub||''}</div>
+        </div>
+      </div>
+      <div class="bc-body">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:.75rem">
+          <div>
+            <div style="font-size:10px;color:var(--mist);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.25rem">Booking Reference</div>
+            <div style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:700;color:var(--charcoal)">${c.bookingRef||'WJ-'+TOKEN}</div>
+          </div>
+          <span class="status-pill ${statusClass}">● ${statusLabel}</span>
+        </div>
+        <div class="bc-grid">
+          <div class="bc-stat"><div class="bc-stat-lbl">Departure</div><div class="bc-stat-val serif">${c.tourDep||'—'}</div></div>
+          <div class="bc-stat"><div class="bc-stat-lbl">Duration</div><div class="bc-stat-val serif">${c.tourDur||'—'}</div></div>
+          <div class="bc-stat"><div class="bc-stat-lbl">Travellers</div><div class="bc-stat-val serif">${c.pax||'1'}</div></div>
+          <div class="bc-stat"><div class="bc-stat-lbl">Room Type</div><div class="bc-stat-val serif">${c.roomType||'Twin Share'}</div></div>
+        </div>
+      </div>
+    </div>
+    ${c.adminNote?`<div class="info-banner"><strong>Note from Wine Journeys:</strong> ${c.adminNote}</div>`:''}
+  `;
+}
+
+// ── PAYMENTS ──
+function loadPayments(){
+  const payments = CLIENT.payments || [];
+  const total = CLIENT.totalPrice || 0;
+  const paid = payments.filter(p=>p.status==='paid').reduce((s,p)=>s+p.amount,0);
+  const pct = total > 0 ? Math.round(paid/total*100) : 0;
+  document.getElementById('payTotal').textContent = total > 0 ? '$'+total.toLocaleString()+' AUD' : 'Contact our team';
+  document.getElementById('payPaidNote').textContent = paid > 0 ? `$${paid.toLocaleString()} AUD paid · $${(total-paid).toLocaleString()} AUD remaining` : 'No payments recorded yet';
+  document.getElementById('payProgress').style.width = pct+'%';
+  document.getElementById('payProgressLbl').textContent = pct+'% paid';
+
+  if(!payments.length){
+    document.getElementById('paymentList').innerHTML = '<div class="notif-empty">No payment schedule set up yet. Contact our team for details.</div>';
+    return;
+  }
+  document.getElementById('paymentList').innerHTML = payments.map((p,i) => {
+    const st = p.status || 'upcoming';
+    const stLabel = st==='paid'?'Paid':st==='due'?'Due':st==='overdue'?'Overdue':'Upcoming';
+    return `<div class="payment-row">
+      <div class="pr-num ${st==='paid'?'paid':''}">${i+1}</div>
+      <div class="pr-info">
+        <div class="pr-label">${p.label||('Payment '+(i+1))}</div>
+        <div class="pr-date">Due: ${formatDate(p.dueDate)}${p.paidDate?' · Paid: '+formatDate(p.paidDate):''}</div>
+      </div>
+      <div class="pr-amt serif">$${Number(p.amount).toLocaleString()}</div>
+      <div class="pr-status ${st}">${stLabel}</div>
+    </div>`;
+  }).join('');
+}
+
+function formatDate(d){
+  if(!d) return '—';
+  try{ return new Date(d).toLocaleDateString('en-AU',{day:'numeric',month:'long',year:'numeric'}); }
+  catch(e){ return d; }
+}
+
+// ── DETAILS ──
+function loadDetails(){
+  const d = CLIENT;
+  if(d.dietary) document.getElementById('d_dietary').value = d.dietary;
+  if(d.mobility) document.getElementById('d_mobility').value = d.mobility;
+  if(d.medical) document.getElementById('d_medical').value = d.medical;
+  if(d.medications) document.getElementById('d_medications').value = d.medications;
+  if(d.ecName) document.getElementById('d_ecName').value = d.ecName;
+  if(d.ecRelation) document.getElementById('d_ecRelation').value = d.ecRelation;
+  if(d.ecPhone) document.getElementById('d_ecPhone').value = d.ecPhone;
+  if(d.ecEmail) document.getElementById('d_ecEmail').value = d.ecEmail;
+}
+
+// ── FLIGHTS ──
+function loadFlights(){
+  const d = CLIENT;
+  if(d.flightHelp) selectRadioLoad('flightHelp', d.flightHelp, 'flightHelpGroup');
+  if(d.arrFlight) document.getElementById('f_arrFlight').value = d.arrFlight;
+  if(d.arrDate) document.getElementById('f_arrDate').value = d.arrDate;
+  if(d.arrFrom) document.getElementById('f_arrFrom').value = d.arrFrom;
+  if(d.arrTime) document.getElementById('f_arrTime').value = d.arrTime;
+  if(d.depFlight) document.getElementById('f_depFlight').value = d.depFlight;
+  if(d.depDate) document.getElementById('f_depDate').value = d.depDate;
+  if(d.depTo) document.getElementById('f_depTo').value = d.depTo;
+  if(d.depTime) document.getElementById('f_depTime').value = d.depTime;
+}
+
+// ── EXTENSIONS ──
+function loadExtensions(){
+  const d = CLIENT;
+  if(d.preExt) selectRadioLoad('pre', d.preExt, 'preGroup');
+  if(d.postExt) selectRadioLoad('post', d.postExt, 'postGroup');
+  if(d.preNights) document.getElementById('ext_preNights').value = d.preNights;
+  if(d.preRoom) document.getElementById('ext_preRoom').value = d.preRoom;
+  if(d.preReq) document.getElementById('ext_preReq').value = d.preReq;
+  if(d.postNights) document.getElementById('ext_postNights').value = d.postNights;
+  if(d.postRoom) document.getElementById('ext_postRoom').value = d.postRoom;
+  if(d.postReq) document.getElementById('ext_postReq').value = d.postReq;
+}
+
+// ── PASSPORT ──
+function loadPassport(){
+  const d = CLIENT;
+  if(d.ppFirst) document.getElementById('pp_first').value = d.ppFirst;
+  if(d.ppLast) document.getElementById('pp_last').value = d.ppLast;
+  if(d.ppDob) document.getElementById('pp_dob').value = d.ppDob;
+  if(d.ppNumber) document.getElementById('pp_number').value = d.ppNumber;
+  if(d.ppExpiry) document.getElementById('pp_expiry').value = d.ppExpiry;
+  if(d.ppCountry) document.getElementById('pp_country').value = d.ppCountry;
+  if(d.ppNationality) document.getElementById('pp_nationality').value = d.ppNationality;
+  if(d.passportFileName){ showPassportUploaded(d.passportFileName); }
+}
+
+// ── NOTIFICATIONS ──
+function loadNotifications(){
+  const notifs = CLIENT.notifications || [];
+  const unread = notifs.filter(n=>!n.read).length;
+  if(unread > 0){
+    document.getElementById('notifBadge').textContent = unread;
+    document.getElementById('notifBadge').classList.add('show');
+    document.getElementById('sbNotifBadge').textContent = unread;
+    document.getElementById('sbNotifBadge').style.display = 'inline';
+  }
+  if(!notifs.length){
+    document.getElementById('notifList').innerHTML = '<div class="notif-empty">🔔 No notifications yet. Updates from Wine Journeys will appear here.</div>';
+    return;
+  }
+  document.getElementById('notifList').innerHTML = notifs.slice().reverse().map(n => `
+    <div class="notif-item ${n.read?'':'unread'}">
+      <div class="ni-dot ${n.read?'read':''}"></div>
+      <div class="ni-body">
+        <div class="ni-msg">${n.message}</div>
+        <div class="ni-date">${formatDate(n.date)}</div>
+      </div>
+    </div>`).join('');
+  // Mark all as read
+  notifs.forEach(n=>n.read=true);
+  CLIENT.notifications = notifs;
+  saveClient();
+  document.getElementById('notifBadge').classList.remove('show');
+  document.getElementById('sbNotifBadge').style.display='none';
+}
+
+// ── SAVE SECTIONS ──
+function saveSection(sec){
+  const d = CLIENT;
+  if(sec==='dietary'){ d.dietary = document.getElementById('d_dietary').value; }
+  else if(sec==='mobility'){ d.mobility = document.getElementById('d_mobility').value; }
+  else if(sec==='medical'){
+    d.medical = document.getElementById('d_medical').value;
+    d.medications = document.getElementById('d_medications').value;
+  }
+  else if(sec==='emergency'){
+    d.ecName = document.getElementById('d_ecName').value;
+    d.ecRelation = document.getElementById('d_ecRelation').value;
+    d.ecPhone = document.getElementById('d_ecPhone').value;
+    d.ecEmail = document.getElementById('d_ecEmail').value;
+  }
+  else if(sec==='flights'){
+    d.flightHelp = getRadio('flightHelp');
+  }
+  else if(sec==='arrival'){
+    d.arrFlight = document.getElementById('f_arrFlight').value;
+    d.arrDate = document.getElementById('f_arrDate').value;
+    d.arrFrom = document.getElementById('f_arrFrom').value;
+    d.arrTime = document.getElementById('f_arrTime').value;
+  }
+  else if(sec==='departure'){
+    d.depFlight = document.getElementById('f_depFlight').value;
+    d.depDate = document.getElementById('f_depDate').value;
+    d.depTo = document.getElementById('f_depTo').value;
+    d.depTime = document.getElementById('f_depTime').value;
+  }
+  else if(sec==='pre'){
+    d.preExt = getRadio('pre');
+    d.preNights = document.getElementById('ext_preNights').value;
+    d.preRoom = document.getElementById('ext_preRoom').value;
+    d.preReq = document.getElementById('ext_preReq').value;
+  }
+  else if(sec==='post'){
+    d.postExt = getRadio('post');
+    d.postNights = document.getElementById('ext_postNights').value;
+    d.postRoom = document.getElementById('ext_postRoom').value;
+    d.postReq = document.getElementById('ext_postReq').value;
+  }
+  else if(sec==='passport'){
+    d.ppFirst = document.getElementById('pp_first').value;
+    d.ppLast = document.getElementById('pp_last').value;
+    d.ppDob = document.getElementById('pp_dob').value;
+    d.ppNumber = document.getElementById('pp_number').value;
+    d.ppExpiry = document.getElementById('pp_expiry').value;
+    d.ppCountry = document.getElementById('pp_country').value;
+    d.ppNationality = document.getElementById('pp_nationality').value;
+  }
+  else if(sec==='passportFile'){
+    // Already saved in handlePassportUpload
+  }
+  d.updatedAt = new Date().toISOString();
+  CLIENT = d;
+  saveClient();
+  flashOk('ok-'+sec);
+}
+
+function saveClient(){
+  localStorage.setItem('wj_client_'+TOKEN, JSON.stringify(CLIENT));
+}
+
+function flashOk(id){
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'), 2500);
+}
+
+// ── RADIO ──
+let radioState = {};
+function selectRadio(group, val, el){
+  radioState[group] = val;
+  const parent = el.parentElement;
+  parent.querySelectorAll('.radio-opt').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');
+  // Show/hide dependent fields
+  if(group==='flightHelp'){
+    document.getElementById('flightHelpNote').style.display = val==='yes'?'block':'none';
+  }
+  if(group==='pre'){
+    document.getElementById('preDetails').style.display = val==='yes'?'grid':'none';
+    document.getElementById('preNotes').style.display = val==='yes'?'grid':'none';
+  }
+  if(group==='post'){
+    document.getElementById('postDetails').style.display = val==='yes'?'grid':'none';
+    document.getElementById('postNotes').style.display = val==='yes'?'grid':'none';
+  }
+}
+function selectRadioLoad(group, val, parentId){
+  radioState[group] = val;
+  const parent = document.getElementById(parentId);
+  if(!parent) return;
+  parent.querySelectorAll('.radio-opt').forEach(o=>{
+    if((val==='yes'&&o.textContent.includes('Yes'))||(val==='no'&&o.textContent.includes('No'))){
+      o.classList.add('selected');
+    }
+  });
+  // Trigger dependent fields
+  if(group==='flightHelp') document.getElementById('flightHelpNote').style.display = val==='yes'?'block':'none';
+  if(group==='pre'){
+    document.getElementById('preDetails').style.display = val==='yes'?'grid':'none';
+    document.getElementById('preNotes').style.display = val==='yes'?'grid':'none';
+  }
+  if(group==='post'){
+    document.getElementById('postDetails').style.display = val==='yes'?'grid':'none';
+    document.getElementById('postNotes').style.display = val==='yes'?'grid':'none';
+  }
+}
+function getRadio(group){ return radioState[group] || null; }
+
+// ── PASSPORT UPLOAD ──
+function handlePassportUpload(input){
+  const file = input.files[0];
+  if(!file) return;
+  if(file.size > 5*1024*1024){ alert('File is too large. Please upload a file under 5MB.'); input.value=''; return; }
+  const reader = new FileReader();
+  reader.onload = function(e){
+    CLIENT.passportFileData = e.target.result;
+    CLIENT.passportFileName = file.name;
+    showPassportUploaded(file.name);
+    saveClient();
+  };
+  reader.readAsDataURL(file);
+}
+function showPassportUploaded(name){
+  document.getElementById('passportUploaded').style.display='block';
+  document.getElementById('passportUploadedName').textContent = name;
+  document.getElementById('passportUploadZone').style.display='none';
+}
+function clearPassport(){
+  CLIENT.passportFileData = null;
+  CLIENT.passportFileName = null;
+  document.getElementById('passportUploaded').style.display='none';
+  document.getElementById('passportUploadZone').style.display='';
+  document.getElementById('passportFile').value='';
+  saveClient();
+}
+
+// ── NAVIGATION ──
+const pageTitles = {
+  booking:'My Booking', payments:'Payments', details:'My Details',
+  flights:'Flights', extensions:'Pre & Post Tour', passport:'Passport & Docs', notifications:'Notifications'
+};
+function goTo(page){
+  document.querySelectorAll('.sec-page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(i=>i.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  document.querySelector('[data-page="'+page+'"]').classList.add('active');
+  document.getElementById('topbarTitle').textContent = pageTitles[page]||page;
+  if(page==='notifications') loadNotifications();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>
