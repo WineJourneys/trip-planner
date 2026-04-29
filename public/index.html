@@ -291,6 +291,7 @@ footer{background:var(--charcoal);padding:3rem 1.5rem 2rem}
       <div class="nav-link" onclick="filterTours('package')">Packages</div>
       <div class="nav-link" onclick="filterTours('cruise')">Cruises</div>
       <div class="nav-link" onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'})">About</div>
+      <a class="nav-link" href="/login/" style="text-decoration:none;color:inherit">My Journey</a>
     </div>
     <button class="nav-cta" onclick="openBrochure()">Get Brochure</button>
   </div>
@@ -387,23 +388,24 @@ footer{background:var(--charcoal);padding:3rem 1.5rem 2rem}
       <p>Small-group wine travel experiences led by passionate experts. From the Barossa to Burgundy, we take you behind the cellar door.</p>
     </div>
     <div class="footer-col"><h4>Experiences</h4><ul>
-      <li><a onclick="filterTours('signature')">Signature Tours</a></li>
-      <li><a onclick="filterTours('package')">Holiday Packages</a></li>
-      <li><a onclick="filterTours('cruise')">Wine Cruises</a></li>
+      <li><a href="javascript:void(0)" onclick="filterTours('signature')">Signature Tours</a></li>
+      <li><a href="javascript:void(0)" onclick="filterTours('package')">Holiday Packages</a></li>
+      <li><a href="javascript:void(0)" onclick="filterTours('cruise')">Wine Cruises</a></li>
     </ul></div>
     <div class="footer-col"><h4>Information</h4><ul>
-      <li><a href="#about" onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'});return false">About Us</a></li>
+      <li><a href="javascript:void(0)" onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'})">About Us</a></li>
       <li><a href="javascript:void(0)" onclick="openBrochure()">Request Brochure</a></li>
       <li><a href="mailto:tours@winejourneys.au">Contact Us</a></li>
     </ul></div>
-    <div class="footer-col"><h4>Contact</h4><ul>
+    <div class="footer-col"><h4>Portals</h4><ul>
+      <li><a href="/login/">My Journey (Client Login)</a></li>
       <li><a href="mailto:tours@winejourneys.au">tours@winejourneys.au</a></li>
       <li><a href="tel:+61731868488">+61 7 3186 8488</a></li>
     </ul></div>
   </div>
   <div class="footer-btm">
     <p>© 2026 Wine Journeys. All rights reserved.</p>
-    <span class="staff-link" onclick="window.location.href='/admin/'">Staff Portal</span>
+    <span class="staff-link" onclick="window.location.href='/login/?tab=admin'">Staff Portal</span>
   </div>
 </footer>
 

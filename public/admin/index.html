@@ -527,7 +527,7 @@ function doLogin(){
 
 function doLogout(){
   localStorage.removeItem(SESSION_KEY);
-  location.reload();
+  window.location.href='/login/?tab=admin';
 }
 
 /* =========================================================
@@ -1290,6 +1290,9 @@ if(localStorage.getItem(SESSION_KEY)==='1'){
   document.getElementById('loginScreen').style.display='none';
   document.getElementById('app').style.display='block';
   initApp();
+} else {
+  // Redirect to unified login page
+  window.location.replace('/login/?tab=admin');
 }
 </script>
 </body>

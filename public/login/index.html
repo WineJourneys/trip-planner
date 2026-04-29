@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wine Journeys — Portal Login</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Segoe UI',Arial,sans-serif;
+  min-height:100vh;
+  background:linear-gradient(135deg,#1a0a00 0%,#3d1f00 55%,#6b3a2a 100%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:24px;
+}
+/* Subtle background pattern */
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:radial-gradient(circle at 20% 50%,rgba(201,168,76,.06) 0%,transparent 60%),
+                   radial-gradient(circle at 80% 20%,rgba(201,168,76,.04) 0%,transparent 50%);
+  pointer-events:none;
+}
+.brand{text-align:center;margin-bottom:32px}
+.brand-logo img{height:56px;filter:brightness(0) invert(1);opacity:.9;margin-bottom:10px}
+.brand-name{font-size:22px;font-weight:700;color:#fff;letter-spacing:.5px}
+.brand-tag{font-size:12px;color:rgba(255,255,255,.45);letter-spacing:2px;text-transform:uppercase;margin-top:3px}
+
+/* Card */
+.card{
+  background:#fff;border-radius:18px;
+  width:100%;max-width:420px;
+  box-shadow:0 24px 80px rgba(0,0,0,.45);
+  overflow:hidden;
+}
+
+/* Tabs */
+.tabs{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #f0ebe0}
+.tab{
+  padding:16px 20px;text-align:center;cursor:pointer;
+  font-size:14px;font-weight:600;color:#aaa;
+  transition:all .2s;position:relative;
+  user-select:none;
+}
+.tab .tab-icon{font-size:18px;display:block;margin-bottom:3px}
+.tab.active{color:#8b6914;background:#fffdf7}
+.tab.active::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;
+  height:2px;background:#8b6914;
+}
+.tab:hover:not(.active){background:#faf8f3;color:#555}
+
+/* Panel */
+.panel{display:none;padding:32px 32px 28px}
+.panel.active{display:block}
+.panel h2{font-size:19px;font-weight:700;color:#1a0a00;margin-bottom:5px}
+.panel p{font-size:13px;color:#888;margin-bottom:24px;line-height:1.6}
+
+/* Form */
+label{display:block;font-size:11px;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:.7px;margin-bottom:6px}
+input[type=text],input[type=password],input[type=email]{
+  width:100%;padding:13px 15px;
+  border:1.5px solid #e0d5c5;border-radius:9px;
+  font-size:15px;font-family:inherit;outline:none;
+  transition:border .2s,box-shadow .2s;
+  color:#1a0a00;
+}
+input:focus{border-color:#8b6914;box-shadow:0 0 0 3px rgba(139,105,20,.1)}
+.input-wrap{position:relative;margin-bottom:18px}
+.input-hint{font-size:11px;color:#aaa;margin-top:5px}
+.btn{
+  width:100%;padding:14px;
+  background:#8b6914;color:#fff;
+  border:none;border-radius:9px;
+  font-size:15px;font-weight:700;
+  cursor:pointer;transition:background .2s,transform .1s;
+  letter-spacing:.3px;
+}
+.btn:hover{background:#6b4f0f}
+.btn:active{transform:scale(.98)}
+.err{
+  display:none;margin-top:14px;padding:11px 14px;
+  background:#fff0f0;border:1px solid #ffcdd2;border-radius:7px;
+  color:#c62828;font-size:13px;
+}
+.err.show{display:block}
+.help-link{
+  display:block;text-align:center;margin-top:18px;
+  font-size:12px;color:#aaa;
+}
+.help-link a{color:#8b6914;text-decoration:none}
+.help-link a:hover{text-decoration:underline}
+/* Access code styling */
+#clientCode{
+  text-align:center;font-size:22px;letter-spacing:6px;
+  font-weight:700;text-transform:uppercase;
+}
+/* Back to site */
+.back-link{
+  margin-top:24px;text-align:center;
+  font-size:12px;color:rgba(255,255,255,.4);
+}
+.back-link a{color:rgba(255,255,255,.6);text-decoration:none;transition:color .2s}
+.back-link a:hover{color:#c9a84c}
+</style>
+</head>
+<body>
+
+<div class="brand">
+  <div class="brand-logo">
+    <img src="https://img1.wsimg.com/isteam/ip/8dd901c3-732a-4eeb-8ef7-df295581f7f0/Wine%20Journeys%20Logo.png/:/rs=h:200,cg:true,m/qt=q:95" alt="Wine Journeys" onerror="this.style.display='none'">
+  </div>
+  <div class="brand-name">Wine Journeys</div>
+  <div class="brand-tag">Portal Access</div>
+</div>
+
+<div class="card">
+  <div class="tabs">
+    <div class="tab active" id="tab-client" onclick="switchTab('client')">
+      <span class="tab-icon">🧳</span>
+      My Journey
+    </div>
+    <div class="tab" id="tab-admin" onclick="switchTab('admin')">
+      <span class="tab-icon">⚙️</span>
+      Team Login
+    </div>
+  </div>
+
+  <!-- CLIENT PANEL -->
+  <div class="panel active" id="panel-client">
+    <h2>Access Your Journey</h2>
+    <p>Enter the 8-character access code provided by our team to view your booking, travel details and itinerary.</p>
+    <label for="clientCode">Your Access Code</label>
+    <div class="input-wrap">
+      <input type="text" id="clientCode" placeholder="e.g. AB3X7YQP" maxlength="8" oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'')" onkeydown="if(event.key==='Enter')clientLogin()">
+      <div class="input-hint">Code is 8 characters — letters and numbers</div>
+    </div>
+    <button class="btn" onclick="clientLogin()">Access My Journey →</button>
+    <div class="err" id="clientErr">That code wasn't recognised. Please check and try again.</div>
+    <div class="help-link">
+      Don't have a code? <a href="mailto:tours@winejourneys.au">Contact our team</a>
+    </div>
+  </div>
+
+  <!-- ADMIN PANEL -->
+  <div class="panel" id="panel-admin">
+    <h2>Team Login</h2>
+    <p>Sign in to manage tours, bookings, clients and your CRM.</p>
+    <label for="adminPass">Password</label>
+    <div class="input-wrap">
+      <input type="password" id="adminPass" placeholder="Enter password" onkeydown="if(event.key==='Enter')adminLogin()">
+    </div>
+    <button class="btn" onclick="adminLogin()">Sign In →</button>
+    <div class="err" id="adminErr">Incorrect password. Please try again.</div>
+    <div class="help-link">
+      Need access? <a href="mailto:tours@winejourneys.au">Contact the administrator</a>
+    </div>
+  </div>
+</div>
+
+<div class="back-link">
+  <a href="/">← Back to Wine Journeys website</a>
+</div>
+
+<script>
+const ADMIN_PASS_KEY='wj_admin_pass';
+const SESSION_KEY='wj_admin_session';
+
+/* Switch between tabs */
+function switchTab(tab){
+  document.getElementById('tab-client').classList.toggle('active',tab==='client');
+  document.getElementById('tab-admin').classList.toggle('active',tab==='admin');
+  document.getElementById('panel-client').classList.toggle('active',tab==='client');
+  document.getElementById('panel-admin').classList.toggle('active',tab==='admin');
+  // Hide errors on switch
+  document.getElementById('clientErr').classList.remove('show');
+  document.getElementById('adminErr').classList.remove('show');
+  // Auto-focus the input
+  setTimeout(()=>{
+    document.getElementById(tab==='client'?'clientCode':'adminPass').focus();
+  },50);
+}
+
+/* Client login — check token exists in localStorage */
+function clientLogin(){
+  const code=document.getElementById('clientCode').value.trim().toUpperCase();
+  if(code.length!==8){
+    document.getElementById('clientErr').textContent='Please enter your full 8-character access code.';
+    document.getElementById('clientErr').classList.add('show');
+    return;
+  }
+  const data=localStorage.getItem('wj_client_'+code);
+  if(data){
+    window.location.href='/client/?token='+code;
+  } else {
+    document.getElementById('clientErr').textContent="That code wasn't recognised. Please check and try again, or contact us.";
+    document.getElementById('clientErr').classList.add('show');
+  }
+}
+
+/* Admin login */
+function adminLogin(){
+  const pass=document.getElementById('adminPass').value;
+  const correct=localStorage.getItem(ADMIN_PASS_KEY)||'WineJourneys2026';
+  if(pass===correct){
+    localStorage.setItem(SESSION_KEY,'1');
+    window.location.href='/admin/';
+  } else {
+    document.getElementById('adminErr').classList.add('show');
+    document.getElementById('adminPass').value='';
+    document.getElementById('adminPass').focus();
+  }
+}
+
+/* Check if URL has a tab param e.g. /login/?tab=admin */
+(function(){
+  const p=new URLSearchParams(location.search);
+  if(p.get('tab')==='admin')switchTab('admin');
+  else document.getElementById('clientCode').focus();
+})();
+</script>
+</body>
+</html>
