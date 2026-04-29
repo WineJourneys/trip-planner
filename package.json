@@ -1,0 +1,15 @@
+{
+  "name": "wine-journeys-trip-planner",
+  "version": "1.0.0",
+  "description": "Wine Journeys pricing and payment trip planner",
+  "scripts": {
+    "serve": "firebase serve --only hosting",
+    "deploy": "firebase deploy --only hosting",
+    "deploy:test": "firebase hosting:channel:deploy test --expires 7d",
+    "deploy:dev": "firebase hosting:channel:deploy develop --expires 30d",
+    "open": "firebase open hosting:site"
+  },
+  "devDependencies": {
+    "firebase-tools": "^13.0.0"
+  }
+}
