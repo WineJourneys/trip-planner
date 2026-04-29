@@ -641,64 +641,129 @@ const TOURS=[
    inc:['Return Sydney transfers','2 nights boutique accommodation','Daily breakfast','Welcome tasting & dinner','All winery visits & tastings','Wine Journeys host','Private transport'],
    exc:['Flights if applicable','Travel insurance','Personal wine purchases','Meals not listed','Optional balloon flight ($280pp)'],
   },
-  {id:'european-rivers',cat:'cruise',title:'European Wine Rivers Cruise',sub:'Amsterdam · Rhine · Alsace · Rhône · Bordeaux',
-   dur:'15 Days / 14 Nights',dest:'France · Germany · Netherlands',grp:'Up to 28 guests',dep:'May, Jun, Sep',
-   price:12800,img:'https://images.unsplash.com/photo-1548574505-5e239809ee19?w=1200&q=80',
-   tags:['Rhine & Moselle Riesling estates','Alsace village wine trail','Bordeaux Grand Cru châteaux','All-inclusive wine & dining'],
-   overview:`<p>Glide through Europe's most scenic wine country aboard a luxury river cruise vessel, stopping at vineyards, medieval wine villages and grand châteaux along the way. This 15-day journey combines the Rhine and Rhône river systems, beginning in Amsterdam and finishing in the wine capital of the world — Bordeaux.</p><p>With Wine Journeys as your guide, every shore excursion is curated around wine — from Riesling in the Rhine gorge to Gewürztraminer in Alsace to the great Cabernet Sauvignon châteaux of Bordeaux.</p>`,
+  {id:'ama-enchanting-rhine',cat:'cruise',operator:'AMA Waterways',
+   title:'Enchanting Rhine Wine Cruise',sub:'Basel · Strasbourg · Rüdesheim · Koblenz · Amsterdam',
+   dur:'7 Nights / 8 Days',dest:'Switzerland · France · Germany · Netherlands',grp:'Small Group',dep:'Multiple departures 2026',
+   price:0,img:'https://images.unsplash.com/photo-1548574505-5e239809ee19?w=1200&q=80',
+   externalUrl:'https://www.amawaterways.com/au/river-cruises/europe/rhine/enchanting-rhine/wine',
+   tags:['AMA Waterways','Rhine wine regions','Black Forest & Alsace tastings','Wine expert on board'],
+   overview:`<p>Sail the legendary Rhine aboard AMA Waterways — one of the world's premier river cruise lines — on this wine-focused journey from Basel in Switzerland to the Dutch waterways of Amsterdam. Purpose-built for wine lovers, every shore excursion is curated around the celebrated vineyards lining Europe's most romantic river.</p><p>From the Riesling estates of the dramatic Rhine Gorge to the Pinot Noir and Gewürztraminer villages of Alsace, and the grand Riesling producers of the Rheingau, this cruise is an immersion in the breadth and brilliance of Rhine wine culture. An on-board wine expert leads tastings and masterclasses throughout the voyage.</p><p style="margin-top:1rem"><a href="https://www.amawaterways.com/au/river-cruises/europe/rhine/enchanting-rhine/wine" target="_blank" rel="noopener" style="color:#8b6914;font-weight:600">View full itinerary &amp; pricing on AMA Waterways ↗</a></p>`,
    itin:[
-    {day:'1–2',t:'Amsterdam — Embarkation',d:'Arrive Amsterdam, embark your luxury river vessel in the afternoon. Welcome cocktail reception on the sun deck. Day two: the Dutch waterways.',tags:['Amsterdam','Embarkation','Rhine River']},
-    {day:'3–5',t:'Rhine Valley — Riesling Country',d:'Three days cruising the legendary Rhine gorge. Shore excursions to private Riesling estates in Rüdesheim and Bernkastel-Kues on the Moselle.',tags:['Rhine','Riesling','Rüdesheim']},
-    {day:'6–8',t:'Strasbourg & Alsace',d:'Three days in fairy-tale Alsace. Wine trail through Riquewihr, Ribeauvillé and Colmar. Private tastings of Gewürztraminer, Riesling and Pinot Gris.',tags:['Alsace','Strasbourg','Gewürztraminer']},
-    {day:'9–14',t:'Lyon, Rhône Valley & Bordeaux',d:'Cruise south through the Rhône Valley with shore excursions to Châteauneuf-du-Pape and Gigondas. Transfer to Bordeaux for two days of Grand Cru château visits.',tags:['Rhône','Châteauneuf-du-Pape','Bordeaux','Grand Cru']},
-    {day:'15',t:'Disembark Bordeaux',d:'Morning disembarkation. Optional city tour before transfer to Bordeaux Airport.',tags:['Bordeaux','Disembarkation']},
+    {day:'1',t:'Basel, Switzerland — Embarkation',d:'Arrive Basel and board your AMA Waterways vessel. Welcome reception and dinner as you cruise into the Rhine.',tags:['Basel','Embarkation','Switzerland']},
+    {day:'2',t:'Breisach & the Black Forest',d:'Shore excursion to Breisach and the wine villages of the Black Forest foothills. Baden wine tasting at a local weingut. Afternoon at leisure on board.',tags:['Breisach','Baden Wine','Black Forest']},
+    {day:'3',t:'Strasbourg — Alsace Wine Villages',d:'Dock in Strasbourg. Guided walk through the medieval old town, a UNESCO World Heritage Site. Afternoon excursion to the Alsace wine route — Riquewihr and Ribeauvillé. Tasting of Riesling, Pinot Gris and Gewürztraminer.',tags:['Strasbourg','Alsace','Riquewihr','Gewürztraminer']},
+    {day:'4',t:'Rüdesheim & the Rhine Gorge',d:'Cruise through the legendary Rhine Gorge — a UNESCO landscape of steep slate vineyards, medieval castles and river legends. Shore excursion to Rüdesheim for private Riesling tasting at a renowned Rheingau estate.',tags:['Rhine Gorge','Rüdesheim','Riesling','Rheingau']},
+    {day:'5',t:'Koblenz & Moselle Wine Country',d:'Dock at Koblenz, where the Moselle meets the Rhine. Optional day trip to the Moselle Valley — Bernkastel-Kues and some of Germany's finest Riesling producers.',tags:['Koblenz','Moselle','Bernkastel']},
+    {day:'6',t:'Cologne — Gothic Cathedral & Craft Wine',d:'Morning in Cologne — visit the towering Gothic cathedral and the old town. Afternoon wine and food pairing at a local wine bar. Sail north through the evening.',tags:['Cologne','Cathedral','Craft Wine']},
+    {day:'7',t:'Kinderdijk & Dutch Waterways',d:'Arrive in the Netherlands. Excursion to the iconic Kinderdijk windmills — a UNESCO World Heritage Site. Afternoon sail toward Amsterdam. Farewell dinner on board.',tags:['Kinderdijk','Windmills','Netherlands']},
+    {day:'8',t:'Amsterdam — Disembarkation',d:'Morning disembarkation in Amsterdam. Optional city tour or independent exploration before onward travel.',tags:['Amsterdam','Disembarkation']},
    ],
    pricing:[
-    {pax:'Suite (twin share pp)',twin:'$14,500',single:'$18,900'},
-    {pax:'Deluxe Cabin (twin share pp)',twin:'$12,800',single:'$16,200',hl:true},
-    {pax:'Standard Cabin (twin share pp)',twin:'$11,200',single:'$14,500'},
+    {pax:'Suite (twin share pp)',twin:'Contact us',single:'Contact us'},
+    {pax:'Deluxe Cabin (twin share pp)',twin:'Contact us',single:'Contact us',hl:true},
+    {pax:'Standard Cabin (twin share pp)',twin:'Contact us',single:'Contact us'},
    ],
-   inc:['14 nights aboard luxury river vessel','All meals and beverages onboard (incl. wine)','All port taxes and fees','Wine Journeys hosted shore excursions','Private château and estate visits','Captain\'s welcome and farewell dinners','Return airport/port transfers','Pre-cruise hotel in Amsterdam'],
-   exc:['International flights','Travel insurance (mandatory)','Personal wine purchases ashore','Gratuities (suggested €15pp/day)','Visa fees if applicable'],
+   inc:['7 nights aboard AMA Waterways river vessel','All onboard meals and beverages (including wine)','Wine expert host and tastings throughout','Curated wine-focused shore excursions','Port taxes and cruising fees','Welcome and farewell dinners'],
+   exc:['International flights','Travel insurance (strongly recommended)','Personal wine purchases ashore','Gratuities for crew','Optional premium excursions'],
   },
-  {id:'douro-cruise',cat:'cruise',title:'Douro Valley River Cruise',sub:'Porto · Régua · Vega Terrón · Porto',
-   dur:'8 Days / 7 Nights',dest:'Portugal',grp:'Up to 22 guests',dep:'Apr, May, Sep, Oct',
-   price:5900,img:'https://images.unsplash.com/photo-1520637836862-4d197d17c97a?w=1200&q=80',
-   tags:['Round-trip from Porto','Quinta visits every port','Port blending masterclass on deck','Spanish border crossing'],
-   overview:`<p>The Douro River winds through some of the most dramatic vineyard scenery in the world — terraces of schist-slate cut into steep gorges, ancient quintas reflected in the still water, and villages unchanged for centuries. A river cruise is the most natural way to explore this UNESCO World Heritage landscape.</p>`,
+  {id:'ama-taste-bordeaux',cat:'cruise',operator:'AMA Waterways',
+   title:'Taste of Bordeaux Wine Cruise',sub:'Bordeaux · Blaye · Bourg · Libourne · Pauillac · Cadillac',
+   dur:'7 Nights / 8 Days',dest:'France — Bordeaux',grp:'Small Group',dep:'Multiple departures 2026',
+   price:0,img:'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1200&q=80',
+   externalUrl:'https://www.amawaterways.com/au/river-cruises/europe/dordogne-garonne/taste-bordeaux/wine',
+   tags:['AMA Waterways','Médoc Grand Cru châteaux','Saint-Émilion UNESCO village','Bordeaux wine immersion'],
+   overview:`<p>Bordeaux is the world's most storied wine region — and sailing its rivers is the finest way to experience its legendary châteaux, medieval wine villages, and centuries of winemaking tradition. AMA Waterways' Taste of Bordeaux cruise winds through the Garonne and Dordogne rivers, docking at the doorsteps of the Médoc's greatest estates and the cobbled streets of Saint-Émilion.</p><p>With a dedicated wine expert on board, guided tastings every day at grand châteaux — from Margaux to Pauillac to Saint-Émilion — and wine-paired meals celebrating the finest regional cuisine, this is Bordeaux at its most immersive.</p><p style="margin-top:1rem"><a href="https://www.amawaterways.com/au/river-cruises/europe/dordogne-garonne/taste-bordeaux/wine" target="_blank" rel="noopener" style="color:#8b6914;font-weight:600">View full itinerary &amp; pricing on AMA Waterways ↗</a></p>`,
    itin:[
-    {day:'1',t:'Porto — Embarkation',d:'Board your intimate river vessel in Porto. Welcome Port tasting on the sundeck as you depart.',tags:['Porto','Embarkation']},
-    {day:'2–3',t:'Through the Five Locks to Régua',d:'Cruise through the dramatic Carrapatelo lock — the tallest river lock in Europe. Shore excursion to Régua and the Douro Museum.',tags:['Régua','Carrapatelo Lock','Douro Museum']},
-    {day:'4–5',t:'Pinhão — The Heart of Port Country',d:'Shore excursion to the river town of Pinhão. Private tasting at Quinta do Crasto. Port blending masterclass on deck in the afternoon.',tags:['Pinhão','Quinta do Crasto','Port Blending']},
-    {day:'6',t:'Vega Terrón — Into Spain',d:'Cross into Spain for a day in Salamanca (optional overland excursion). Return to the vessel for dinner.',tags:['Salamanca','Spain','Border Crossing']},
-    {day:'7–8',t:'Return to Porto — Disembark',d:'Cruise back downriver. Final morning free in Porto before disembarkation.',tags:['Porto','Disembarkation']},
+    {day:'1',t:'Bordeaux — Embarkation',d:'Board your AMA Waterways vessel in the heart of Bordeaux. Welcome champagne reception on the sun deck. Farewell dinner paired with wines from the region.',tags:['Bordeaux','Embarkation','Welcome Dinner']},
+    {day:'2',t:'Bordeaux City — Wine Capital of the World',d:'Guided walking tour of central Bordeaux — the UNESCO-listed old city, the Place de la Bourse, and the Cité du Vin wine museum. Afternoon wine tasting at a négociant.',tags:['Bordeaux City','Cité du Vin','UNESCO']},
+    {day:'3',t:'Blaye & Bourg — Right Bank Villages',d:'Cruise up the Gironde Estuary to the fortified town of Blaye (a UNESCO World Heritage citadel). Afternoon in Bourg for a tasting of Côtes de Bourg wines at a family estate.',tags:['Blaye','Bourg','Gironde','Citadel']},
+    {day:'4',t:'Libourne & Saint-Émilion',d:'Dock at Libourne and transfer to Saint-Émilion — the jewel of the Right Bank. Private guided tour of this UNESCO village, followed by a grand cru classé tasting at a Saint-Émilion château.',tags:['Saint-Émilion','Grand Cru','Merlot','UNESCO']},
+    {day:'5',t:'Cadillac & Sauternes',d:'Morning in the medieval bastide town of Cadillac. Afternoon excursion to the Sauternes region for a tasting of one of the world\'s great dessert wines, including a Premier Cru Classé estate.',tags:['Cadillac','Sauternes','Château d\'Yquem','Dessert Wine']},
+    {day:'6',t:'Pauillac — Médoc Grand Cru',d:'Dock at Pauillac, surrounded by the world\'s most celebrated cabernet estates. Private tasting at a Pauillac Grand Cru Classé château — Margaux, Pichon Baron, or similar. Afternoon wine masterclass on board.',tags:['Pauillac','Médoc','Cabernet Sauvignon','Grand Cru Classé']},
+    {day:'7',t:'Médoc & Margaux',d:'Morning excursion to the village of Margaux and the prestigious châteaux of the Médoc appellation. Farewell dinner on board with a multi-course Bordeaux wine pairing menu.',tags:['Margaux','Médoc','Farewell Dinner']},
+    {day:'8',t:'Bordeaux — Disembarkation',d:'Morning disembarkation in Bordeaux. Optional city stroll or market visit before onward travel.',tags:['Bordeaux','Disembarkation']},
    ],
    pricing:[
-    {pax:'Suite (twin share pp)',twin:'$7,200',single:'$9,500'},
-    {pax:'Deluxe Cabin (twin share pp)',twin:'$5,900',single:'$7,800',hl:true},
+    {pax:'Suite (twin share pp)',twin:'Contact us',single:'Contact us'},
+    {pax:'Deluxe Cabin (twin share pp)',twin:'Contact us',single:'Contact us',hl:true},
+    {pax:'Standard Cabin (twin share pp)',twin:'Contact us',single:'Contact us'},
    ],
-   inc:['7 nights aboard river vessel','All meals and wines onboard','Port blending masterclass','All hosted shore excursions','Port lodge visit in Porto','Return airport transfers','Port taxes and river fees'],
-   exc:['International flights to Porto','Travel insurance','Personal wine purchases','Gratuities (suggested €12pp/day)','Salamanca excursion (optional, $120pp)'],
+   inc:['7 nights aboard AMA Waterways river vessel','All onboard meals and beverages (including wine)','Wine expert host and daily tastings','Grand Cru château visits and tastings','Sauternes estate visit','All port taxes and cruising fees'],
+   exc:['International flights','Travel insurance (strongly recommended)','Personal wine purchases ashore','Gratuities for crew','Optional premium excursions'],
   },
-  {id:'rhone-cruise',cat:'cruise',title:'Rhône & Provence Wine Cruise',sub:'Lyon · Tournon · Avignon · Arles · Marseille',
-   dur:'10 Days / 9 Nights',dest:'France',grp:'Up to 24 guests',dep:'May, Jun, Sep',
-   price:7400,img:'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1200&q=80',
-   tags:['Côte-Rôtie private domaine','Châteauneuf-du-Pape Grand Cru','Avignon Papal Palace','Lavender fields of Provence'],
-   overview:`<p>The Rhône is France's great red wine river — from the granite-terraced Syrah of Côte-Rôtie in the north to the warm stone vineyards of Châteauneuf-du-Pape in the south, to the rosé heartland of Provence. This 10-day cruise follows the river from Lyon to the Mediterranean, stopping at the most celebrated wine villages along the way.</p>`,
+  {id:'ama-colours-provence',cat:'cruise',operator:'AMA Waterways',
+   title:'Colours of Provence Wine Cruise',sub:'Lyon · Tain-l\'Hermitage · Viviers · Avignon · Arles',
+   dur:'7 Nights / 8 Days',dest:'France — Rhône & Provence',grp:'Small Group',dep:'Multiple departures 2026',
+   price:0,img:'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=1200&q=80',
+   externalUrl:'https://www.amawaterways.com/au/river-cruises/europe/rhone/colors-provence/wine',
+   tags:['AMA Waterways','Côtes du Rhône estates','Châteauneuf-du-Pape','Avignon & Provence rosé'],
+   overview:`<p>From the granite hillside vineyards of Hermitage in the north to the sun-baked galets of Châteauneuf-du-Pape and the rosé country of Provence, the Rhône Valley is one of the world's greatest wine rivers. AMA Waterways' Colours of Provence cruise captures the full breadth of this magnificent region — its wines, its villages, its Roman heritage and its legendary lavender-scented landscape.</p><p>A wine expert hosts tastings and educational sessions throughout the voyage, and every port stop offers curated vineyard experiences — from cellar tours at top Rhône domaines to a walk through the Papal City of Avignon.</p><p style="margin-top:1rem"><a href="https://www.amawaterways.com/au/river-cruises/europe/rhone/colors-provence/wine" target="_blank" rel="noopener" style="color:#8b6914;font-weight:600">View full itinerary &amp; pricing on AMA Waterways ↗</a></p>`,
    itin:[
-    {day:'1–2',t:'Lyon — Embarkation & Beaujolais',d:'Arrive Lyon — France\'s gastronomic capital. Embark afternoon. Shore excursion to a Beaujolais village domaine. Welcome dinner with classic Lyonnais cuisine.',tags:['Lyon','Embarkation','Beaujolais']},
-    {day:'3–4',t:'Côte-Rôtie & Condrieu',d:'Shore excursions to the steep granite terraces of Côte-Rôtie and Condrieu. Private tasting at a top Syrah domaine.',tags:['Côte-Rôtie','Condrieu','Syrah']},
-    {day:'5–7',t:'Châteauneuf-du-Pape & Avignon',d:'Private tasting at a Châteauneuf Grand Cru estate. Half-day in Avignon including the Papal Palace. Village market in Les Baux-de-Provence.',tags:['Châteauneuf-du-Pape','Avignon','Grenache']},
-    {day:'8–9',t:'Arles & Provence Rosé Country',d:'Shore excursion to Roman Arles. Afternoon at a Provençal rosé estate. Final dinner onboard — a rosé-themed wine pairing menu.',tags:['Arles','Provence','Rosé']},
-    {day:'10',t:'Marseille — Disembark',d:'Disembark in Marseille. Optional morning at the Vieux-Port market before transfers.',tags:['Marseille','Disembarkation']},
+    {day:'1',t:'Lyon — Embarkation',d:'Board your AMA Waterways vessel in Lyon — France\'s gastronomic capital. Welcome cocktail reception. Dinner on board with a Beaujolais and Rhône wine pairing.',tags:['Lyon','Embarkation','Beaujolais']},
+    {day:'2',t:'Tain-l\'Hermitage — Syrah Heartland',d:'Dock at Tain-l\'Hermitage, home of the legendary Hermitage Hill. Private tasting at a top Crozes-Hermitage or Hermitage estate. Afternoon walk through the granite terraces with the wine expert.',tags:['Tain-l\'Hermitage','Hermitage','Syrah','Crozes-Hermitage']},
+    {day:'3',t:'Viviers — Medieval Wine Village',d:'Morning in the beautifully preserved medieval village of Viviers. Afternoon excursion to the Ardèche — Grenache country with ancient volcanic soils. Wine tasting at a local cooperative.',tags:['Viviers','Ardèche','Grenache','Medieval Village']},
+    {day:'4',t:'Avignon & Châteauneuf-du-Pape',d:'Dock in the shadow of the great walled city of Avignon. Morning tour of the Papal Palace — a UNESCO World Heritage Site. Afternoon private tasting at a Châteauneuf-du-Pape Grand Cru estate.',tags:['Avignon','Papal Palace','Châteauneuf-du-Pape','Grand Cru']},
+    {day:'5',t:'Arles & the Camargue',d:'Shore excursion to Roman Arles — the UNESCO amphitheatre, Van Gogh trail, and Saturday market. Optional afternoon excursion into the Camargue wetlands — flamingos, white horses, and salt flats.',tags:['Arles','Roman Amphitheatre','Camargue','Van Gogh']},
+    {day:'6',t:'Les Baux-de-Provence & Rosé Tasting',d:'Morning in the dramatic hilltop village of Les Baux-de-Provence. Afternoon at a Provence rosé estate — the most prestigious appellation in the world for rosé. Wine expert tasting and food pairing on board.',tags:['Les Baux-de-Provence','Provence Rosé','Bandol','Rosé']},
+    {day:'7',t:'Pont du Gard & Languedoc',d:'Excursion to the extraordinary Roman aqueduct Pont du Gard. Afternoon tasting at a Languedoc-Roussillon estate — emerging wines of extraordinary value. Farewell dinner with the cruise\'s signature wine pairing menu.',tags:['Pont du Gard','Roman Aqueduct','Languedoc','Farewell']},
+    {day:'8',t:'Lyon — Disembarkation',d:'Return to Lyon for morning disembarkation. Optional city tour of the historic Vieux-Lyon district before onward travel.',tags:['Lyon','Disembarkation','Vieux-Lyon']},
    ],
    pricing:[
-    {pax:'Suite (twin share pp)',twin:'$9,200',single:'$12,500'},
-    {pax:'Deluxe Cabin (twin share pp)',twin:'$7,400',single:'$9,800',hl:true},
-    {pax:'Standard Cabin (twin share pp)',twin:'$6,500',single:'$8,700'},
+    {pax:'Suite (twin share pp)',twin:'Contact us',single:'Contact us'},
+    {pax:'Deluxe Cabin (twin share pp)',twin:'Contact us',single:'Contact us',hl:true},
+    {pax:'Standard Cabin (twin share pp)',twin:'Contact us',single:'Contact us'},
    ],
-   inc:['9 nights aboard luxury river vessel','All meals and Rhône wines onboard','All Wine Journeys hosted shore excursions','Private domaine tastings at each port','Châteauneuf-du-Pape Grand Cru tasting','Marseille bouillabaisse farewell dinner','Return airport/port transfers','All port taxes and fees'],
-   exc:['International flights','Travel insurance (mandatory)','Personal wine purchases','Gratuities (suggested €15pp/day)','Optional premium excursions'],
+   inc:['7 nights aboard AMA Waterways river vessel','All onboard meals and beverages (including wine)','On-board wine expert and daily tastings','Châteauneuf-du-Pape Grand Cru tasting','Avignon Papal Palace visit','All port taxes and cruising fees'],
+   exc:['International flights','Travel insurance (strongly recommended)','Personal wine purchases ashore','Gratuities for crew','Optional premium excursions'],
+  },
+  {id:'uniworld-burgundy-provence',cat:'cruise',operator:'Uniworld',
+   title:'Burgundy & Provence — S.S. Catherine',sub:'A Hosted Wine Lovers\' Journey with William Chris Vineyards',
+   dur:'8 Days / 7 Nights',dest:'France — Burgundy & Provence',grp:'Small Group',dep:'2027',
+   price:0,img:'https://images.unsplash.com/photo-1504279577054-acfeccf8fc52?w=1200&q=80',
+   externalUrl:'https://williamchriswines.com/2027-cruise-for-wine-lovers/',
+   tags:['Uniworld S.S. Catherine','Hosted by William Chris Vineyards','Burgundy Grand Cru','Provence & Rhône wine country'],
+   overview:`<p>Sail aboard Uniworld's supremely elegant S.S. Catherine — one of the world's most celebrated river cruise ships — on this extraordinary hosted wine journey through Burgundy and Provence. Curated in partnership with William Chris Vineyards, this 2027 departure brings together passionate wine lovers for a week of discovery through two of France's most beloved wine regions.</p><p>From the hallowed Grand Cru vineyards of the Côte d'Or to the sun-drenched garrigue of Provence, the wine hosts guide guests through private domaine visits, barrel tastings, and intimate conversations with the winemakers behind some of France's most revered labels. S.S. Catherine's world-class cuisine, butler service, and all-suite interiors create an environment as exquisite as the wines themselves.</p><p style="margin-top:1rem"><a href="https://williamchriswines.com/2027-cruise-for-wine-lovers/" target="_blank" rel="noopener" style="color:#8b6914;font-weight:600">View full details &amp; pricing on William Chris Vineyards ↗</a></p>`,
+   itin:[
+    {day:'1',t:'Lyon — Embark S.S. Catherine',d:'Board Uniworld\'s S.S. Catherine in Lyon. Welcome champagne reception, hosted introduction from the William Chris Vineyards wine team, and opening dinner with a Burgundy wine pairing.',tags:['Lyon','S.S. Catherine','Embarkation','Burgundy Wine']},
+    {day:'2',t:'Chalon-sur-Saône & Côte Chalonnaise',d:'Shore excursion to the Côte Chalonnaise — Rully, Mercurey and Givry. Private tasting of Chardonnay and Pinot Noir from this underrated Burgundy appellation with a William Chris host.',tags:['Chalon-sur-Saône','Côte Chalonnaise','Mercurey','Chardonnay']},
+    {day:'3',t:'Beaune — The Capital of Burgundy Wine',d:'Full day in Beaune. Visit the iconic Hospices de Beaune and its extraordinary 15th-century wine cellars. Guided Grand Cru vineyard walk in Gevrey-Chambertin or Nuits-Saint-Georges. Private domaine tasting.',tags:['Beaune','Hospices de Beaune','Grand Cru','Pinot Noir']},
+    {day:'4',t:'Mâcon & Pouilly-Fuissé',d:'Morning visit to Mâcon market. Afternoon at a Pouilly-Fuissé estate — among Burgundy\'s finest Chardonnay producers. Wine expert masterclass on board: Burgundy vs New World Chardonnay.',tags:['Mâcon','Pouilly-Fuissé','Chardonnay','Masterclass']},
+    {day:'5',t:'Viviers & the Northern Rhône',d:'Cruise south into the Rhône Valley. Shore excursion to Viviers and an introduction to Northern Rhône wines — Syrah-dominated Crozes-Hermitage and St-Joseph.',tags:['Viviers','Northern Rhône','Syrah','Crozes-Hermitage']},
+    {day:'6',t:'Avignon & Châteauneuf-du-Pape',d:'Morning at the UNESCO-listed Papal Palace in Avignon. Afternoon hosted tasting at a Châteauneuf-du-Pape Grand Cru estate — a comprehensive exploration of one of France\'s most complex appellations.',tags:['Avignon','Châteauneuf-du-Pape','Grand Cru','Grenache']},
+    {day:'7',t:'Arles & Provence Rosé',d:'Shore excursion to Roman Arles. Afternoon at a prestigious Provence rosé estate. Farewell dinner on board — a sommelier-crafted wine-paired menu celebrating the full journey through Burgundy and Provence.',tags:['Arles','Provence Rosé','Farewell Dinner']},
+    {day:'8',t:'Lyon — Disembarkation',d:'Morning disembarkation in Lyon. Individual onward travel arrangements.',tags:['Lyon','Disembarkation']},
+   ],
+   pricing:[
+    {pax:'Suite (twin share pp)',twin:'Contact us',single:'Contact us'},
+    {pax:'Deluxe Cabin (twin share pp)',twin:'Contact us',single:'Contact us',hl:true},
+   ],
+   inc:['7 nights aboard Uniworld S.S. Catherine','All meals and premium beverages on board','Butler service for all suites','Wine host from William Chris Vineyards throughout','Grand Cru Burgundy domaine visits','Châteauneuf-du-Pape Grand Cru tasting','All port taxes and river fees'],
+   exc:['International flights','Travel insurance (strongly recommended)','Personal wine purchases ashore','Gratuities for crew','Optional excursions not listed'],
+  },
+  {id:'viking-chateaux-rivers-wine',cat:'cruise',operator:'Viking',
+   title:'Châteaux, Rivers & Wine',sub:'Bordeaux · Médoc · Blaye · Saint-Émilion · Libourne · Pauillac',
+   dur:'8 Days / 7 Nights',dest:'France — Bordeaux',grp:'Small Group',dep:'2026 Bordeaux',
+   price:0,img:'https://images.unsplash.com/photo-1574722772249-e25db80a7148?w=1200&q=80',
+   externalUrl:'https://www.vikingrivercruises.com.au/cruise-destinations/europe/chateaux-rivers-wine/2026-bordeaux-bordeaux/index.html',
+   tags:['Viking River Cruises','Bordeaux round-trip','Médoc Grand Cru châteaux','Saint-Émilion & Cognac'],
+   overview:`<p>Viking's acclaimed Châteaux, Rivers & Wine itinerary is widely regarded as one of the finest wine-focused river cruise journeys in the world — a round-trip from Bordeaux through the Gironde Estuary and the Dordogne, calling at the great wine villages, medieval citadels, and legendary châteaux of southwest France.</p><p>Aboard a Viking Longship — designed for the ultimate in quiet luxury and Scandinavian-inspired elegance — guests explore the Médoc's Grand Cru Classé estates, the cobbled UNESCO village of Saint-Émilion, the world's finest dessert wine country at Sauternes, and finish with a distillery visit to the cognac capital of the world.</p><p style="margin-top:1rem"><a href="https://www.vikingrivercruises.com.au/cruise-destinations/europe/chateaux-rivers-wine/2026-bordeaux-bordeaux/index.html" target="_blank" rel="noopener" style="color:#8b6914;font-weight:600">View full itinerary &amp; pricing on Viking ↗</a></p>`,
+   itin:[
+    {day:'1',t:'Bordeaux — Embarkation',d:'Arrive Bordeaux and board your Viking Longship. Welcome reception and dinner on board. Evening sail down the Garonne River.',tags:['Bordeaux','Embarkation','Viking Longship']},
+    {day:'2',t:'Bordeaux City Tour',d:'Guided city tour of Bordeaux — the UNESCO World Heritage waterfront, Place de la Bourse, and the Grand Théâtre. Afternoon free to explore independently. Evening wine lecture on board.',tags:['Bordeaux','UNESCO','Place de la Bourse','City Tour']},
+    {day:'3',t:'Blaye & Bourg',d:'Morning cruise up the Gironde Estuary to Blaye — the 17th-century Vauban citadel and the vineyards of the Blaye Côtes de Bordeaux. Afternoon in Bourg-sur-Gironde.',tags:['Blaye','Bourg','Gironde','Vauban Citadel']},
+    {day:'4',t:'Libourne & Saint-Émilion',d:'Dock at Libourne — gateway to the Right Bank. Full-day excursion to Saint-Émilion: guided tour of the monolithic church, underground catacombs, and a Grand Cru Classé château tasting.',tags:['Saint-Émilion','Libourne','Grand Cru','Merlot','UNESCO']},
+    {day:'5',t:'Cadillac & Sauternes',d:'Morning in the charming bastide town of Cadillac. Afternoon visit to a Premier Cru Classé Sauternes estate — the world\'s most celebrated sweet wine region.',tags:['Cadillac','Sauternes','Premier Cru','Sweet Wine']},
+    {day:'6',t:'Pauillac — Médoc Grand Crus',d:'Dock at Pauillac — surrounded by three of Bordeaux\'s five First Growth estates. Private guided château visit and tasting in the Médoc. On-board masterclass: Left Bank Cabernet Sauvignon.',tags:['Pauillac','Médoc','First Growth','Cabernet Sauvignon']},
+    {day:'7',t:'Cognac — Spirit of the Region',d:'Sail to Cognac and visit one of the great distillery houses — Hennessy, Martell, or Rémy Martin — for a guided tour and tasting. Farewell dinner on board.',tags:['Cognac','Distillery','Hennessy','Farewell Dinner']},
+    {day:'8',t:'Bordeaux — Disembarkation',d:'Return to Bordeaux for morning disembarkation. Optional city walk before onward travel.',tags:['Bordeaux','Disembarkation']},
+   ],
+   pricing:[
+    {pax:'Veranda Suite (twin share pp)',twin:'Contact us',single:'Contact us'},
+    {pax:'Deluxe Veranda (twin share pp)',twin:'Contact us',single:'Contact us',hl:true},
+    {pax:'Standard Veranda (twin share pp)',twin:'Contact us',single:'Contact us'},
+   ],
+   inc:['7 nights aboard Viking Longship','All onboard meals and beverages','Wine and cognac tastings throughout','Guided château and estate visits','Saint-Émilion Grand Cru tasting','Cognac distillery visit','All port taxes and river fees','Shore excursions as listed'],
+   exc:['International flights to/from Bordeaux','Travel insurance (strongly recommended)','Personal wine purchases ashore','Gratuities for crew','Optional premium excursions'],
   },
 ];
 
@@ -712,7 +777,7 @@ function renderCards(filter){
     <div class="tour-card" onclick="openTour('${t.id}')">
       <div class="tc-img">
         <img src="${t.img}" alt="${t.title}" loading="lazy">
-        <div class="tc-cat ${t.cat}">${t.cat==='signature'?'🏆 Signature':t.cat==='package'?'🛎️ Package':'🚢 Cruise'}</div>
+        <div class="tc-cat ${t.cat}">${t.cat==='signature'?'🏆 Signature':t.cat==='package'?'🛎️ Package':t.operator?'🚢 '+t.operator:'🚢 Cruise'}</div>
         <div class="tc-fav" onclick="event.stopPropagation();this.textContent=this.textContent==='🤍'?'❤️':'🤍'">🤍</div>
       </div>
       <div class="tc-body">
@@ -743,13 +808,23 @@ function openTour(id,push=true){
   activeTour=t;
   document.getElementById('dvImg').src=t.img;
   const b=document.getElementById('dvBadge');
-  b.textContent=t.cat==='signature'?'🏆 Signature Tour':t.cat==='package'?'🛎️ Holiday Package':'🚢 Wine Cruise';
+  b.textContent=t.cat==='signature'?'🏆 Signature Tour':t.cat==='package'?'🛎️ Holiday Package':'🚢 '+(t.operator||'Wine Cruise');
   b.className='dv-badge '+t.cat;
   document.getElementById('dvTitle').textContent=t.title;
   document.getElementById('dvSub').textContent=t.sub;
   document.getElementById('dvStats').innerHTML=
     `<div class="dv-stat">📅 ${t.dur}</div><div class="dv-stat">🌍 ${t.dest}</div><div class="dv-stat">👥 ${t.grp}</div><div class="dv-stat">✈️ ${t.dep}</div>`;
-  buildOverview(t);buildItinerary(t);buildPricing(t);buildInclusions(t);buildBooking(t);
+  // Switch last tab label for cruises
+  const lastTab=document.querySelector('.dv-tabs .dv-tab:last-child');
+  if(t.cat==='cruise'){
+    lastTab.textContent='Enquire Now';
+    lastTab.setAttribute('onclick',"setTab('booking',this)");
+  } else {
+    lastTab.textContent='Book Now';
+    lastTab.setAttribute('onclick',"setTab('booking',this)");
+  }
+  buildOverview(t);buildItinerary(t);buildPricing(t);buildInclusions(t);
+  if(t.cat==='cruise'){buildEnquiry(t);}else{buildBooking(t);}
   setTab('overview');
   const dv=document.getElementById('detailView');
   dv.classList.add('open');dv.scrollTo({top:0});
@@ -848,6 +923,94 @@ function buildInclusions(t){
         <ul class="inc-list">${t.exc.map(e=>`<li><span class="chk chk-n">✗</span>${e}</li>`).join('')}</ul>
       </div>
     </div>`;
+}
+
+function buildEnquiry(t){
+  document.getElementById('pane-booking').innerHTML=`
+    <div id="enqFormWrap">
+      <div class="bk-intro">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px">
+          <span style="font-size:22px">🚢</span>
+          <div>
+            <h3 style="margin-bottom:2px">${t.operator||''} — ${t.title}</h3>
+            <p style="margin:0;font-size:13px;color:#888">Operated by ${t.operator||'our cruise partner'}. Complete this form and our team will be in touch within 24 hours with availability and pricing.</p>
+          </div>
+        </div>
+      </div>
+      <div class="trip-block">
+        <h3>Your Enquiry Details</h3>
+        <div class="frow">
+          <div class="ffield"><label>Full Name *</label><input type="text" id="enqName" placeholder="Jane Smith"></div>
+          <div class="ffield"><label>Email Address *</label><input type="email" id="enqEmail" placeholder="jane@example.com"></div>
+        </div>
+        <div class="frow">
+          <div class="ffield"><label>Mobile Number *</label><input type="tel" id="enqMobile" placeholder="+61 400 000 000"></div>
+          <div class="ffield"><label>Number of Guests Travelling *</label>
+            <select id="enqGuests">
+              ${Array.from({length:12},(_,i)=>`<option value="${i+1}">${i+1} guest${i>0?'s':''}</option>`).join('')}
+              <option value="13+">13+ guests</option>
+            </select>
+          </div>
+        </div>
+        <div class="frow">
+          <div class="ffield"><label>Preferred Departure Date</label><input type="date" id="enqDep"></div>
+          <div class="ffield"><label>Preferred Cabin Type</label>
+            <select id="enqCabin">
+              <option value="">— Please select —</option>
+              <option value="standard">Standard Cabin (twin share)</option>
+              <option value="deluxe">Deluxe Cabin (twin share)</option>
+              <option value="suite">Suite (twin share)</option>
+              <option value="single-standard">Single — Standard Cabin</option>
+              <option value="single-deluxe">Single — Deluxe Cabin</option>
+              <option value="single-suite">Single — Suite</option>
+              <option value="unsure">Not sure — please advise</option>
+            </select>
+          </div>
+        </div>
+        <div class="frow one">
+          <div class="ffield"><label>Any special requirements or questions?</label>
+            <textarea id="enqNotes" rows="3" placeholder="Dietary requirements, mobility needs, special occasions, questions about the cruise…"></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="submit-row">
+        <button class="btn-submit" onclick="submitEnquiry('${t.id}','${(t.title||'').replace(/'/g,'\\'')}','${t.operator||''}')">Submit Enquiry →</button>
+        <p class="submit-note">No payment required at this stage. Our team will contact you within 24 hours with availability, full pricing and next steps.</p>
+      </div>
+      ${t.externalUrl?`<p style="text-align:center;margin-top:1.5rem;font-size:13px;color:#888">Prefer to book directly? <a href="${t.externalUrl}" target="_blank" rel="noopener" style="color:#8b6914">View on ${t.operator||'cruise line'} website ↗</a></p>`:''}
+    </div>
+    <div class="bk-success" id="enqSuccess">
+      <div class="success-icon">🍷</div>
+      <h2>Enquiry Received!</h2>
+      <p>Thank you for your interest in <strong>${t.title}</strong>. Our team will be in touch within 24 hours with availability, full pricing, and next steps.</p>
+      <button class="btn-submit" onclick="closeDetail()" style="margin-top:.5rem">Back to Tours</button>
+    </div>`;
+}
+
+function submitEnquiry(tourId,tourTitle,operator){
+  const name=document.getElementById('enqName')?.value?.trim();
+  const email=document.getElementById('enqEmail')?.value?.trim();
+  const mobile=document.getElementById('enqMobile')?.value?.trim();
+  if(!name){alert('Please enter your full name.');return;}
+  if(!email||!email.includes('@')){alert('Please enter a valid email address.');return;}
+  if(!mobile){alert('Please enter your mobile number.');return;}
+  // Save to CRM leads
+  const leads=JSON.parse(localStorage.getItem('wj_crm_leads')||'[]');
+  leads.push({
+    id:'LD'+Date.now(),email,name,mobile,
+    source:'cruise-enquiry',
+    tourId,tourTitle,operator,
+    guests:document.getElementById('enqGuests')?.value,
+    dep:document.getElementById('enqDep')?.value,
+    cabin:document.getElementById('enqCabin')?.value,
+    notes:document.getElementById('enqNotes')?.value?.trim(),
+    date:new Date().toISOString().slice(0,10),
+    status:'new'
+  });
+  localStorage.setItem('wj_crm_leads',JSON.stringify(leads));
+  document.getElementById('enqFormWrap').style.display='none';
+  document.getElementById('enqSuccess').classList.add('show');
+  document.getElementById('detailView').scrollTo({top:0,behavior:'smooth'});
 }
 
 function buildBooking(t){
