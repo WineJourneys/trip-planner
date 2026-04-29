@@ -1,0 +1,2754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wine Journeys — Trip Planner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  /* Wine Journeys brand palette */
+  --wine:    #6b1e2e;   /* deep burgundy — primary brand */
+  --wine-dk: #4a1020;   /* darker wine — hover states */
+  --wine-lt: #f9f0f2;   /* blush — tinted surfaces */
+  --wine-mid:#8b2d42;   /* mid wine — accents */
+  --gold:    #c9a84c;   /* warm gold — highlights */
+  --gold-lt: #fdf6e3;   /* cream gold — light surfaces */
+  --cream:   #faf8f4;   /* warm cream — page bg */
+  --ivory:   #fff;      /* pure white — cards */
+  --parchment:#f5f0e8;  /* parchment — secondary surfaces */
+  --charcoal:#1a1512;   /* near-black — primary text */
+  --slate:   #4a3f35;   /* warm brown-grey — secondary text */
+  --mist:    #9e8e82;   /* muted warm grey — tertiary text */
+  --rule:    #e2d5c3;   /* warm rule lines */
+  --rule2:   #c8b89a;   /* stronger rule */
+  /* Functional semantic colours */
+  --green:   #2d5a3d;   --glt:#edf3ee;
+  --amber:   #7a4a00;   --alt:#fef6e4;
+  --blue:    #1e3a5f;   --blt:#eff6ff;
+  --red:     #7f1d1d;   --rlt:#fef2f2;
+  --purple:  #4c1d95;   --plt:#f5f3ff;
+  --bg:var(--cream); --surface:var(--ivory); --s2:var(--parchment); --s3:#ede5d8;
+  --border:var(--rule); --border2:var(--rule2);
+  --ink:var(--charcoal); --ink2:var(--slate); --ink3:var(--mist);
+  --r:6px; --rl:10px;
+}
+body{font-family:'Jost',sans-serif;font-size:14px;background:var(--bg);color:var(--ink);min-height:100vh}
+.serif{font-family:'Cormorant Garamond',serif}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:300;background:var(--wine-dk);border-bottom:2px solid var(--gold);height:56px;display:flex;align-items:center;padding:0 1.5rem;gap:.875rem}
+.nav-logo{display:flex;align-items:center;gap:10px;flex:1;text-decoration:none}
+.nav-logo img{height:32px;object-fit:contain;filter:brightness(1.1)}
+.nav-logo-text{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:#fff;letter-spacing:.02em;line-height:1}
+.nav-logo-sub{font-size:9px;font-weight:400;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-top:1px}
+.tab-pills{display:flex;gap:2px;background:rgba(255,255,255,.08);border-radius:var(--r);padding:2px;border:1px solid rgba(255,255,255,.15)}
+.tab-pill{padding:4px 14px;border-radius:5px;font-size:11px;font-weight:500;letter-spacing:.04em;cursor:pointer;color:rgba(255,255,255,.65);transition:all .15s;border:none;background:none;text-transform:uppercase}
+.tab-pill.active{background:var(--gold);color:var(--wine-dk);font-weight:600}
+.nbtn{padding:5px 13px;border-radius:var(--r);font-size:11px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;border:1px solid rgba(255,255,255,.25);background:transparent;color:rgba(255,255,255,.8);transition:all .15s}
+.nbtn:hover{border-color:var(--gold);color:var(--gold)}
+.nbtn.p{background:var(--gold);color:var(--wine-dk);border-color:var(--gold);font-weight:600}.nbtn.p:hover{background:#dbb85a}
+
+/* LAYOUT */
+.app{display:flex;height:calc(100vh - 56px)}
+.sidebar{width:248px;flex-shrink:0;border-right:1px solid var(--border);background:var(--surface);display:flex;flex-direction:column;overflow:hidden}
+.main{flex:1;overflow-y:auto;padding:1.25rem}
+
+/* SIDEBAR */
+.sb-head{padding:.875rem 1rem .75rem;border-bottom:1px solid var(--border);background:var(--parchment)}
+.sb-head h2{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--mist)}
+.trip-list{flex:1;overflow-y:auto}
+.ti{display:flex;align-items:center;gap:8px;padding:.6rem .875rem;cursor:pointer;border-bottom:1px solid var(--border);transition:background .12s}
+.ti:hover{background:var(--wine-lt)}.ti.active{background:var(--wine-lt);border-left:3px solid var(--wine)}
+.ti-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.ti-info{flex:1;min-width:0}
+.ti-name{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ti-date{font-size:10px;color:var(--ink3);margin-top:1px}
+.ti-del{opacity:0;font-size:14px;color:var(--ink3);cursor:pointer;padding:1px 4px;border-radius:3px}
+.ti:hover .ti-del{opacity:1}.ti-del:hover{color:var(--red);background:var(--rlt)}
+.sb-foot{padding:.75rem;border-top:1px solid var(--border);background:var(--parchment)}
+
+/* EMPTY STATE */
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:60vh;gap:10px;color:var(--ink3);text-align:center}
+.empty .icon{font-size:44px}.empty h2{font-size:15px;font-weight:500;color:var(--ink2);font-family:'Cormorant Garamond',serif}.empty p{font-size:12px;max-width:280px;line-height:1.6}
+
+/* BUTTONS */
+.btn{padding:6px 13px;border-radius:var(--r);font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--ink2);display:inline-flex;align-items:center;gap:5px;transition:all .15s;white-space:nowrap;text-decoration:none}
+.btn:hover{background:var(--s2);color:var(--ink)}
+.btn.g{background:var(--wine);color:#fff;border-color:var(--wine)}.btn.g:hover{background:var(--wine-dk)}
+.btn.a{background:var(--alt);color:var(--amber);border-color:#e8c87a}
+.btn.b{background:var(--blt);color:var(--blue);border-color:#b0cef0}
+.btn.r{background:var(--rlt);color:var(--red);border-color:#f0b0b0}
+.btn.pu{background:var(--plt);color:var(--purple);border-color:#c4b5fd}
+.btn.gold{background:var(--gold);color:var(--wine-dk);border-color:var(--gold);font-weight:600}.btn.gold:hover{background:#dbb85a}
+.btn.sm{padding:4px 9px;font-size:11px}
+
+/* TRIP HEADER */
+.trip-hd{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:1rem 1.25rem;margin-bottom:1rem;display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.trip-hd h1{font-size:18px;font-weight:700;letter-spacing:-.02em}
+.trip-hd p{font-size:12px;color:var(--ink2);margin-top:3px}
+.hd-actions{display:flex;gap:6px;flex-wrap:wrap}
+
+/* CONTROLS BAR */
+.ctrl-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:1rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:.625rem .875rem}
+.cg{display:flex;align-items:center;gap:6px}
+.cg label{font-size:11px;color:var(--ink2);white-space:nowrap}
+.cg input{width:76px;padding:4px 7px;font-size:12px;border:1px solid var(--border2);border-radius:5px;background:var(--bg);color:var(--ink)}
+.cg input:focus{outline:2px solid var(--green);outline-offset:1px}
+.ctrl-divider{width:1px;height:20px;background:var(--border);margin:0 4px}
+
+/* HOST SECTION */
+.host-section{background:var(--surface);border:1px solid var(--wine-mid);border-radius:var(--rl);margin-bottom:8px;overflow:hidden}
+.host-hd{display:flex;align-items:center;gap:8px;padding:.625rem .875rem;background:var(--wine);cursor:pointer;user-select:none}
+.host-hd h3{font-size:12px;font-weight:600;color:#fff;flex:1;font-family:'Cormorant Garamond',serif;font-size:15px;letter-spacing:.02em}
+.host-body{padding:.875rem 1rem}
+.host-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-bottom:.875rem}
+.host-input-card{background:var(--parchment);border:1px solid var(--border);border-radius:var(--r);padding:.625rem .75rem}
+.host-input-card label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--ink3);display:block;margin-bottom:4px}
+.host-input-card input{width:100%;padding:4px 7px;font-size:13px;border:1px solid var(--border2);border-radius:5px;background:var(--surface);color:var(--ink);font-weight:600}
+.host-input-card input:focus{outline:2px solid var(--wine);outline-offset:1px}
+.host-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;padding:.75rem;background:var(--wine-lt);border-radius:var(--r);border:1px solid var(--rule)}
+.host-stat .hl{font-size:9px;text-transform:uppercase;letter-spacing:.07em;color:var(--wine-mid);margin-bottom:2px;font-weight:600}
+.host-stat .hv{font-size:16px;font-weight:600;color:var(--wine);font-family:'Cormorant Garamond',serif}
+
+/* EXTRAS SECTION */
+.extras-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);margin-bottom:8px;overflow:hidden}
+.extras-hd{display:flex;align-items:center;gap:8px;padding:.55rem .75rem;background:var(--s2);border-bottom:1px solid var(--border);cursor:pointer;user-select:none}
+.extras-hd h3{font-size:12px;font-weight:700;color:var(--ink2);flex:1}
+.extra-row{display:grid;grid-template-columns:1fr 120px 120px 28px;gap:8px;align-items:center;padding:.45rem .875rem;border-bottom:1px solid var(--border);font-size:12px}
+.extra-row:last-child{border-bottom:none}
+.extra-row:hover{background:var(--s2)}
+.extra-row input{padding:3px 7px;font-size:12px;border:1px solid var(--border2);border-radius:4px;background:var(--bg);color:var(--ink);width:100%}
+.extra-row input:focus{outline:2px solid var(--green);outline-offset:1px}
+.extra-row input.r-inp{text-align:right}
+
+/* PRICING RANGE TABLE */
+.range-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:.75rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.range-table th{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);padding:5px 10px;border-bottom:1px solid var(--border);text-align:center;background:var(--s2)}
+.range-table th:first-child{text-align:left}
+.range-table td{padding:5px 10px;border-bottom:1px solid var(--border);text-align:center;font-variant-numeric:tabular-nums}
+.range-table td:first-child{text-align:left;font-weight:600}
+.range-table tr:last-child td{border-bottom:none}
+.range-table tr.active-row{background:var(--wine-lt)}
+.range-table tr.active-row td{color:var(--wine);font-weight:700}
+
+/* SUMMARY CARDS */
+.sum-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-bottom:1rem}
+.mc{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:.625rem .875rem}
+.mc.bold{border-color:var(--wine);border-top:2px solid var(--wine)}
+.mc.pu{border-color:#c4b5fd;background:var(--plt)}
+.mc .ml{font-size:9px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink3);margin-bottom:3px;font-weight:600}
+.mc .mv{font-size:16px;font-weight:600;letter-spacing:-.01em;font-family:'Cormorant Garamond',serif}
+.mc.bold .mv{color:var(--wine);font-size:19px}
+.mc .ms{font-size:9px;color:var(--ink3);margin-top:1px}
+
+/* SECTION */
+.section{margin-bottom:6px}
+.sec-hd{display:flex;align-items:center;gap:7px;padding:.5rem .875rem;background:var(--parchment);border:1px solid var(--border);border-radius:var(--r);cursor:pointer;user-select:none}
+.sec-hd:hover{background:var(--s3)}
+.sec-hd h3{font-size:12px;font-weight:600;flex:1;font-family:'Cormorant Garamond',serif;font-size:14px}
+.sec-hd .sd{font-size:10px;color:var(--ink3)}
+.sec-hd .st{font-size:12px;font-weight:700;color:var(--wine)}
+.sec-hd .sc{font-size:10px;color:var(--ink3)}
+.sec-body{border:1px solid var(--border);border-top:none;border-radius:0 0 var(--r) var(--r);overflow:hidden}
+.sec-body.col{display:none}
+table{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed}
+thead th{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);padding:4px 7px;border-bottom:1px solid var(--border);text-align:left;background:var(--surface)}
+thead th.r{text-align:right}
+tbody td{padding:5px 7px;border-bottom:1px solid var(--border);vertical-align:middle}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:var(--wine-lt)}
+td.r{text-align:right;font-variant-numeric:tabular-nums}
+.det{font-size:10px;color:var(--ink3);margin-top:1px}
+
+/* BADGES */
+.badge{display:inline-block;font-size:9px;padding:1px 5px;border-radius:3px;font-weight:600;margin-right:2px;vertical-align:middle}
+.bd{background:var(--s2);color:var(--ink2)}
+.be{background:var(--alt);color:var(--amber)}
+.ba{background:#e6f1fb;color:#185FA5}
+.bt{background:#eaf3de;color:#3B6D11}
+.bdi{background:#fdecea;color:#993C1D}
+.bx{background:#f0eeff;color:#534AB7}
+
+/* PRICE INPUT */
+.pi{width:70px;text-align:right;font-size:12px;font-variant-numeric:tabular-nums;border:1px solid var(--border2);border-radius:4px;padding:2px 4px;background:var(--surface);color:var(--ink)}
+.pi:focus{outline:2px solid var(--wine);outline-offset:1px}
+.pi.ov{color:var(--wine);font-weight:700}
+.pr{display:flex;align-items:center;justify-content:flex-end;gap:2px}
+.pc{font-size:10px;color:var(--ink3)}
+
+/* ─── PAYMENT TAB ─── */
+.pay-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:1.25rem}
+.pay-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:.75rem 1rem}
+.pay-card .pl{font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);margin-bottom:4px}
+.pay-card .pv{font-size:18px;font-weight:700;letter-spacing:-.02em}
+.pay-card .ps{font-size:10px;color:var(--ink3);margin-top:2px}
+.pay-card.warn{border-color:#f0c070;background:var(--alt)}
+.pay-card.warn .pv{color:var(--amber)}
+.pay-card.ok{border-color:#86efac;background:var(--wine-lt)}
+.pay-card.ok .pv{color:var(--green)}
+.pay-card.alert{border-color:#fca5a5;background:var(--rlt)}
+.pay-card.alert .pv{color:var(--red)}
+
+.booking-table{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:1.25rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden}
+.booking-table th{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);padding:6px 10px;border-bottom:1px solid var(--border);text-align:left;background:var(--s2)}
+.booking-table th.r{text-align:right}
+.booking-table td{padding:7px 10px;border-bottom:1px solid var(--border);vertical-align:middle}
+.booking-table tr:last-child td{border-bottom:none}
+.booking-table tr:hover{background:var(--s2)}
+.booking-table td.r{text-align:right;font-variant-numeric:tabular-nums}
+.bk-status{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px}
+.bk-confirmed{background:var(--wine-lt);color:var(--green)}
+.bk-pending{background:var(--alt);color:var(--amber)}
+.bk-cancelled{background:var(--rlt);color:var(--red)}
+.bk-tentative{background:var(--blt);color:var(--blue)}
+.pay-status{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px}
+.ps-paid{background:var(--wine-lt);color:var(--green)}
+.ps-partial{background:var(--alt);color:var(--amber)}
+.ps-unpaid{background:var(--s2);color:var(--ink2)}
+.ps-overdue{background:var(--rlt);color:var(--red)}
+
+.timeline{margin-bottom:1.5rem}
+.tl-month{font-size:11px;font-weight:700;color:var(--ink2);padding:.5rem 0 .375rem;border-bottom:1px solid var(--border);margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.06em}
+.tl-item{display:flex;align-items:flex-start;gap:10px;padding:.5rem .625rem;border-radius:var(--r);margin-bottom:4px;border:1px solid var(--border);background:var(--surface)}
+.tl-item.overdue{background:var(--rlt);border-color:#fca5a5}
+.tl-item.upcoming{background:var(--alt);border-color:#f0c070}
+.tl-item.done{background:var(--wine-lt);border-color:#86efac;opacity:.75}
+.tl-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:3px}
+.tl-info{flex:1;min-width:0}
+.tl-name{font-size:12px;font-weight:600}
+.tl-desc{font-size:11px;color:var(--ink2);margin-top:1px}
+.tl-amount{font-size:13px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;flex-shrink:0}
+.tl-date{font-size:10px;color:var(--ink3);flex-shrink:0;text-align:right}
+
+.section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink3);margin:.875rem 0 .5rem;display:flex;align-items:center;justify-content:space-between}
+
+/* ADD SUPPLIER / ADD BOOKING */
+.add-row{display:flex;align-items:center;gap:7px;padding:.5rem .75rem;border:1.5px dashed var(--border2);border-radius:var(--r);margin-top:.75rem;cursor:pointer;color:var(--ink3);font-size:12px;transition:all .15s}
+.add-row:hover{border-color:var(--wine);color:var(--wine);background:var(--wine-lt)}
+
+/* INVOICE UPLOAD AREA */
+.upload-area{border:2px dashed var(--border2);border-radius:var(--rl);padding:2rem 1.5rem;text-align:center;cursor:pointer;transition:all .2s;background:var(--surface)}
+.upload-area:hover,.upload-area.drag{border-color:var(--wine);background:var(--wine-lt)}
+.upload-area .ui{font-size:32px;margin-bottom:.5rem}
+.upload-area h3{font-size:14px;font-weight:600;margin-bottom:.25rem;font-family:'Cormorant Garamond',serif}
+.upload-area p{font-size:12px;color:var(--ink3)}
+.upload-area input{display:none}
+.parsing-msg{display:flex;align-items:center;gap:10px;padding:.875rem 1rem;background:var(--blt);border:1px solid #b0cef0;border-radius:var(--r);font-size:13px;color:var(--blue);margin-top:.75rem}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{width:16px;height:16px;border:2px solid #b0cef0;border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+
+/* INVOICE MATCH PANEL */
+.match-panel{border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-top:.75rem}
+.match-panel-hd{background:var(--parchment);padding:.5rem .875rem;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink2);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.match-row{display:grid;grid-template-columns:1fr 100px 100px 80px;gap:6px;padding:.4rem .875rem;border-bottom:1px solid var(--border);align-items:center;font-size:12px}
+.match-row:last-child{border-bottom:none}
+.match-row:hover{background:var(--wine-lt)}
+.match-row.selected{background:var(--wine-lt);border-left:3px solid var(--wine)}
+.match-diff-ok{color:var(--green);font-weight:700;font-size:11px}
+.match-diff-warn{color:var(--amber);font-weight:700;font-size:11px}
+.match-diff-alert{color:var(--red);font-weight:700;font-size:11px}
+.match-check{cursor:pointer;width:14px;height:14px;accent-color:var(--wine)}
+
+/* MODAL */
+.overlay{display:none;position:fixed;inset:0;background:rgba(26,21,18,.5);z-index:500;align-items:center;justify-content:center;padding:1rem}
+.overlay.open{display:flex}
+.modal{background:var(--surface);border-radius:var(--rl);width:580px;max-width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 24px 70px rgba(0,0,0,.25)}
+.modal.wide{width:740px}
+.mh{padding:1rem 1.375rem;border-bottom:2px solid var(--gold);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--wine-dk);z-index:1;border-radius:var(--rl) var(--rl) 0 0}
+.mh h2{font-size:16px;font-weight:600;color:#fff;font-family:'Cormorant Garamond',serif;letter-spacing:.01em}
+.mc-btn{background:none;border:none;font-size:18px;cursor:pointer;color:rgba(255,255,255,.6);padding:1px 6px;border-radius:4px}
+.mc-btn:hover{color:#fff;background:rgba(255,255,255,.1)}
+.mb{padding:1.125rem 1.375rem}
+.mf{padding:.75rem 1.375rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:7px;background:var(--parchment);border-radius:0 0 var(--rl) var(--rl)}
+.field{margin-bottom:.875rem}
+.field label{display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--ink2);margin-bottom:4px}
+.field input,.field select,.field textarea{width:100%;padding:7px 9px;border:1px solid var(--border2);border-radius:var(--r);font-size:13px;font-family:inherit;color:var(--ink);background:var(--bg)}
+.field input:focus,.field select:focus,.field textarea:focus{outline:2px solid var(--wine);outline-offset:1px}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fr3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px}
+.sdiv{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink3);margin:1rem 0 .5rem;padding-top:.75rem;border-top:1px solid var(--border)}
+
+/* PAYMENT SCHEDULE ROWS in modal */
+.sched-item{display:grid;grid-template-columns:auto 1fr auto auto auto;gap:8px;align-items:center;padding:.4rem .625rem;border:1px solid var(--border);border-radius:5px;margin-bottom:5px;background:var(--bg)}
+.sched-item input{padding:4px 7px;font-size:12px;border:1px solid var(--border2);border-radius:4px;background:var(--surface);color:var(--ink)}
+.sched-item input:focus{outline:2px solid var(--green);outline-offset:1px}
+.sched-item input[type=date]{width:120px}
+.sched-item input[type=number]{width:90px;text-align:right}
+.sched-del{color:var(--ink3);cursor:pointer;font-size:14px;padding:1px 4px;border-radius:3px}
+.sched-del:hover{color:var(--red);background:var(--rlt)}
+
+/* STATUS pills */
+.status{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px}
+.s-a{background:var(--wine-lt);color:var(--green)}.s-p{background:var(--alt);color:var(--amber)}
+.s-d{background:var(--blt);color:var(--blue)}.s-c{background:var(--s2);color:var(--ink3)}
+
+/* PROGRESS BAR */
+.prog-wrap{width:100%;height:6px;background:var(--s2);border-radius:3px;overflow:hidden}
+.prog-bar{height:100%;border-radius:3px;transition:width .4s}
+
+/* INVOICE REVIEW MODAL */
+/* MANUAL ENTRY FORM */
+.manual-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--ink3);display:block;margin-bottom:3px}
+.man-inp{width:100%;padding:5px 8px;border:1px solid var(--border2);border-radius:var(--r);font-size:12px;background:var(--surface);color:var(--ink);font-family:inherit}
+.man-inp:focus{outline:2px solid var(--wine);outline-offset:1px}
+.inv-row{display:grid;grid-template-columns:auto 1fr 100px 100px 90px 32px;gap:6px;align-items:center;padding:.5rem .875rem;border-bottom:1px solid var(--border);font-size:12px}
+.inv-row:last-child{border-bottom:none}
+.inv-row:hover{background:var(--parchment)}
+.inv-row.inv-changed{background:#fff8e6}
+.inv-row.inv-ok{background:var(--glt)}
+.inv-badge{font-size:9px;padding:2px 6px;border-radius:3px;font-weight:700;white-space:nowrap}
+.inv-badge-up{background:#fef3c7;color:#92400e}
+.inv-badge-dn{background:#e0f2fe;color:#0369a1}
+.inv-badge-ok{background:var(--glt);color:var(--green)}
+.inv-badge-new{background:var(--plt);color:var(--purple)}
+.inv-badge-miss{background:var(--s2);color:var(--ink3)}
+.inv-nett-inp{width:82px;text-align:right;font-size:12px;padding:3px 6px;border:1px solid var(--border2);border-radius:4px;background:var(--surface);font-variant-numeric:tabular-nums}
+.inv-nett-inp:focus{outline:2px solid var(--wine);outline-offset:1px}
+.inv-check{width:15px;height:15px;accent-color:var(--wine);cursor:pointer}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="#" onclick="return false">
+    <img src="https://img1.wsimg.com/isteam/ip/8dd901c3-732a-4eeb-8ef7-df295581f7f0/Wine%20Journeys%20Logo.png/:/rs=h:200,cg:true,m/qt=q:95" alt="Wine Journeys" style="height:36px;object-fit:contain" onerror="this.style.display='none';document.getElementById('nav-wordmark').style.display='flex'">
+    <div id="nav-wordmark" style="display:none;flex-direction:column">
+      <div class="nav-logo-text">Wine Journeys</div>
+      <div class="nav-logo-sub">Trip Planner</div>
+    </div>
+  </a>
+  <div class="tab-pills" id="mainTabs">
+    <button class="tab-pill active" onclick="setMainTab('costs',this)">Cost Planner</button>
+    <button class="tab-pill" onclick="setMainTab('payments',this)">Bookings &amp; Payments</button>
+  </div>
+  <div style="display:flex;gap:6px;align-items:center">
+    <button class="nbtn" onclick="showBackupRestore()" title="Save or restore a backup of all trip data">💾 Backup / Restore</button>
+    <button class="nbtn p" onclick="showNewTrip()">+ New trip</button>
+  </div>
+</nav>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="sb-head"><h2>Trips</h2></div>
+    <div class="trip-list" id="tripList"></div>
+    <div class="sb-foot"><button class="btn g" style="width:100%;justify-content:center" onclick="showNewTrip()">+ New trip</button></div>
+  </aside>
+  <main class="main" id="main">
+    <div class="empty" id="emptyState">
+      <div class="icon">🍷</div>
+      <h2>No journey selected</h2>
+      <p>Create a new trip or select one from the sidebar to begin planning.</p>
+      <button class="btn g" style="margin-top:8px" onclick="showNewTrip()">+ Create first trip</button>
+    </div>
+    <div id="costsView" style="display:none"></div>
+    <div id="paymentsView" style="display:none"></div>
+  </main>
+</div>
+
+<!-- ══════ MODALS ══════ -->
+
+<!-- Trip Modal -->
+<div class="overlay" id="tripModal">
+  <div class="modal">
+    <div class="mh"><h2 id="tmTitle">New trip</h2><button class="mc-btn" onclick="closeModal('tripModal')">✕</button></div>
+    <div class="mb">
+      <div class="fr"><div class="field"><label>Trip name *</label><input id="tm-name" placeholder="e.g. South Africa 2027"></div><div class="field"><label>Subtitle</label><input id="tm-sub"></div></div>
+      <div class="fr"><div class="field"><label>Start date</label><input id="tm-start" type="date"></div><div class="field"><label>End date</label><input id="tm-end" type="date"></div></div>
+      <div class="fr"><div class="field"><label>Status</label><select id="tm-status"><option value="draft">Draft</option><option value="planning">Planning</option><option value="active">Active</option><option value="completed">Completed</option></select></div><div class="field"><label>Foreign currency</label><select id="tm-cur"><option value="ZAR">ZAR – South Africa</option><option value="EUR">EUR – Europe</option><option value="NZD">NZD – New Zealand</option><option value="USD">USD – United States</option><option value="GBP">GBP – United Kingdom</option><option value="AUD">AUD only</option></select></div></div>
+      <div class="fr3"><div class="field"><label>Min guests</label><input id="tm-gmin" type="number" value="8" min="1"></div><div class="field"><label>Default guests</label><input id="tm-guests" type="number" value="10" min="1"></div><div class="field"><label>Max guests</label><input id="tm-gmax" type="number" value="16" min="1"></div></div>
+      <div class="fr3"><div class="field"><label>Tour hosts (#)</label><input id="tm-hosts" type="number" value="1" min="0" placeholder="e.g. 1"></div><div class="field"><label>FX → AUD</label><input id="tm-fx" type="number" value="0.085" step="0.001"></div><div class="field"><label>Markup %</label><input id="tm-mk" type="number" value="15" min="0"></div></div>
+      <div class="field"><label>Notes</label><textarea id="tm-notes" rows="2" placeholder="Internal notes..."></textarea></div>
+    </div>
+    <div class="mf"><button class="btn" onclick="closeModal('tripModal')">Cancel</button><button class="btn g" onclick="saveTrip()">Save</button></div>
+  </div>
+</div>
+
+<!-- Supplier Modal -->
+<div class="overlay" id="supModal">
+  <div class="modal">
+    <div class="mh"><h2 id="smTitle">Add supplier</h2><button class="mc-btn" onclick="closeModal('supModal')">✕</button></div>
+    <div class="mb">
+      <div class="fr"><div class="field" style="grid-column:1/-1"><label>Supplier name *</label><input id="sm-name" placeholder="e.g. Klein Constantia"></div></div>
+      <div class="fr"><div class="field"><label>Day(s)</label><input id="sm-day" placeholder="e.g. 2 or 3–5"></div><div class="field"><label>Location</label><input id="sm-loc" placeholder="e.g. Constantia, Cape Town"></div></div>
+      <div class="sdiv">Line items</div>
+      <div id="itemList"></div>
+      <div class="add-row" onclick="addItemRow()">＋ Add line item</div>
+    </div>
+    <div class="mf"><button class="btn" onclick="closeModal('supModal')">Cancel</button><button class="btn g" onclick="saveSupplier()">Save supplier</button></div>
+  </div>
+</div>
+
+<!-- Booking Modal -->
+<div class="overlay" id="bookModal">
+  <div class="modal wide">
+    <div class="mh"><h2 id="bmTitle">Add booking</h2><button class="mc-btn" onclick="closeModal('bookModal')">✕</button></div>
+    <div class="mb">
+      <div class="fr">
+        <div class="field"><label>Supplier *</label>
+          <select id="bm-sup"></select>
+        </div>
+        <div class="field"><label>Booking status</label>
+          <select id="bm-status">
+            <option value="tentative">Tentative</option>
+            <option value="confirmed">Confirmed</option>
+            <option value="pending">Pending confirmation</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
+      </div>
+      <div class="fr">
+        <div class="field"><label>Reference / booking no.</label><input id="bm-ref" placeholder="e.g. INV-2027-001"></div>
+        <div class="field"><label>Contact name</label><input id="bm-contact" placeholder="e.g. Sarah Jones"></div>
+      </div>
+      <div class="fr">
+        <div class="field"><label>Contact email</label><input id="bm-email" type="email" placeholder="e.g. sarah@winery.com"></div>
+        <div class="field"><label>Contact phone</label><input id="bm-phone" placeholder="e.g. +27 21 000 0000"></div>
+      </div>
+      <div class="fr3">
+        <div class="field"><label>Total amount (AUD)</label><input id="bm-total" type="number" min="0" step="0.01" placeholder="0.00"></div>
+        <div class="field"><label>Currency paid in</label><select id="bm-cur"><option>AUD</option><option>ZAR</option><option>EUR</option><option>NZD</option><option>USD</option><option>GBP</option></select></div>
+        <div class="field"><label>Confirmation date</label><input id="bm-confdate" type="date"></div>
+      </div>
+      <div class="field"><label>Notes / special requirements</label><textarea id="bm-notes" rows="2" placeholder="Any special requirements or notes..."></textarea></div>
+
+      <div class="sdiv">Payment schedule</div>
+      <div id="schedList"></div>
+      <div class="add-row" onclick="addSchedRow()">＋ Add payment milestone</div>
+
+      <div class="sdiv">Uploaded documents & invoice matching</div>
+      <div id="bm-docs-list"></div>
+      <div class="upload-area" id="bm-upload" onclick="document.getElementById('bm-file').click()" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="handleDrop(event)">
+        <input type="file" id="bm-file" accept=".pdf,.jpg,.jpeg,.png,.gif" onchange="handleFileSelect(this)">
+        <div class="ui">📄</div>
+        <h3>Upload invoice or document</h3>
+        <p>PDF, JPG or PNG — Claude reads and extracts key details automatically<br>
+        <strong style="color:var(--wine)">Enter NETT amounts only</strong> — markup is applied separately in the cost planner</p>
+      </div>
+      <div id="parsing-status"></div>
+      <!-- Invoice vs Planner Match Panel -->
+      <div id="match-panel-wrap" style="display:none">
+        <div class="match-panel">
+          <div class="match-panel-hd">
+            🔍 Match invoice amounts against cost planner
+            <span style="font-size:9px;font-weight:400;color:var(--ink3);margin-left:auto">Tick items to accept · Differences highlighted in red</span>
+          </div>
+          <div id="match-rows"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.5rem;font-size:11px;color:var(--ink3)">
+          <span id="match-summary"></span>
+          <button class="btn g btn-sm" onclick="acceptMatchedItems()" style="font-size:11px;padding:4px 10px">Accept selected &amp; update totals</button>
+        </div>
+      </div>
+    </div>
+    <div class="mf"><button class="btn" onclick="closeModal('bookModal')">Cancel</button><button class="btn g" onclick="saveBooking()">Save booking</button></div>
+  </div>
+</div>
+
+<!-- Payment Modal (mark paid) -->
+<div class="overlay" id="payModal">
+  <div class="modal" style="width:420px">
+    <div class="mh"><h2>Record payment</h2><button class="mc-btn" onclick="closeModal('payModal')">✕</button></div>
+    <div class="mb">
+      <div class="field"><label>Amount paid (AUD)</label><input id="pm-amount" type="number" step="0.01" min="0"></div>
+      <div class="field"><label>Payment date</label><input id="pm-date" type="date"></div>
+      <div class="field"><label>Payment method</label><select id="pm-method"><option>Bank transfer</option><option>Credit card</option><option>PayPal</option><option>Cheque</option><option>Cash</option><option>Other</option></select></div>
+      <div class="field"><label>Reference</label><input id="pm-ref" placeholder="e.g. transaction ID"></div>
+      <div class="field"><label>Notes</label><textarea id="pm-notes" rows="2"></textarea></div>
+    </div>
+    <div class="mf"><button class="btn" onclick="closeModal('payModal')">Cancel</button><button class="btn g" onclick="recordPayment()">Record payment</button></div>
+  </div>
+</div>
+
+<!-- Backup / Restore Modal -->
+<div class="overlay" id="importModal">
+  <div class="modal" style="width:520px">
+    <div class="mh"><h2>Backup &amp; Restore</h2><button class="mc-btn" onclick="closeModal('importModal')">✕</button></div>
+    <div class="mb">
+      <p style="font-size:13px;color:var(--ink2);margin-bottom:1.25rem;line-height:1.6">Your trip data saves automatically in this browser. Use the options below to download a backup or restore from a previously saved file.</p>
+      <div style="background:var(--parchment);border:1px solid var(--border);border-radius:var(--r);padding:1rem;margin-bottom:1rem">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--wine);margin-bottom:.5rem">💾 Download backup</div>
+        <p style="font-size:12px;color:var(--ink3);margin-bottom:.75rem;line-height:1.5">Save all your trips and bookings as a file you can keep on your computer or share with a colleague.</p>
+        <button class="btn g" onclick="downloadBackup()">Download backup file</button>
+        <span id="backup-count" style="font-size:12px;color:var(--ink3);margin-left:10px"></span>
+      </div>
+      <div style="background:var(--parchment);border:1px solid var(--border);border-radius:var(--r);padding:1rem">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--wine);margin-bottom:.5rem">📂 Restore from backup</div>
+        <p style="font-size:12px;color:var(--ink3);margin-bottom:.75rem;line-height:1.5">Load a previously saved backup. Trips from the file will be added without removing any existing ones.</p>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <label class="btn" style="cursor:pointer">
+            Choose backup file
+            <input type="file" accept=".json" style="display:none" onchange="restoreFromFile(this)">
+          </label>
+          <span id="restore-filename" style="font-size:12px;color:var(--ink3)">No file selected</span>
+        </div>
+        <div id="restore-status" style="margin-top:.75rem"></div>
+      </div>
+    </div>
+    <div class="mf"><button class="btn" onclick="closeModal('importModal')">Close</button></div>
+  </div>
+</div>
+
+<!-- Invoice Review Modal -->
+<div class="overlay" id="invModal">
+  <div class="modal wide" style="width:800px;max-height:92vh">
+    <div class="mh">
+      <div>
+        <h2 id="inv-modal-title">Review invoice</h2>
+        <div id="inv-modal-sub" style="font-size:11px;color:rgba(255,255,255,.6);margin-top:2px"></div>
+      </div>
+      <button class="mc-btn" onclick="closeModal('invModal')">&#x2715;</button>
+    </div>
+    <div class="mb" style="padding:0;overflow-y:auto;max-height:calc(92vh - 130px)">
+      <div id="inv-upload-zone" style="padding:1.25rem 1.375rem">
+        <div style="font-size:12px;color:var(--ink2);margin-bottom:.875rem;line-height:1.6;background:var(--parchment);padding:.75rem 1rem;border-radius:var(--r);border:1px solid var(--border)">
+          <strong style="color:var(--wine)">How this works:</strong> Upload a quote or invoice PDF (or photo). The system reads the amounts, compares them against the current cost planner values, and shows you exactly what will change. You review each item and confirm — nothing updates until you click <em>Apply selected changes</em>.<br>
+          Enter <strong>nett amounts only</strong> — your markup percentage is applied separately by the planner.
+        </div>
+        <div class="upload-area" id="inv-upload-area" onclick="document.getElementById('inv-file').click()" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="handleInvDrop(event)">
+          <input type="file" id="inv-file" accept=".pdf,.jpg,.jpeg,.png,.xlsx,.xls,.csv" style="display:none" onchange="handleInvFile(this)">
+          <div style="font-size:38px;margin-bottom:.5rem">📄</div>
+          <h3>Drop invoice, quote or spreadsheet here</h3>
+          <p>PDF · JPG / PNG · Excel (.xlsx) · CSV · or click to choose file</p>
+        </div>
+        <div id="inv-parsing-status" style="margin-top:.75rem"></div>
+        <div style="text-align:center;margin-top:.75rem">
+          <button class="btn" onclick="showManualEntry(trips.find(t=>t.id===_invTripId),trips.find(t=>t.id===_invTripId)?.suppliers?.find(s=>s.id===_invSupId))" style="font-size:11px">
+            ✏️ Enter amounts manually instead
+          </button>
+        </div>
+      </div>
+      <div id="inv-review-zone" style="display:none">
+        <div id="inv-summary-bar" style="display:flex;gap:1.25rem;align-items:center;padding:.875rem 1.375rem;background:var(--parchment);border-bottom:1px solid var(--border);flex-wrap:wrap;font-size:12px"></div>
+        <div style="display:grid;grid-template-columns:18px 1fr 105px 105px 80px;gap:6px;padding:.4rem .875rem;background:var(--s2);border-bottom:1px solid var(--border)">
+          <div></div>
+          <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--ink3)">Line item</div>
+          <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--ink3);text-align:right">Current (pp)</div>
+          <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--ink3);text-align:right">Invoice nett</div>
+          <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--ink3);text-align:right">Difference</div>
+        </div>
+        <div id="inv-review-rows"></div>
+        <div id="inv-new-section" style="display:none">
+          <div style="padding:.5rem .875rem;background:var(--parchment);border-top:2px solid var(--border);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--ink3)">Items on invoice not matched in planner &mdash; tick to add</div>
+          <div id="inv-new-rows"></div>
+        </div>
+        <div style="padding:.625rem 1.375rem;background:var(--parchment);border-top:1px solid var(--border);font-size:11px;color:var(--ink3)">
+          Tick items to include &middot; Edit nett amounts if needed &middot; Unticked items keep current values
+        </div>
+      </div>
+    </div>
+    <div class="mf" style="justify-content:space-between;align-items:center">
+      <div id="inv-sel-summary" style="font-size:12px;color:var(--ink2)"></div>
+      <div style="display:flex;gap:8px">
+        <button class="btn" onclick="closeModal('invModal')">Cancel</button>
+        <button class="btn g" id="inv-apply-btn" style="display:none" onclick="applyInvoiceChanges()">Apply selected changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════════════
+let trips=[], overrides={}, activeId=null, activeTab='costs';
+let _editTripId=null, _editSupId=null, _editTripIdSup=null;
+let _editBookId=null, _editBookTripId=null;
+let _payBookId=null, _payTripId=null, _paySchedIdx=null;
+let _tempItems=[], _tempScheds=[], _tempDocs=[];
+let _matchComparisons=[], _parsedFileData=null, _parsedMediaType=null;
+
+const CAT={
+  accommodation:{label:'Stay',cls:'ba'},
+  tasting:{label:'Tasting',cls:'bt'},
+  dining:{label:'Dining',cls:'bdi'},
+  experience:{label:'Transport',cls:'bx'},
+};
+const SDOT={active:'#8b1a2c',planning:'#92400e',draft:'#1e3a5f',completed:'#9a9a95'};
+
+// ══════════════════════════════════════════════════════
+//  STORAGE — robust wrapper, works as file:// or hosted
+// ══════════════════════════════════════════════════════
+const SK='btg_v4', SK_OV='btg_v4_ov';
+const _mem={};
+function storeSet(k,v){try{localStorage.setItem(k,v);}catch(e){_mem[k]=v;}}
+function storeGet(k){try{return localStorage.getItem(k);}catch(e){return _mem[k]||null;}}
+
+function load(){
+  try{trips=JSON.parse(storeGet(SK))||[];}catch{trips=[];}
+  try{overrides=JSON.parse(storeGet(SK_OV))||{};}catch{overrides={};}
+  if(!trips.length) seedDemo();
+}
+function save(){
+  storeSet(SK,JSON.stringify(trips));
+  storeSet(SK_OV,JSON.stringify(overrides));
+}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
+
+// ══════════════════════════════════════════════════════
+//  CALCULATIONS
+// ══════════════════════════════════════════════════════
+function calcDef(item,trip,guests){
+  const fx=trip.fx||0.085, mk=trip.markup||0;
+  let pp=null;
+  if(item.audBase!=null) pp=item.audBase*(1+mk/100);
+  else if(item.zarBase!=null){
+    pp=item.zarBase*fx*(1+mk/100);
+    if(item.groupFlat) pp/=guests;
+    if(item.perCar) pp/=2;
+  }
+  return pp;
+}
+function getPP(item,trip,guests){
+  const ov=(overrides[trip.id]||{})[item.id];
+  if(ov!==undefined&&ov!=='') return parseFloat(ov);
+  return calcDef(item,trip,guests);
+}
+function money(v){if(v==null)return'—';return'$'+Math.round(v).toLocaleString('en-AU');}
+function calcTotals(trip,guests){
+  const c={accommodation:0,tasting:0,dining:0,experience:0};
+  (trip.suppliers||[]).forEach(s=>(s.items||[]).forEach(it=>{
+    if(it.perNight)return;
+    const pp=getPP(it,trip,guests);
+    if(pp!=null) c[it.cat]=(c[it.cat]||0)+pp;
+  }));
+  return c;
+}
+
+// Payment calculations
+function getBookingPayStats(booking){
+  const total=parseFloat(booking.totalAUD)||0;
+  const paid=(booking.payments||[]).reduce((a,p)=>a+(parseFloat(p.amount)||0),0);
+  const scheduled=(booking.schedule||[]).reduce((a,s)=>a+(parseFloat(s.amount)||0),0);
+  const overdue=(booking.schedule||[]).filter(s=>s.status!=='paid'&&s.dueDate&&new Date(s.dueDate)<new Date()).reduce((a,s)=>a+(parseFloat(s.amount)||0),0);
+  return{total,paid,scheduled,overdue,balance:total-paid};
+}
+function getTripPayStats(trip){
+  const bks=trip.bookings||[];
+  const totalContracted=bks.reduce((a,b)=>a+(parseFloat(b.totalAUD)||0),0);
+  const totalPaid=bks.reduce((a,b)=>a+(b.payments||[]).reduce((x,p)=>x+(parseFloat(p.amount)||0),0),0);
+  const totalOverdue=bks.reduce((a,b)=>{
+    const od=(b.schedule||[]).filter(s=>s.status!=='paid'&&s.dueDate&&new Date(s.dueDate)<new Date()).reduce((x,s)=>x+(parseFloat(s.amount)||0),0);
+    return a+od;
+  },0);
+  const upcoming30=bks.reduce((a,b)=>{
+    const now=new Date(), d30=new Date(); d30.setDate(d30.getDate()+30);
+    const u=(b.schedule||[]).filter(s=>s.status!=='paid'&&s.dueDate&&new Date(s.dueDate)>=now&&new Date(s.dueDate)<=d30).reduce((x,s)=>x+(parseFloat(s.amount)||0),0);
+    return a+u;
+  },0);
+  return{totalContracted,totalPaid,totalOverdue,upcoming30,balance:totalContracted-totalPaid};
+}
+
+// ══════════════════════════════════════════════════════
+//  SEED DEMO
+// ══════════════════════════════════════════════════════
+function seedDemo(){
+  const t={
+    id:uid(),name:'South Africa by the Glass',subtitle:'Wine & Safari Journey',
+    start:'2027-04-12',end:'2027-04-25',status:'active',
+    currency:'ZAR',fx:0.085,markup:15,guests:10,gmin:8,gmax:16,hosts:1,
+    hostCosts:{room:2900,meals:1500,airfare:2200,misc:400},
+    extras:[{name:'Travel insurance (per person)',pp:180},{name:'Admin & documentation fee',pp:75}],
+    notes:'',
+    bookings:[],
+    suppliers:[
+      {id:uid(),name:'Mount Nelson, A Belmond Hotel',day:'1–2',loc:'Cape Town',items:[
+        {id:uid(),cat:'accommodation',day:'1–2',name:'Superior Room incl. breakfast',nights:2,audBase:1450,perNight:true},
+        {id:uid(),cat:'dining',day:'1',name:'Welcome drinks — The Planet Bar',audBase:100,est:true},
+      ]},
+      {id:uid(),name:'Merchant Bar & Grill',day:'1',loc:'Cape Town',items:[
+        {id:uid(),cat:'dining',day:'1',name:'Dinner — 5-course',audBase:100,est:true},
+        {id:uid(),cat:'dining',day:'1',name:'Dinner drinks allowance',audBase:100,est:true},
+      ]},
+      {id:uid(),name:'Klein Constantia',day:'2',loc:'Constantia',items:[
+        {id:uid(),cat:'tasting',day:'2',name:'Vin de Constance Vertical Tasting',zarBase:750},
+      ]},
+      {id:uid(),name:'Steenberg',day:'2',loc:'Constantia',items:[
+        {id:uid(),cat:'tasting',day:'2',name:'Flagship Tasting',zarBase:250},
+      ]},
+      {id:uid(),name:'Bouchard Finlayson',day:'3',loc:'Hermanus',items:[
+        {id:uid(),cat:'tasting',day:'3',name:'Vintage tasting (R8,000 flat ÷ guests)',zarBase:8000,groupFlat:true},
+      ]},
+      {id:uid(),name:'La Vierge',day:'3',loc:'Hermanus',items:[
+        {id:uid(),cat:'tasting',day:'3',name:'The Story Teller Tasting',zarBase:150},
+        {id:uid(),cat:'dining',day:'3',name:'VIP Room lunch + wine pairing',audBase:50},
+      ]},
+      {id:uid(),name:'The Marine Hermanus',day:'3',loc:'Hermanus',items:[
+        {id:uid(),cat:'accommodation',day:'3',name:'Room incl. breakfast',nights:1,audBase:null,est:true,perNight:true},
+      ]},
+      {id:uid(),name:'Le Petit Manoir Boutique Hotel',day:'4–6',loc:'Franschhoek',items:[
+        {id:uid(),cat:'accommodation',day:'4–6',name:'Room incl. breakfast',nights:3,audBase:600,perNight:true},
+      ]},
+      {id:uid(),name:'Rickety Bridge',day:'5',loc:'Franschhoek',items:[
+        {id:uid(),cat:'experience',day:'5',name:'Franschhoek Wine Tram — Red Line',zarBase:330},
+        {id:uid(),cat:'tasting',day:'5',name:'Estate Signature Experience (4.5hrs)',zarBase:2500},
+      ]},
+      {id:uid(),name:'Inverdoorn Private Game Reserve',day:'8–9',loc:'Karoo',items:[
+        {id:uid(),cat:'accommodation',day:'8–9',name:'Ambassador Chalet — full board',nights:2,zarBase:7670,perNight:true},
+        {id:uid(),cat:'dining',day:'8',name:'Dinner drinks allowance',audBase:100},
+      ]},
+      {id:uid(),name:'Babylonstoren',day:'13–14',loc:'Franschhoek Valley',items:[
+        {id:uid(),cat:'accommodation',day:'13–14',name:'Hotel room incl. breakfast',nights:2,audBase:1000,perNight:true},
+        {id:uid(),cat:'tasting',day:'13',name:'Private wine tasting',zarBase:550},
+        {id:uid(),cat:'dining',day:'13',name:'Private Dinner — The Old Bakery',zarBase:1050},
+      ]},
+    ]
+  };
+  t.bookings=[];
+  trips.push(t);
+  save();
+}
+
+// ══════════════════════════════════════════════════════
+//  RENDER SIDEBAR
+// ══════════════════════════════════════════════════════
+function renderSidebar(){
+  const el=document.getElementById('tripList');
+  if(!trips.length){el.innerHTML='<div style="padding:1rem;font-size:11px;color:var(--ink3);text-align:center">No trips yet</div>';return;}
+  el.innerHTML=trips.map(t=>`
+    <div class="ti${t.id===activeId?' active':''}" onclick="selectTrip('${t.id}')">
+      <div class="ti-dot" style="background:${SDOT[t.status]||'#888'}"></div>
+      <div class="ti-info">
+        <div class="ti-name">${t.name}</div>
+        <div class="ti-date">${fmtRange(t.start,t.end)}</div>
+      </div>
+      <span class="ti-del" onclick="event.stopPropagation();deleteTrip('${t.id}')">×</span>
+    </div>`).join('');
+}
+
+function fmtRange(s,e){
+  const f=d=>{if(!d)return'';const p=d.split('-');return p[2]+'/'+p[1]+'/'+p[0].slice(2);};
+  return s?f(s)+(e?' – '+f(e):''):'No dates';
+}
+function fmtDate(d){if(!d)return'—';const p=d.split('-');return p[2]+'/'+p[1]+'/'+p[0].slice(2);}
+function daysUntil(d){if(!d)return null;const diff=new Date(d)-new Date();return Math.ceil(diff/(1000*60*60*24));}
+
+// ══════════════════════════════════════════════════════
+//  SELECT TRIP & TAB
+// ══════════════════════════════════════════════════════
+function selectTrip(id){
+  activeId=id;
+  renderSidebar();
+  renderActive();
+}
+function setMainTab(tab,btn){
+  activeTab=tab;
+  document.querySelectorAll('.tab-pill').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderActive();
+}
+function renderActive(){
+  const trip=trips.find(t=>t.id===activeId);
+  const empty=document.getElementById('emptyState');
+  const cv=document.getElementById('costsView');
+  const pv=document.getElementById('paymentsView');
+  if(!trip){empty.style.display='flex';cv.style.display='none';pv.style.display='none';return;}
+  empty.style.display='none';
+  cv.style.display=activeTab==='costs'?'block':'none';
+  pv.style.display=activeTab==='payments'?'block':'none';
+  if(activeTab==='costs') renderCosts(trip);
+  else renderPayments(trip);
+}
+
+// ══════════════════════════════════════════════════════
+//  COSTS VIEW
+// ══════════════════════════════════════════════════════
+function renderCosts(trip){
+  const guests=trip.guests||10;
+  const cats=calcTotals(trip,guests);
+  const grand=Object.values(cats).reduce((a,b)=>a+b,0);
+  const sc={active:'s-a',planning:'s-p',draft:'s-d',completed:'s-c'}[trip.status]||'s-d';
+  const hosts=trip.hosts||1;
+  const hostCosts=trip.hostCosts||{room:0,meals:0,airfare:0,misc:0};
+  const extras=trip.extras||[];
+  const gmin=trip.gmin||guests, gmax=trip.gmax||guests;
+
+  // ── Summary cards including host allocation
+  const hostTotalPerTrip=(parseFloat(hostCosts.room)||0)+(parseFloat(hostCosts.meals)||0)+(parseFloat(hostCosts.airfare)||0)+(parseFloat(hostCosts.misc)||0);
+  const hostTotalAllHosts=hostTotalPerTrip*hosts;
+  const hostPerGuest=guests>0?hostTotalAllHosts/guests:0;
+  const extrasPP=extras.reduce((a,e)=>a+(parseFloat(e.pp)||0),0);
+  const grandWithHost=grand+hostPerGuest+extrasPP;
+
+  const cards=[
+    {l:'Accommodation',v:cats.accommodation,s:'excl. per-night'},
+    {l:'Wine Tastings',v:cats.tasting},
+    {l:'Dining & Drinks',v:cats.dining},
+    {l:'Experiences',v:cats.experience},
+    ...(extrasPP>0?[{l:'Additional expenses',v:extrasPP}]:[]),
+    ...(hosts>0?[{l:`Host cost (÷${guests})`,v:hostPerGuest,pu:true}]:[]),
+    {l:'Total per person',v:grandWithHost,b:true},
+    {l:`Total (${guests} guests)`,v:grandWithHost*guests,b:true},
+  ].map(m=>`<div class="mc${m.b?' bold':''}${m.pu?' pu':''}"><div class="ml">${m.l}</div><div class="mv" style="${m.pu?'color:var(--purple)':''}">${money(m.v)}</div>${m.s?`<div class="ms">${m.s}</div>`:''}</div>`).join('');
+
+  // ── Supplier sections
+  const secs=(trip.suppliers||[]).map(sup=>{
+    let supPP=0;
+    const addRowHTML=`<tr class="add-item-row" id="add-item-${sup.id}">
+      <td colspan="5" style="padding:0">
+        <div style="display:none" id="add-item-form-${sup.id}">
+          <div style="display:grid;grid-template-columns:90px 1fr 80px 80px 60px 32px;gap:5px;padding:.4rem .75rem;background:var(--wine-lt);align-items:center">
+            <select id="new-cat-${sup.id}" style="font-size:11px;padding:3px 4px;border:1px solid var(--border2);border-radius:4px;background:var(--surface)">
+              ${Object.entries(CAT).map(([k,v])=>`<option value="${k}">${v.label}</option>`).join('')}
+            </select>
+            <input id="new-name-${sup.id}" placeholder="Item name" style="font-size:12px;padding:3px 6px;border:1px solid var(--border2);border-radius:4px;background:var(--surface);width:100%">
+            <input id="new-aud-${sup.id}" type="number" placeholder="AUD" style="font-size:11px;padding:3px 5px;border:1px solid var(--border2);border-radius:4px;background:var(--surface);text-align:right;width:100%">
+            <input id="new-zar-${sup.id}" type="number" placeholder="${trip.currency||'ZAR'}" style="font-size:11px;padding:3px 5px;border:1px solid var(--border2);border-radius:4px;background:var(--surface);text-align:right;width:100%">
+            <label style="font-size:10px;display:flex;align-items:center;gap:3px"><input type="checkbox" id="new-est-${sup.id}"> Est</label>
+            <button class="btn sm g" onclick="saveNewItem('${trip.id}','${sup.id}')" style="padding:3px 7px">＋</button>
+          </div>
+        </div>
+        <div onclick="toggleAddItemForm('${sup.id}')" style="padding:.35rem .75rem;font-size:11px;color:var(--ink3);cursor:pointer;display:flex;align-items:center;gap:5px;transition:color .15s" onmouseover="this.style.color='var(--green)'" onmouseout="this.style.color='var(--ink3)')">
+          <span id="add-toggle-icon-${sup.id}">＋</span> Add line item
+        </div>
+      </td>
+    </tr>`;
+
+    const rows=(sup.items||[]).map((item,itemIdx)=>{
+      const def=calcDef(item,trip,guests);
+      const pp=getPP(item,trip,guests);
+      if(!item.perNight&&pp!=null) supPP+=pp;
+      const defR=def!=null?Math.round(def):null;
+      const ov=(overrides[trip.id]||{})[item.id];
+      const cat=CAT[item.cat]||{label:item.cat,cls:'bd'};
+      const grpVal=item.perNight?(pp!=null?item.nights+' nts = '+money(pp*item.nights):'—'):(pp!=null?money(pp*guests):'—');
+      return`<tr id="row-${item.id}">
+        <td style="width:44px">
+          <input value="${item.day||''}" style="width:38px;font-size:10px;padding:2px 3px;border:1px solid transparent;border-radius:3px;background:transparent;color:var(--ink2);text-align:center" 
+            onfocus="this.style.border='1px solid var(--border2)';this.style.background='var(--surface)'"
+            onblur="this.style.border='1px solid transparent';this.style.background='transparent';updateItemField('${trip.id}','${sup.id}','${item.id}','day',this.value)"
+            onchange="updateItemField('${trip.id}','${sup.id}','${item.id}','day',this.value)">
+        </td>
+        <td>
+          <span class="badge ${cat.cls}" style="cursor:pointer" onclick="cycleItemCat('${trip.id}','${sup.id}','${item.id}')" title="Click to change category">${cat.label}</span>${item.est?'<span class="badge be">est</span> ':''}
+          <input value="${item.name||''}" style="font-size:12px;border:none;background:transparent;color:var(--ink);width:calc(100% - 100px);padding:1px 3px;border-bottom:1px solid transparent"
+            onfocus="this.style.borderBottom='1px solid var(--border2)'"
+            onblur="this.style.borderBottom='1px solid transparent';updateItemField('${trip.id}','${sup.id}','${item.id}','name',this.value)"
+            onchange="updateItemField('${trip.id}','${sup.id}','${item.id}','name',this.value)">
+          ${item.detail?`<div class="det">${item.detail}</div>`:''}
+        </td>
+        <td class="r" style="width:110px"><div class="pr"><span class="pc">$</span><input class="pi${ov!==undefined&&ov!==''?' ov':''}" id="pi-${item.id}" type="number" min="0" step="1"
+          value="${defR!=null?defR:''}" placeholder="${defR!=null?defR:'TBC'}"
+          title="Double-click to reset to calculated value"
+          oninput="setOv('${trip.id}','${item.id}',this.value)"
+          ondblclick="resetOv('${trip.id}','${item.id}',${defR})"
+        >${item.perNight?'<span style="font-size:10px;color:var(--ink3)">/night</span>':''}</div></td>
+        <td class="r" style="width:125px" id="grp-${item.id}">${grpVal}</td>
+        <td style="width:52px;text-align:right">
+          <span style="cursor:pointer;color:var(--ink3);font-size:11px;padding:2px 4px;border-radius:3px" onclick="editSupplier('${trip.id}','${sup.id}')" title="Edit supplier">✎</span>
+          <span style="cursor:pointer;color:var(--ink3);font-size:13px;padding:2px 4px;border-radius:3px" onclick="delItemInline('${trip.id}','${sup.id}','${item.id}')" title="Remove item">×</span>
+        </td>
+      </tr>`;
+    }).join('');
+
+    return`<div class="section">
+      <div class="sec-hd" onclick="toggleSec('sb-${sup.id}','ch-${sup.id}')">
+        <h3>
+          <input value="${sup.name||''}" style="font-size:12px;font-weight:700;border:none;background:transparent;color:var(--ink);padding:0;width:200px"
+            onfocus="event.stopPropagation()" onclick="event.stopPropagation()"
+            onblur="updateSupField('${trip.id}','${sup.id}','name',this.value)"
+            onchange="updateSupField('${trip.id}','${sup.id}','name',this.value)">
+        </h3>
+        <input value="${sup.loc||''}" placeholder="Location" style="font-size:10px;border:none;background:transparent;color:var(--ink3);padding:0;width:100px"
+          onfocus="event.stopPropagation()" onclick="event.stopPropagation()"
+          onblur="updateSupField('${trip.id}','${sup.id}','loc',this.value)"
+          onchange="updateSupField('${trip.id}','${sup.id}','loc',this.value)">
+        <span class="sd">
+          <input value="${sup.day||''}" placeholder="Day" style="font-size:10px;border:none;background:transparent;color:var(--ink3);padding:0;width:50px;text-align:right"
+            onfocus="event.stopPropagation()" onclick="event.stopPropagation()"
+            onblur="updateSupField('${trip.id}','${sup.id}','day',this.value)"
+            onchange="updateSupField('${trip.id}','${sup.id}','day',this.value)">
+        </span>
+        <span class="st" id="st-${sup.id}">${supPP>0?money(supPP)+' pp':'—'}</span>
+        <span class="sc" id="ch-${sup.id}">▾</span>
+        <span style="cursor:pointer;color:var(--wine);font-size:11px;font-weight:600;margin-left:8px;padding:3px 10px;border:1.5px solid var(--wine);border-radius:4px;background:#fff;white-space:nowrap;transition:all .15s" onmouseover="this.style.background='var(--wine)';this.style.color='#fff'" onmouseout="this.style.background='#fff';this.style.color='var(--wine)'" onclick="event.stopPropagation();openSupInvoice('${trip.id}','${sup.id}')" title="Upload a quote, invoice or spreadsheet from this supplier">📄 Upload invoice / quote</span>
+        <span style="cursor:pointer;color:var(--ink3);font-size:13px;margin-left:4px" onclick="event.stopPropagation();delSupplier('${trip.id}','${sup.id}')" title="Delete supplier">×</span>
+      </div>
+      ${sup.invoiceNote?`<div style="display:flex;align-items:center;gap:8px;padding:.375rem .875rem;background:#fff8e6;border-bottom:1px solid #e8c87a;font-size:11px;color:${sup.invoiceNote.type==='ok'?'var(--green)':'var(--amber)'}">
+        ${sup.invoiceNote.type==='ok'?'✓':'⚠'} <strong>${sup.invoiceNote.label}</strong> — ${sup.invoiceNote.msg}
+        <span style="margin-left:auto;cursor:pointer;color:var(--ink3)" onclick="clearInvoiceNote('${trip.id}','${sup.id}')">×</span>
+      </div>`:''}
+      <div class="sec-body" id="sb-${sup.id}">
+        <table><thead><tr><th style="width:44px">Day</th><th>Item</th><th class="r" style="width:110px">Per person</th><th class="r" style="width:125px">Group total</th><th style="width:52px"></th></tr></thead>
+        <tbody>${rows}${addRowHTML}</tbody></table>
+      </div>
+    </div>`;
+  }).join('');
+
+  // ── Host costs section
+  const hostSection=`
+    <div class="host-section">
+      <div class="host-hd" onclick="toggleSec('host-body','host-chev')">
+        <h3>🎤 Tour host costs</h3>
+        <span style="font-size:11px;color:#7c3aed;margin-right:8px">${hosts} host${hosts!==1?'s':''} · ${money(hostTotalAllHosts)} total · ${money(hostPerGuest)} pp (spread across ${guests} guests)</span>
+        <span id="host-chev" style="font-size:10px;color:#7c3aed">▾</span>
+      </div>
+      <div id="host-body" class="host-body">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:.875rem;font-size:12px">
+          <label style="font-weight:600">Number of tour hosts:</label>
+          <input type="number" min="0" max="10" value="${hosts}" style="width:60px;padding:4px 7px;border:1px solid var(--border2);border-radius:5px;font-size:13px;font-weight:700;background:var(--bg);color:var(--purple)"
+            oninput="updateHosts('${trip.id}',this.value)">
+          <span style="color:var(--ink3);font-size:11px">Each host gets their own room and meals — costs are totalled and spread across paying guests</span>
+        </div>
+        <div class="host-grid">
+          <div class="host-input-card">
+            <label>Room cost per host (AUD)</label>
+            <input type="number" min="0" step="1" value="${hostCosts.room||''}" placeholder="0" oninput="updateHostCost('${trip.id}','room',this.value)">
+          </div>
+          <div class="host-input-card">
+            <label>Meals per host (AUD)</label>
+            <input type="number" min="0" step="1" value="${hostCosts.meals||''}" placeholder="0" oninput="updateHostCost('${trip.id}','meals',this.value)">
+          </div>
+          <div class="host-input-card">
+            <label>Airfares per host (AUD)</label>
+            <input type="number" min="0" step="1" value="${hostCosts.airfare||''}" placeholder="0" oninput="updateHostCost('${trip.id}','airfare',this.value)">
+          </div>
+          <div class="host-input-card">
+            <label>Miscellaneous per host (AUD)</label>
+            <input type="number" min="0" step="1" value="${hostCosts.misc||''}" placeholder="0" oninput="updateHostCost('${trip.id}','misc',this.value)">
+          </div>
+        </div>
+        <div class="host-summary">
+          <div class="host-stat"><div class="hl">Per host total</div><div class="hv">${money(hostTotalPerTrip)}</div></div>
+          <div class="host-stat"><div class="hl">All hosts (×${hosts})</div><div class="hv">${money(hostTotalAllHosts)}</div></div>
+          <div class="host-stat"><div class="hl">Per guest (÷${guests})</div><div class="hv">${money(hostPerGuest)}</div></div>
+          <div class="host-stat"><div class="hl">In guest price</div><div class="hv">${money(grand+hostPerGuest+extrasPP)}</div></div>
+        </div>
+      </div>
+    </div>`;
+
+  // ── Additional expenses section
+  const extraRows=extras.map((e,i)=>`
+    <div class="extra-row">
+      <input value="${e.name||''}" placeholder="Expense name (e.g. Travel insurance, Admin fee)" oninput="updateExtra('${trip.id}',${i},'name',this.value)" class="">
+      <input type="number" value="${e.pp||''}" placeholder="0.00" class="r-inp" oninput="updateExtra('${trip.id}',${i},'pp',this.value)" title="Per person (AUD)">
+      <div style="text-align:right;font-size:12px;color:var(--ink2);font-variant-numeric:tabular-nums">${money((parseFloat(e.pp)||0)*guests)}</div>
+      <span style="cursor:pointer;color:var(--ink3);font-size:13px;text-align:center" onclick="removeExtra('${trip.id}',${i})">×</span>
+    </div>`).join('');
+
+  const extrasSection=`
+    <div class="extras-section">
+      <div class="extras-hd" onclick="toggleSec('extras-body','extras-chev')">
+        <h3>Additional expenses</h3>
+        <span style="font-size:11px;color:var(--ink3);margin-right:8px">${extras.length} item${extras.length!==1?'s':''} · ${money(extrasPP)} pp</span>
+        <span id="extras-chev" style="font-size:10px;color:var(--ink3)">▾</span>
+      </div>
+      <div id="extras-body">
+        <div style="display:grid;grid-template-columns:1fr 120px 120px 28px;gap:8px;padding:.35rem .875rem;background:var(--s2);border-bottom:1px solid var(--border)">
+          <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3)">Description</span>
+          <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);text-align:right">Per person (AUD)</span>
+          <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);text-align:right">Group total</span>
+          <span></span>
+        </div>
+        ${extraRows}
+        <div class="add-row" style="margin:.5rem .75rem;border-radius:5px" onclick="addExtra('${trip.id}')">＋ Add expense</div>
+      </div>
+    </div>`;
+
+  // ── Pricing range table
+  const gStep=Math.max(1,Math.round((gmax-gmin)/4));
+  const gRange=[];
+  for(let g=gmin;g<=gmax;g+=gStep) gRange.push(g);
+  if(!gRange.includes(gmax)) gRange.push(gmax);
+  const rangeTable=gmin!==gmax?`
+    <div style="margin-top:1rem">
+      <div class="section-title">Pricing by guest count<span style="font-size:10px;color:var(--ink3);font-weight:400;text-transform:none;letter-spacing:0">${gmin}–${gmax} guests</span></div>
+      <table class="range-table">
+        <thead><tr>
+          <th>Guests</th>
+          <th>Guest costs pp</th>
+          <th>Host pp allocation</th>
+          <th>Extras pp</th>
+          <th>Total pp</th>
+          <th>Group revenue</th>
+        </tr></thead>
+        <tbody>
+          ${gRange.map(g=>{
+            const hpa=g>0?hostTotalAllHosts/g:0;
+            const total=grand+hpa+extrasPP;
+            const isActive=g===guests;
+            return`<tr class="${isActive?'active-row':''}">
+              <td>${g}${isActive?' ← current':''}</td>
+              <td>${money(grand)}</td>
+              <td>${money(hpa)}</td>
+              <td>${money(extrasPP)}</td>
+              <td>${money(total)}</td>
+              <td>${money(total*g)}</td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>`:'';
+
+  document.getElementById('costsView').innerHTML=`
+    <div class="trip-hd">
+      <div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">
+          <h1>${trip.name}</h1><span class="status ${sc}">${trip.status}</span>
+        </div>
+        <p>${trip.subtitle||''} · ${fmtRange(trip.start,trip.end)}${gmin!==gmax?` · ${gmin}–${gmax} guests`:''}</p>
+      </div>
+      <div class="hd-actions">
+        <button class="btn" onclick="showEditTrip('${trip.id}')">✎ Edit trip</button>
+        <button class="btn" onclick="exportJSON('${trip.id}')" title="Download a backup of this trip">💾 Save backup</button>
+        <button class="btn a" onclick="exportXLSX('${trip.id}')">📊 Export Excel</button>
+        <button class="btn b" onclick="exportPDF('${trip.id}')">🖨 Print / PDF</button>
+      </div>
+    </div>
+    <div class="ctrl-bar">
+      <div class="cg"><label>Guests (current)</label><input id="ctrl-g" type="number" value="${guests}" min="${gmin}" max="${gmax}" oninput="updateGuests(this.value)"></div>
+      <div class="ctrl-divider"></div>
+      <div class="cg"><label>Min</label><input id="ctrl-gmin" type="number" value="${gmin}" min="1" style="width:55px" oninput="updateGminmax('min',this.value)"></div>
+      <div class="cg"><label>Max</label><input id="ctrl-gmax" type="number" value="${gmax}" min="1" style="width:55px" oninput="updateGminmax('max',this.value)"></div>
+      <div class="ctrl-divider"></div>
+      <div class="cg"><label>${trip.currency||'ZAR'} → AUD</label><input id="ctrl-fx" type="number" value="${trip.fx||0.085}" step="0.001" oninput="updateFX(this.value)"></div>
+      <div class="cg"><label>Markup %</label><input id="ctrl-mk" type="number" value="${trip.markup||0}" min="0" oninput="updateMK(this.value)"></div>
+    </div>
+    <div class="sum-grid">${cards}</div>
+    ${secs}
+    <div class="add-row" onclick="addSupplier('${trip.id}')">＋ Add supplier</div>
+    <div style="margin-top:.75rem;padding:.625rem 1rem;background:var(--parchment);border:1px solid var(--border);border-radius:var(--r);font-size:11px;color:var(--ink2);display:flex;align-items:center;gap:8px">
+      <span style="font-size:16px">💡</span>
+      <span>To upload a supplier invoice, quote or spreadsheet — click the <strong style="color:var(--wine)">📄 Upload invoice / quote</strong> button on any supplier row above. The system reads the amounts and shows you what will change before updating anything.</span>
+    </div>
+    ${hostSection}
+    ${extrasSection}
+    ${rangeTable}
+    <div class="pfoot">* Click any price to override · Double-click to reset · Blue = overridden · Click supplier name/location/day to edit inline<br>† Category badge is clickable to cycle type · ＋ row at bottom of each supplier to add items without opening modal</div>`;
+}
+
+// ══════════════════════════════════════════════════════
+//  PAYMENTS VIEW
+// ══════════════════════════════════════════════════════
+function renderPayments(trip){
+  const bks=trip.bookings||[];
+  const ps=getTripPayStats(trip);
+  const pct=ps.totalContracted>0?Math.round(ps.totalPaid/ps.totalContracted*100):0;
+
+  // Summary cards
+  const cards=[
+    {l:'Total contracted',v:money(ps.totalContracted),cls:''},
+    {l:'Total paid',v:money(ps.totalPaid),cls:' ok'},
+    {l:'Balance due',v:money(ps.balance),cls:ps.balance>0?' warn':''},
+    {l:'Overdue now',v:money(ps.totalOverdue),cls:ps.totalOverdue>0?' alert':''},
+    {l:'Due in 30 days',v:money(ps.upcoming30),cls:ps.upcoming30>0?' warn':''},
+    {l:'Bookings',v:bks.length,cls:''},
+  ].map(m=>`<div class="pay-card${m.cls}"><div class="pl">${m.l}</div><div class="pv">${m.v}</div></div>`).join('');
+
+  // Progress bar
+  const prog=`<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:.875rem 1rem;margin-bottom:1rem">
+    <div style="display:flex;justify-content:space-between;margin-bottom:.5rem;font-size:12px">
+      <span style="font-weight:600">Payment progress</span>
+      <span style="color:var(--ink2)">${money(ps.totalPaid)} of ${money(ps.totalContracted)} paid (${pct}%)</span>
+    </div>
+    <div class="prog-wrap"><div class="prog-bar" style="width:${pct}%;background:${pct>=100?'var(--green)':pct>=50?'#f59e0b':'var(--blue)'}"></div></div>
+  </div>`;
+
+  // Build upcoming timeline
+  const allScheds=[];
+  bks.forEach(bk=>{
+    const sup=trip.suppliers?.find(s=>s.id===bk.supplierId);
+    (bk.schedule||[]).forEach(s=>allScheds.push({...s,supName:sup?.name||'Unknown supplier',bkId:bk.id,bkRef:bk.ref}));
+  });
+  allScheds.sort((a,b)=>new Date(a.dueDate||0)-new Date(b.dueDate||0));
+
+  // Group by month
+  const byMonth={};
+  allScheds.forEach(s=>{
+    if(!s.dueDate)return;
+    const m=s.dueDate.slice(0,7);
+    if(!byMonth[m])byMonth[m]=[];
+    byMonth[m].push(s);
+  });
+  const now=new Date();
+  const timelineHTML=Object.entries(byMonth).map(([month,items])=>{
+    const [y,m]=month.split('-');
+    const mName=new Date(y,m-1).toLocaleDateString('en-AU',{month:'long',year:'numeric'});
+    const itemsHTML=items.map(s=>{
+      const du=daysUntil(s.dueDate);
+      const isOverdue=s.status!=='paid'&&du!==null&&du<0;
+      const isUpcoming=s.status!=='paid'&&du!==null&&du<=30&&du>=0;
+      const cls=s.status==='paid'?'done':isOverdue?'overdue':isUpcoming?'upcoming':'';
+      const dotColor=s.status==='paid'?'var(--green)':isOverdue?'var(--red)':isUpcoming?'var(--amber)':'var(--border2)';
+      const dueTxt=s.status==='paid'?`Paid ${fmtDate(s.paidDate||'')}`:isOverdue?`${Math.abs(du)} days overdue`:du===0?'Due today':`Due in ${du} days`;
+      return`<div class="tl-item ${cls}">
+        <div class="tl-dot" style="background:${dotColor}"></div>
+        <div class="tl-info">
+          <div class="tl-name">${s.supName}</div>
+          <div class="tl-desc">${s.label||'Payment'} · Ref: ${s.bkRef||'—'}</div>
+        </div>
+        <div style="text-align:right">
+          <div class="tl-amount">${money(s.amount)}</div>
+          <div class="tl-date">${fmtDate(s.dueDate)}<br><span style="font-size:9px">${dueTxt}</span></div>
+        </div>
+        ${s.status!=='paid'?`<button class="btn sm g" onclick="markPaid('${trip.id}','${s.bkId}','${s.id}',${s.amount})">Mark paid</button>`:'<span style="font-size:11px;color:var(--green);font-weight:600">✓ Paid</span>'}
+      </div>`;
+    }).join('');
+    return`<div class="timeline"><div class="tl-month">${mName}</div>${itemsHTML}</div>`;
+  }).join('');
+
+  // Bookings table
+  const bookRows=bks.map(bk=>{
+    const sup=trip.suppliers?.find(s=>s.id===bk.supplierId);
+    const bs=getBookingPayStats(bk);
+    const paidPct=bs.total>0?Math.round(bs.paid/bs.total*100):0;
+    const bkStatusCls={confirmed:'bk-confirmed',tentative:'bk-tentative',pending:'bk-pending',cancelled:'bk-cancelled'}[bk.status]||'bk-pending';
+    const payStatusCls=bs.overdue>0?'ps-overdue':bs.paid>=bs.total&&bs.total>0?'ps-paid':bs.paid>0?'ps-partial':'ps-unpaid';
+    const payStatusLabel=bs.overdue>0?'Overdue':bs.paid>=bs.total&&bs.total>0?'Paid in full':bs.paid>0?'Partial':'Unpaid';
+    return`<tr>
+      <td><strong style="font-size:12px">${sup?.name||'Unknown'}</strong><div class="det">${bk.ref||'No ref'} · ${bk.contact||''}</div></td>
+      <td><span class="bk-status ${bkStatusCls}">${bk.status}</span></td>
+      <td class="r">${money(bs.total)}</td>
+      <td class="r"><span class="pay-status ${payStatusCls}">${payStatusLabel}</span></td>
+      <td class="r">${money(bs.paid)}</td>
+      <td class="r" style="color:${bs.balance>0?'var(--amber)':'var(--green)'}">${money(bs.balance)}</td>
+      <td style="width:100px">
+        <div class="prog-wrap" style="height:4px;margin-bottom:3px"><div class="prog-bar" style="width:${paidPct}%;background:var(--green)"></div></div>
+        <div style="font-size:9px;color:var(--ink3);text-align:right">${paidPct}%</div>
+      </td>
+      <td style="width:80px;text-align:right">
+        <button class="btn sm" onclick="editBooking('${trip.id}','${bk.id}')">✎</button>
+        <button class="btn sm r" onclick="delBooking('${trip.id}','${bk.id}')">×</button>
+      </td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('paymentsView').innerHTML=`
+    <div class="trip-hd">
+      <div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px"><h1>${trip.name}</h1></div>
+        <p>Bookings & payment tracking · ${bks.length} supplier${bks.length!==1?'s':''} booked</p>
+      </div>
+      <div class="hd-actions">
+        <button class="btn a" onclick="exportPayXLSX('${trip.id}')">📊 Export Excel</button>
+        <button class="btn b" onclick="exportPayPDF('${trip.id}')">🖨 Print / PDF</button>
+        <button class="btn g" onclick="addBooking('${trip.id}')">+ Add booking</button>
+      </div>
+    </div>
+    <div class="pay-grid">${cards}</div>
+    ${prog}
+    <div class="section-title">Payment timeline<span style="font-size:10px;color:var(--ink3);font-weight:400;text-transform:none;letter-spacing:0">All milestones across bookings</span></div>
+    ${allScheds.length?timelineHTML:'<div style="text-align:center;padding:2rem;color:var(--ink3);font-size:13px">No payment schedule entries yet. Add a booking to get started.</div>'}
+    <div class="section-title" style="margin-top:1.5rem">All bookings<span></span></div>
+    ${bks.length?`<table class="booking-table">
+      <thead><tr><th>Supplier</th><th>Status</th><th class="r">Total</th><th class="r">Payment</th><th class="r">Paid</th><th class="r">Balance</th><th>Progress</th><th></th></tr></thead>
+      <tbody>${bookRows}</tbody>
+    </table>`:'<div class="add-row" style="margin-top:.5rem" onclick="addBooking(\''+trip.id+'\')">＋ Add your first booking</div>'}
+    <div class="add-row" onclick="addBooking('${trip.id}')">＋ Add booking</div>`;
+}
+
+// ══════════════════════════════════════════════════════
+//  OVERRIDES
+// ══════════════════════════════════════════════════════
+function setOv(tid,iid,val){
+  if(!overrides[tid])overrides[tid]={};
+  overrides[tid][iid]=val;
+  const inp=document.getElementById('pi-'+iid);
+  if(inp)inp.classList.toggle('ov',val!=='');
+  save();refreshCalcs();
+}
+function resetOv(tid,iid,defR){
+  if(overrides[tid])delete overrides[tid][iid];
+  const inp=document.getElementById('pi-'+iid);
+  if(inp){inp.value=defR!=null?defR:'';inp.classList.remove('ov');}
+  save();refreshCalcs();
+}
+function getGuests(){const t=trips.find(x=>x.id===activeId);return parseInt(document.getElementById('ctrl-g')?.value)||t?.guests||10;}
+function updateGuests(v){const t=trips.find(x=>x.id===activeId);if(t){t.guests=parseInt(v)||10;save();}refreshCalcs();}
+function updateFX(v){const t=trips.find(x=>x.id===activeId);if(t){t.fx=parseFloat(v)||0.085;save();}refreshCalcs();}
+function updateMK(v){const t=trips.find(x=>x.id===activeId);if(t){t.markup=parseFloat(v)||0;save();}refreshCalcs();}
+function updateGminmax(which,v){
+  const t=trips.find(x=>x.id===activeId);if(!t)return;
+  if(which==='min')t.gmin=parseInt(v)||t.gmin||1;
+  else t.gmax=parseInt(v)||t.gmax||t.guests;
+  save();refreshCalcs();
+}
+
+// ══════════════════════════════════════════════════════
+//  HOST & EXTRAS
+// ══════════════════════════════════════════════════════
+function updateHosts(tid,v){
+  const t=trips.find(x=>x.id===tid);if(!t)return;
+  t.hosts=parseInt(v)||0;
+  save();refreshCalcs();
+}
+function updateHostCost(tid,field,v){
+  const t=trips.find(x=>x.id===tid);if(!t)return;
+  if(!t.hostCosts)t.hostCosts={room:0,meals:0,airfare:0,misc:0};
+  t.hostCosts[field]=parseFloat(v)||0;
+  save();refreshCalcs();
+}
+function addExtra(tid){
+  const t=trips.find(x=>x.id===tid);if(!t)return;
+  if(!t.extras)t.extras=[];
+  t.extras.push({name:'',pp:0});
+  save();renderCosts(t);
+}
+function updateExtra(tid,idx,field,val){
+  const t=trips.find(x=>x.id===tid);if(!t||!t.extras)return;
+  t.extras[idx][field]=field==='pp'?parseFloat(val)||0:val;
+  save();refreshCalcs();
+}
+function removeExtra(tid,idx){
+  const t=trips.find(x=>x.id===tid);if(!t||!t.extras)return;
+  t.extras.splice(idx,1);
+  save();renderCosts(t);
+}
+
+// ══════════════════════════════════════════════════════
+//  INLINE EDIT — SUPPLIER FIELDS & ITEMS
+// ══════════════════════════════════════════════════════
+function updateSupField(tid,sid,field,val){
+  const t=trips.find(x=>x.id===tid);
+  const s=t?.suppliers?.find(x=>x.id===sid);
+  if(s){s[field]=val;save();}
+}
+function updateItemField(tid,sid,iid,field,val){
+  const t=trips.find(x=>x.id===tid);
+  const s=t?.suppliers?.find(x=>x.id===sid);
+  const item=s?.items?.find(x=>x.id===iid);
+  if(item){item[field]=val;save();}
+}
+const CAT_KEYS=Object.keys(CAT);
+function cycleItemCat(tid,sid,iid){
+  const t=trips.find(x=>x.id===tid);
+  const s=t?.suppliers?.find(x=>x.id===sid);
+  const item=s?.items?.find(x=>x.id===iid);
+  if(!item)return;
+  const cur=CAT_KEYS.indexOf(item.cat);
+  item.cat=CAT_KEYS[(cur+1)%CAT_KEYS.length];
+  save();renderCosts(t);
+}
+function delItemInline(tid,sid,iid){
+  const t=trips.find(x=>x.id===tid);
+  const s=t?.suppliers?.find(x=>x.id===sid);
+  if(!s)return;
+  s.items=s.items.filter(x=>x.id!==iid);
+  save();renderCosts(t);
+}
+function toggleAddItemForm(sid){
+  const form=document.getElementById('add-item-form-'+sid);
+  const icon=document.getElementById('add-toggle-icon-'+sid);
+  if(!form)return;
+  const showing=form.style.display!=='none';
+  form.style.display=showing?'none':'block';
+  if(icon)icon.textContent=showing?'＋':'−';
+}
+function saveNewItem(tid,sid){
+  const t=trips.find(x=>x.id===tid);
+  const s=t?.suppliers?.find(x=>x.id===sid);
+  if(!s)return;
+  const name=document.getElementById('new-name-'+sid)?.value?.trim();
+  if(!name)return;
+  const cat=document.getElementById('new-cat-'+sid)?.value||'dining';
+  const aud=document.getElementById('new-aud-'+sid)?.value;
+  const zar=document.getElementById('new-zar-'+sid)?.value;
+  const est=document.getElementById('new-est-'+sid)?.checked||false;
+  s.items.push({id:uid(),cat,name,audBase:aud?parseFloat(aud):null,zarBase:zar?parseFloat(zar):null,est,day:s.day||''});
+  save();renderCosts(t);
+}
+function refreshCalcs(){
+  const trip=trips.find(t=>t.id===activeId);if(!trip||activeTab!=='costs')return;
+  const guests=getGuests();
+  const hosts=trip.hosts||1;
+  const hostCosts=trip.hostCosts||{room:0,meals:0,airfare:0,misc:0};
+  const extras=trip.extras||[];
+  const hostTotalPerTrip=(parseFloat(hostCosts.room)||0)+(parseFloat(hostCosts.meals)||0)+(parseFloat(hostCosts.airfare)||0)+(parseFloat(hostCosts.misc)||0);
+  const hostTotalAllHosts=hostTotalPerTrip*hosts;
+  const hostPerGuest=guests>0?hostTotalAllHosts/guests:0;
+  const extrasPP=extras.reduce((a,e)=>a+(parseFloat(e.pp)||0),0);
+
+  (trip.suppliers||[]).forEach(sup=>{
+    let spp=0;
+    (sup.items||[]).forEach(item=>{
+      const def=calcDef(item,trip,guests);
+      const pp=getPP(item,trip,guests);
+      if(!item.perNight&&pp!=null)spp+=pp;
+      const inp=document.getElementById('pi-'+item.id);
+      const grp=document.getElementById('grp-'+item.id);
+      const ov=(overrides[trip.id]||{})[item.id];
+      if(inp&&(ov===undefined||ov==='')){const r=def!=null?Math.round(def):null;inp.value=r!=null?r:'';inp.placeholder=r!=null?String(r):'TBC';}
+      if(grp)grp.textContent=item.perNight?(pp!=null?item.nights+' nts = '+money(pp*item.nights):'—'):(pp!=null?money(pp*guests):'—');
+    });
+    const st=document.getElementById('st-'+sup.id);
+    if(st)st.textContent=spp>0?money(spp)+' pp':'—';
+  });
+  const cats=calcTotals(trip,guests);
+  const grand=Object.values(cats).reduce((a,b)=>a+b,0);
+  const grandWithHost=grand+hostPerGuest+extrasPP;
+  const grid=document.querySelector('.sum-grid');
+  if(grid)grid.innerHTML=[
+    {l:'Accommodation',v:cats.accommodation,s:'excl. per-night'},
+    {l:'Wine Tastings',v:cats.tasting},
+    {l:'Dining & Drinks',v:cats.dining},
+    {l:'Experiences',v:cats.experience},
+    ...(extrasPP>0?[{l:'Additional expenses',v:extrasPP}]:[]),
+    ...(hosts>0?[{l:`Host cost (÷${guests})`,v:hostPerGuest,pu:true}]:[]),
+    {l:'Total per person',v:grandWithHost,b:true},
+    {l:`Total (${guests} guests)`,v:grandWithHost*guests,b:true},
+  ].map(m=>`<div class="mc${m.b?' bold':''}${m.pu?' pu':''}"><div class="ml">${m.l}</div><div class="mv" style="${m.pu?'color:var(--purple)':''}">${money(m.v)}</div>${m.s?`<div class="ms">${m.s}</div>`:''}</div>`).join('');
+}
+
+// ══════════════════════════════════════════════════════
+//  TRIP CRUD
+// ══════════════════════════════════════════════════════
+function showNewTrip(){
+  _editTripId=null;
+  document.getElementById('tmTitle').textContent='New trip';
+  ['tm-name','tm-sub','tm-notes'].forEach(id=>document.getElementById(id).value='');
+  ['tm-start','tm-end'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('tm-status').value='draft';
+  document.getElementById('tm-cur').value='ZAR';
+  document.getElementById('tm-guests').value='10';
+  document.getElementById('tm-gmin').value='8';
+  document.getElementById('tm-gmax').value='16';
+  document.getElementById('tm-hosts').value='1';
+  document.getElementById('tm-fx').value='0.085';
+  document.getElementById('tm-mk').value='15';
+  openModal('tripModal');
+}
+function showEditTrip(id){
+  const t=trips.find(x=>x.id===id);if(!t)return;
+  _editTripId=id;
+  document.getElementById('tmTitle').textContent='Edit trip';
+  document.getElementById('tm-name').value=t.name||'';
+  document.getElementById('tm-sub').value=t.subtitle||'';
+  document.getElementById('tm-start').value=t.start||'';
+  document.getElementById('tm-end').value=t.end||'';
+  document.getElementById('tm-status').value=t.status||'draft';
+  document.getElementById('tm-cur').value=t.currency||'ZAR';
+  document.getElementById('tm-guests').value=t.guests||10;
+  document.getElementById('tm-gmin').value=t.gmin||t.guests||8;
+  document.getElementById('tm-gmax').value=t.gmax||t.guests||16;
+  document.getElementById('tm-hosts').value=t.hosts||1;
+  document.getElementById('tm-fx').value=t.fx||0.085;
+  document.getElementById('tm-mk').value=t.markup||0;
+  document.getElementById('tm-notes').value=t.notes||'';
+  openModal('tripModal');
+}
+function saveTrip(){
+  const name=document.getElementById('tm-name').value.trim();
+  if(!name){alert('Trip name required');return;}
+  const data={
+    name,subtitle:document.getElementById('tm-sub').value.trim(),
+    start:document.getElementById('tm-start').value,end:document.getElementById('tm-end').value,
+    status:document.getElementById('tm-status').value,currency:document.getElementById('tm-cur').value,
+    guests:parseInt(document.getElementById('tm-guests').value)||10,
+    gmin:parseInt(document.getElementById('tm-gmin').value)||8,
+    gmax:parseInt(document.getElementById('tm-gmax').value)||16,
+    hosts:parseInt(document.getElementById('tm-hosts').value)||1,
+    fx:parseFloat(document.getElementById('tm-fx').value)||0.085,
+    markup:parseFloat(document.getElementById('tm-mk').value)||0,
+    notes:document.getElementById('tm-notes').value.trim(),
+  };
+  if(_editTripId){Object.assign(trips.find(t=>t.id===_editTripId),data);}
+  else{const t={id:uid(),suppliers:[],bookings:[],hostCosts:{room:0,meals:0,airfare:0,misc:0},extras:[],...data};trips.push(t);activeId=t.id;}
+  save();closeModal('tripModal');renderSidebar();renderActive();
+}
+function deleteTrip(id){
+  if(!confirm('Delete this trip?'))return;
+  trips=trips.filter(t=>t.id!==id);delete overrides[id];
+  if(activeId===id)activeId=trips[0]?.id||null;
+  save();renderSidebar();renderActive();
+}
+
+// ══════════════════════════════════════════════════════
+//  SUPPLIER CRUD
+// ══════════════════════════════════════════════════════
+function addSupplier(tid){
+  _editTripIdSup=tid;_editSupId=null;_tempItems=[{}];
+  document.getElementById('smTitle').textContent='Add supplier';
+  document.getElementById('sm-name').value='';
+  document.getElementById('sm-day').value='';
+  document.getElementById('sm-loc').value='';
+  renderItemList();openModal('supModal');
+}
+function editSupplier(tid,sid){
+  const t=trips.find(x=>x.id===tid);
+  const sup=t?.suppliers?.find(s=>s.id===sid);if(!sup)return;
+  _editTripIdSup=tid;_editSupId=sid;
+  _tempItems=JSON.parse(JSON.stringify(sup.items||[]));
+  document.getElementById('smTitle').textContent='Edit supplier';
+  document.getElementById('sm-name').value=sup.name||'';
+  document.getElementById('sm-day').value=sup.day||'';
+  document.getElementById('sm-loc').value=sup.loc||'';
+  renderItemList();openModal('supModal');
+}
+function renderItemList(){
+  const trip=trips.find(t=>t.id===_editTripIdSup)||{};
+  const cur=trip.currency||'ZAR';
+  const el=document.getElementById('itemList');
+  if(!_tempItems.length){el.innerHTML='';return;}
+  el.innerHTML=_tempItems.map((item,i)=>`
+    <div style="border:1px solid var(--border);border-radius:6px;margin-bottom:5px;overflow:hidden">
+      <div style="display:grid;grid-template-columns:100px 1fr 80px 80px 60px 24px;gap:5px;padding:.4rem .625rem;align-items:center;background:var(--bg)">
+        <select onchange="_tempItems[${i}].cat=this.value" style="font-size:11px;padding:3px 4px;border:1px solid var(--border2);border-radius:4px;background:var(--surface)">
+          ${Object.entries(CAT).map(([k,v])=>`<option value="${k}"${item.cat===k?' selected':''}>${v.label}</option>`).join('')}
+        </select>
+        <input value="${item.name||''}" placeholder="Item name" oninput="_tempItems[${i}].name=this.value" style="font-size:12px;padding:3px 6px;border:1px solid var(--border2);border-radius:4px;background:var(--surface);width:100%">
+        <input type="number" value="${item.audBase!=null?item.audBase:''}" placeholder="AUD" title="AUD price" oninput="_tempItems[${i}].audBase=this.value?parseFloat(this.value):null" style="font-size:11px;padding:3px 5px;border:1px solid var(--border2);border-radius:4px;background:var(--surface);width:100%;text-align:right">
+        <input type="number" value="${item.zarBase!=null?item.zarBase:''}" placeholder="${cur}" title="${cur} price" oninput="_tempItems[${i}].zarBase=this.value?parseFloat(this.value):null" style="font-size:11px;padding:3px 5px;border:1px solid var(--border2);border-radius:4px;background:var(--surface);width:100%;text-align:right">
+        <div style="display:flex;flex-direction:column;gap:2px;font-size:10px">
+          <label style="display:flex;align-items:center;gap:2px;white-space:nowrap"><input type="checkbox" ${item.est?'checked':''} onchange="_tempItems[${i}].est=this.checked"> Est</label>
+          <label style="display:flex;align-items:center;gap:2px;white-space:nowrap"><input type="checkbox" ${item.perNight?'checked':''} onchange="_tempItems[${i}].perNight=this.checked;if(this.checked&&!_tempItems[${i}].nights)_tempItems[${i}].nights=1;renderItemList()"> /night</label>
+        </div>
+        <span class="sched-del" onclick="_tempItems.splice(${i},1);renderItemList()">×</span>
+      </div>
+      ${item.perNight?`<div style="padding:.3rem .625rem;background:var(--s2);font-size:11px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <label>Nights: <input type="number" value="${item.nights||1}" min="1" oninput="_tempItems[${i}].nights=parseInt(this.value)||1" style="width:45px;padding:2px 4px;border:1px solid var(--border2);border-radius:3px;font-size:11px;background:var(--surface)"></label>
+        <label>Day label: <input value="${item.day||''}" placeholder="e.g. 1–3" oninput="_tempItems[${i}].day=this.value" style="width:65px;padding:2px 4px;border:1px solid var(--border2);border-radius:3px;font-size:11px;background:var(--surface)"></label>
+        <label><input type="checkbox" ${item.groupFlat?'checked':''} onchange="_tempItems[${i}].groupFlat=this.checked"> Group flat fee</label>
+        <label><input type="checkbox" ${item.perCar?'checked':''} onchange="_tempItems[${i}].perCar=this.checked"> Per car</label>
+      </div>`:''}
+    </div>`).join('');
+}
+function addItemRow(){_tempItems.push({cat:'dining',name:'',audBase:null,zarBase:null,est:false});renderItemList();}
+function saveSupplier(){
+  const name=document.getElementById('sm-name').value.trim();
+  if(!name){alert('Supplier name required');return;}
+  const trip=trips.find(t=>t.id===_editTripIdSup);if(!trip)return;
+  const items=_tempItems.map(it=>({...it,id:it.id||uid()}));
+  if(_editSupId){const s=trip.suppliers.find(x=>x.id===_editSupId);if(s){s.name=name;s.day=document.getElementById('sm-day').value;s.loc=document.getElementById('sm-loc').value;s.items=items;}}
+  else{trip.suppliers.push({id:uid(),name,day:document.getElementById('sm-day').value,loc:document.getElementById('sm-loc').value,items});}
+  save();closeModal('supModal');renderActive();
+}
+function delSupplier(tid,sid){
+  if(!confirm('Remove supplier?'))return;
+  const t=trips.find(x=>x.id===tid);if(t)t.suppliers=t.suppliers.filter(s=>s.id!==sid);
+  save();renderActive();
+}
+
+// ══════════════════════════════════════════════════════
+//  BOOKING CRUD
+// ══════════════════════════════════════════════════════
+function populateSupSelect(trip,selId){
+  const sel=document.getElementById('bm-sup');
+  sel.innerHTML=(trip.suppliers||[]).map(s=>`<option value="${s.id}"${s.id===selId?' selected':''}>${s.name}</option>`).join('');
+}
+function addBooking(tid){
+  const trip=trips.find(t=>t.id===tid);if(!trip)return;
+  _editBookTripId=tid;_editBookId=null;_tempScheds=[];_tempDocs=[];
+  document.getElementById('bmTitle').textContent='Add booking';
+  populateSupSelect(trip,null);
+  ['bm-ref','bm-contact','bm-email','bm-phone','bm-notes'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('bm-total').value='';
+  document.getElementById('bm-cur').value='AUD';
+  document.getElementById('bm-confdate').value='';
+  document.getElementById('bm-status').value='tentative';
+  renderSchedList();renderDocList();clearParseStatus();
+  _matchComparisons=[];
+  const mpw=document.getElementById('match-panel-wrap');if(mpw)mpw.style.display='none';
+  openModal('bookModal');
+}
+function editBooking(tid,bid){
+  const trip=trips.find(t=>t.id===tid);
+  const bk=trip?.bookings?.find(b=>b.id===bid);if(!bk)return;
+  _editBookTripId=tid;_editBookId=bid;
+  _tempScheds=JSON.parse(JSON.stringify(bk.schedule||[]));
+  _tempDocs=JSON.parse(JSON.stringify(bk.docs||[]));
+  document.getElementById('bmTitle').textContent='Edit booking';
+  populateSupSelect(trip,bk.supplierId);
+  document.getElementById('bm-ref').value=bk.ref||'';
+  document.getElementById('bm-contact').value=bk.contact||'';
+  document.getElementById('bm-email').value=bk.email||'';
+  document.getElementById('bm-phone').value=bk.phone||'';
+  document.getElementById('bm-notes').value=bk.notes||'';
+  document.getElementById('bm-total').value=bk.totalAUD||'';
+  document.getElementById('bm-cur').value=bk.currency||'AUD';
+  document.getElementById('bm-confdate').value=bk.confDate||'';
+  document.getElementById('bm-status').value=bk.status||'tentative';
+  renderSchedList();renderDocList();clearParseStatus();
+  _matchComparisons=[];
+  const mpw2=document.getElementById('match-panel-wrap');if(mpw2)mpw2.style.display='none';
+  openModal('bookModal');
+}
+function saveBooking(){
+  const sup=document.getElementById('bm-sup').value;
+  if(!sup){alert('Select a supplier');return;}
+  const trip=trips.find(t=>t.id===_editBookTripId);if(!trip)return;
+  if(!trip.bookings)trip.bookings=[];
+  const data={
+    supplierId:sup,status:document.getElementById('bm-status').value,
+    ref:document.getElementById('bm-ref').value.trim(),contact:document.getElementById('bm-contact').value.trim(),
+    email:document.getElementById('bm-email').value.trim(),phone:document.getElementById('bm-phone').value.trim(),
+    totalAUD:parseFloat(document.getElementById('bm-total').value)||0,
+    currency:document.getElementById('bm-cur').value,
+    confDate:document.getElementById('bm-confdate').value,
+    notes:document.getElementById('bm-notes').value.trim(),
+    schedule:_tempScheds.map(s=>({...s,id:s.id||uid()})),
+    docs:_tempDocs,
+  };
+  if(_editBookId){
+    const bk=trip.bookings.find(b=>b.id===_editBookId);
+    if(bk){const payments=bk.payments||[];Object.assign(bk,data);bk.payments=payments;}
+  } else {
+    trip.bookings.push({id:uid(),payments:[],...data});
+  }
+  save();closeModal('bookModal');renderPayments(trip);
+}
+function delBooking(tid,bid){
+  if(!confirm('Delete this booking?'))return;
+  const t=trips.find(x=>x.id===tid);if(t)t.bookings=t.bookings.filter(b=>b.id!==bid);
+  save();renderPayments(t);
+}
+
+// Schedule rows
+function renderSchedList(){
+  const el=document.getElementById('schedList');
+  el.innerHTML=_tempScheds.map((s,i)=>`
+    <div class="sched-item">
+      <select onchange="_tempScheds[${i}].status=this.value" style="font-size:11px;padding:3px 5px;border:1px solid var(--border2);border-radius:4px;background:var(--surface)">
+        <option value="unpaid"${s.status==='unpaid'?' selected':''}>Unpaid</option>
+        <option value="paid"${s.status==='paid'?' selected':''}>Paid</option>
+        <option value="overdue"${s.status==='overdue'?' selected':''}>Overdue</option>
+      </select>
+      <input value="${s.label||''}" placeholder="Label (e.g. Deposit 30%)" oninput="_tempScheds[${i}].label=this.value" style="font-size:12px;padding:3px 6px;border:1px solid var(--border2);border-radius:4px;background:var(--surface);width:100%">
+      <input type="number" value="${s.amount||''}" placeholder="Amount" oninput="_tempScheds[${i}].amount=parseFloat(this.value)||0" style="font-size:12px;padding:3px 5px;border:1px solid var(--border2);border-radius:4px;background:var(--surface);text-align:right;width:100%">
+      <input type="date" value="${s.dueDate||''}" onchange="_tempScheds[${i}].dueDate=this.value" style="font-size:12px;padding:3px 5px;border:1px solid var(--border2);border-radius:4px;background:var(--surface)">
+      ${s.status==='paid'?`<input type="date" value="${s.paidDate||''}" onchange="_tempScheds[${i}].paidDate=this.value" placeholder="Paid date" style="font-size:11px;padding:3px 5px;border:1px solid var(--border2);border-radius:4px;background:var(--surface)">`:
+      `<div style="font-size:10px;color:var(--ink3);padding:0 4px">${s.dueDate&&daysUntil(s.dueDate)!==null?(daysUntil(s.dueDate)<0?Math.abs(daysUntil(s.dueDate))+' days overdue':daysUntil(s.dueDate)+' days'):'—'}</div>`}
+      <span class="sched-del" onclick="_tempScheds.splice(${i},1);renderSchedList()">×</span>
+    </div>`).join('');
+}
+function addSchedRow(){_tempScheds.push({label:'',amount:0,dueDate:'',status:'unpaid'});renderSchedList();}
+
+// Mark paid from timeline
+function markPaid(tid,bid,sid,amt){
+  _payTripId=tid;_payBookId=bid;_paySchedIdx=sid;
+  document.getElementById('pm-amount').value=amt||'';
+  document.getElementById('pm-date').value=new Date().toISOString().slice(0,10);
+  document.getElementById('pm-method').value='Bank transfer';
+  document.getElementById('pm-ref').value='';
+  document.getElementById('pm-notes').value='';
+  openModal('payModal');
+}
+function recordPayment(){
+  const trip=trips.find(t=>t.id===_payTripId);
+  const bk=trip?.bookings?.find(b=>b.id===_payBookId);
+  if(!bk)return;
+  const amt=parseFloat(document.getElementById('pm-amount').value)||0;
+  const date=document.getElementById('pm-date').value;
+  if(!bk.payments)bk.payments=[];
+  bk.payments.push({id:uid(),amount:amt,date,method:document.getElementById('pm-method').value,ref:document.getElementById('pm-ref').value,notes:document.getElementById('pm-notes').value});
+  // Mark matching schedule item as paid
+  const sched=bk.schedule?.find(s=>s.id===_paySchedIdx);
+  if(sched){sched.status='paid';sched.paidDate=date;}
+  save();closeModal('payModal');renderPayments(trip);
+}
+
+// ══════════════════════════════════════════════════════
+//  INVOICE PARSING (Claude API)
+// ══════════════════════════════════════════════════════
+
+function handleFileSelect(input){
+  if(input.files&&input.files[0]) processFile(input.files[0]);
+}
+function handleDrop(ev){
+  ev.preventDefault();
+  document.getElementById('bm-upload').classList.remove('drag');
+  const file=ev.dataTransfer.files[0];
+  if(file) processFile(file);
+}
+function processFile(file){
+  const allowed=['application/pdf','image/jpeg','image/png','image/gif','image/webp'];
+  if(!allowed.includes(file.type)){alert('Please upload a PDF or image file.');return;}
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const b64=e.target.result.split(',')[1];
+    _parsedFileData=b64;_parsedMediaType=file.type;
+    parseInvoice(file.name,b64,file.type);
+  };
+  reader.readAsDataURL(file);
+}
+async function parseInvoice(filename,b64data,mediaType){
+  setParseStatus('loading',`Reading ${filename}...`);
+  const contentBlock=mediaType==='application/pdf'
+    ?{type:'document',source:{type:'base64',media_type:mediaType,data:b64data}}
+    :{type:'image',source:{type:'base64',media_type:mediaType,data:b64data}};
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        messages:[{role:'user',content:[
+          contentBlock,
+          {type:'text',text:`You are extracting invoice/booking data from a travel supplier document. 
+IMPORTANT: Extract NETT amounts only (before any markup or commission). Do not include service fees or markup in the amounts.
+Return ONLY a JSON object with these fields (use null if not found):
+{
+  "supplierName": string,
+  "ref": string,
+  "contact": string,
+  "email": string,
+  "phone": string,
+  "totalAmount": number (NETT total, numeric only, no currency symbols),
+  "currency": string (3-letter code e.g. AUD, ZAR),
+  "depositAmount": number or null (NETT),
+  "depositDueDate": string or null (YYYY-MM-DD),
+  "balanceAmount": number or null (NETT),
+  "balanceDueDate": string or null (YYYY-MM-DD),
+  "notes": string (key conditions, cancellation policy — max 150 chars),
+  "lineItems": array of {description, nettAmount, unit} for each line item on the invoice,
+  "scheduleItems": array of {label, amount (NETT), dueDate (YYYY-MM-DD or null)}
+}
+Return only the JSON, no other text.`}
+        ]}]
+      })
+    });
+    const data=await resp.json();
+    const text=data.content?.map(c=>c.text||'').join('');
+    let parsed;
+    try{parsed=JSON.parse(text.replace(/```json|```/g,'').trim());}catch{throw new Error('Could not parse response');}
+
+    // Auto-fill form fields
+    if(parsed.ref) document.getElementById('bm-ref').value=parsed.ref;
+    if(parsed.contact) document.getElementById('bm-contact').value=parsed.contact;
+    if(parsed.email) document.getElementById('bm-email').value=parsed.email;
+    if(parsed.phone) document.getElementById('bm-phone').value=parsed.phone;
+    if(parsed.totalAmount) document.getElementById('bm-total').value=parsed.totalAmount;
+    if(parsed.currency) document.getElementById('bm-cur').value=parsed.currency;
+    if(parsed.notes) document.getElementById('bm-notes').value=parsed.notes;
+
+    // Auto-populate schedule
+    if(parsed.scheduleItems&&parsed.scheduleItems.length){
+      parsed.scheduleItems.forEach(si=>{
+        _tempScheds.push({label:si.label||'Payment',amount:si.amount||0,dueDate:si.dueDate||'',status:'unpaid'});
+      });
+    } else {
+      if(parsed.depositAmount&&parsed.depositDueDate)
+        _tempScheds.push({label:'Deposit',amount:parsed.depositAmount,dueDate:parsed.depositDueDate,status:'unpaid'});
+      if(parsed.balanceAmount&&parsed.balanceDueDate)
+        _tempScheds.push({label:'Balance',amount:parsed.balanceAmount,dueDate:parsed.balanceDueDate,status:'unpaid'});
+    }
+    renderSchedList();
+
+    // Build match panel against cost planner
+    buildMatchPanel(parsed);
+
+    // Save doc reference
+    _tempDocs.push({name:filename,mediaType,size:'uploaded',parsedAt:new Date().toISOString().slice(0,10)});
+    renderDocList();
+
+    const fieldCount=Object.entries(parsed).filter(([k,v])=>v!=null&&k!=='scheduleItems'&&k!=='lineItems').length;
+    setParseStatus('success',`✓ Invoice read — ${fieldCount} fields extracted. Review the match panel below and accept confirmed amounts.`);
+  }catch(e){
+    setParseStatus('error','Could not read invoice automatically. Please fill in details manually.');
+    console.error(e);
+  }
+}
+
+function buildMatchPanel(parsed){
+  const trip=trips.find(t=>t.id===_editBookTripId);
+  if(!trip) return;
+  const supId=document.getElementById('bm-sup').value;
+  const sup=trip.suppliers?.find(s=>s.id===supId);
+  if(!sup||((!parsed.lineItems||!parsed.lineItems.length)&&!parsed.totalAmount)) return;
+
+  const guests=trip.guests||10;
+  const wrap=document.getElementById('match-panel-wrap');
+  const rowsEl=document.getElementById('match-rows');
+  wrap.style.display='block';
+
+  // Build comparison rows
+  const comparisons=[];
+
+  // Match line items against supplier items if available
+  if(parsed.lineItems&&parsed.lineItems.length){
+    parsed.lineItems.forEach(li=>{
+      // Try to find matching supplier item by fuzzy name match
+      const matched=sup.items?.find(si=>
+        si.name.toLowerCase().split(' ').some(w=>w.length>3&&li.description.toLowerCase().includes(w))
+      );
+      const plannerPP=matched?getPP(matched,trip,guests):null;
+      const plannerTotal=plannerPP!=null?(matched.perNight?plannerPP*matched.nights:plannerPP*guests):null;
+      comparisons.push({
+        id:'li-'+Math.random().toString(36).slice(2,6),
+        invDesc:li.description,
+        invNett:li.nettAmount||0,
+        plannerItem:matched?.name||null,
+        plannerTotal,
+        field:'lineItem',
+        accepted:false,
+      });
+    });
+  } else if(parsed.totalAmount){
+    // Just show total vs planner total
+    const cats=calcTotals(trip,guests);
+    const grand=Object.values(cats).reduce((a,b)=>a+b,0);
+    comparisons.push({
+      id:'total-match',
+      invDesc:'Invoice total (nett)',
+      invNett:parsed.totalAmount,
+      plannerItem:'Cost planner total (excl. markup)',
+      plannerTotal:grand,
+      field:'total',
+      accepted:false,
+    });
+  }
+
+  _matchComparisons=comparisons;
+
+  rowsEl.innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 100px 100px 80px 28px;gap:6px;padding:.35rem .875rem;background:var(--parchment);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3)">
+      <span>Invoice item</span><span style="text-align:right">Invoice (nett)</span><span style="text-align:right">Planner</span><span style="text-align:right">Diff</span><span></span>
+    </div>
+    ${comparisons.map((c,i)=>{
+      const diff=c.plannerTotal!=null?c.invNett-c.plannerTotal:null;
+      const diffPct=c.plannerTotal>0?Math.round(diff/c.plannerTotal*100):null;
+      const diffCls=diff===null?'':Math.abs(diff)<1?'match-diff-ok':Math.abs(diffPct)<5?'match-diff-warn':'match-diff-alert';
+      const diffTxt=diff===null?'—':diff===0?'✓ Match':diffPct!=null?`${diff>0?'+':''}${diffPct}%`:'—';
+      return`<div class="match-row" id="mrow-${c.id}">
+        <div>
+          <div style="font-size:12px;font-weight:500">${c.invDesc}</div>
+          ${c.plannerItem?`<div style="font-size:10px;color:var(--ink3)">vs: ${c.plannerItem}</div>`:'<div style="font-size:10px;color:var(--ink3)">No match found in planner</div>'}
+        </div>
+        <div style="text-align:right;font-size:12px;font-weight:600;font-variant-numeric:tabular-nums">${money(c.invNett)}</div>
+        <div style="text-align:right;font-size:12px;color:var(--ink2);font-variant-numeric:tabular-nums">${c.plannerTotal!=null?money(c.plannerTotal):'—'}</div>
+        <div style="text-align:right"><span class="${diffCls}">${diffTxt}</span></div>
+        <div style="text-align:center"><input type="checkbox" class="match-check" onchange="toggleMatchRow('${c.id}',this.checked,${i})"></div>
+      </div>`;
+    }).join('')}`;
+
+  updateMatchSummary();
+}
+
+function toggleMatchRow(id,checked,idx){
+  if(_matchComparisons[idx]) _matchComparisons[idx].accepted=checked;
+  const row=document.getElementById('mrow-'+id);
+  if(row) row.classList.toggle('selected',checked);
+  updateMatchSummary();
+}
+function updateMatchSummary(){
+  const accepted=_matchComparisons.filter(c=>c.accepted);
+  const total=accepted.reduce((a,c)=>a+c.invNett,0);
+  const el=document.getElementById('match-summary');
+  if(el) el.textContent=accepted.length?`${accepted.length} item${accepted.length!==1?'s':''} selected · ${money(total)} nett accepted`:'Select items to accept';
+}
+function acceptMatchedItems(){
+  const accepted=_matchComparisons.filter(c=>c.accepted);
+  if(!accepted.length){alert('No items selected');return;}
+  const total=accepted.reduce((a,c)=>a+c.invNett,0);
+  const existing=parseFloat(document.getElementById('bm-total').value)||0;
+  // If no total set yet, fill it
+  if(!existing) document.getElementById('bm-total').value=Math.round(total);
+  alert(`✓ ${accepted.length} item${accepted.length!==1?'s':''} accepted.\nNett total: ${money(total)}\nMarkup will be applied by the cost planner.`);
+}
+function setParseStatus(type,msg){
+  const el=document.getElementById('parsing-status');
+  const colors={loading:'var(--blt)',success:'var(--glt)',error:'var(--rlt)'};
+  const borders={loading:'#b0cef0',success:'#86efac',error:'#fca5a5'};
+  el.innerHTML=`<div style="display:flex;align-items:center;gap:10px;padding:.75rem 1rem;background:${colors[type]};border:1px solid ${borders[type]};border-radius:var(--r);font-size:12px;margin-top:.625rem">
+    ${type==='loading'?'<div class="spinner"></div>':''}
+    <span>${msg}</span>
+  </div>`;
+}
+function clearParseStatus(){document.getElementById('parsing-status').innerHTML='';}
+function renderDocList(){
+  const el=document.getElementById('bm-docs-list');
+  if(!_tempDocs.length){el.innerHTML='';return;}
+  el.innerHTML=_tempDocs.map((d,i)=>`<div style="display:flex;align-items:center;gap:8px;padding:.4rem .625rem;background:var(--s2);border-radius:5px;margin-bottom:4px;font-size:12px">
+    <span>📄</span><span style="flex:1">${d.name}</span><span style="color:var(--ink3);font-size:10px">${d.parsedAt||''}</span>
+    <span class="sched-del" onclick="_tempDocs.splice(${i},1);renderDocList()">×</span>
+  </div>`).join('');
+}
+
+// ══════════════════════════════════════════════════════
+//  EXPORT — JSON
+// ══════════════════════════════════════════════════════
+function exportJSON(tid){
+  const t=trips.find(x=>x.id===tid);if(!t)return;
+  const blob=new Blob([JSON.stringify(t,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=(t.name||'trip').replace(/\s+/g,'-').toLowerCase()+'.json';a.click();
+}
+
+// ══════════════════════════════════════════════════════
+//  EXPORT — COSTS XLSX
+// ══════════════════════════════════════════════════════
+function exportXLSX(tid){
+  const trip=trips.find(x=>x.id===tid);if(!trip)return;
+  const guests=trip.guests||10;
+  const cats=calcTotals(trip,guests);
+  const grand=Object.values(cats).reduce((a,b)=>a+b,0);
+  const wb=XLSX.utils.book_new();
+  const s1=[
+    [trip.name],[trip.subtitle||''],[`Dates: ${fmtRange(trip.start,trip.end)}`],[`Guests: ${guests}`],[`FX: ${trip.fx} · Markup: ${trip.markup}%`],[],
+    ['Category','Per Person AUD','Group Total AUD','Notes'],
+    ['Accommodation',Math.round(cats.accommodation),Math.round(cats.accommodation*guests),'Excl. per-night items'],
+    ['Wine Tastings',Math.round(cats.tasting),Math.round(cats.tasting*guests),''],
+    ['Dining & Drinks',Math.round(cats.dining),Math.round(cats.dining*guests),''],
+    ['Experiences',Math.round(cats.experience),Math.round(cats.experience*guests),''],
+    [],[`TOTAL PER PERSON`,Math.round(grand),'',''],
+    [`TOTAL GROUP (${guests})`, '', Math.round(grand*guests),''],
+  ];
+  const ws1=XLSX.utils.aoa_to_sheet(s1);ws1['!cols']=[{wch:28},{wch:18},{wch:18},{wch:22}];
+  XLSX.utils.book_append_sheet(wb,ws1,'Summary');
+  const s2=[['Supplier','Location','Day','Category','Item','Est','AUD Base','Foreign Base','Per Person AUD','Group Total AUD']];
+  (trip.suppliers||[]).forEach(sup=>(sup.items||[]).forEach(item=>{
+    const pp=getPP(item,trip,guests);
+    const grp=item.perNight?(pp!=null?Math.round(pp*item.nights):null):(pp!=null?Math.round(pp*guests):null);
+    s2.push([sup.name,sup.loc||'','Day '+item.day,CAT[item.cat]?.label||item.cat,item.name+(item.detail?' ('+item.detail+')':''),item.est?'Yes':'',item.audBase??'',item.zarBase??'',pp!=null?Math.round(pp):'TBC',grp??'TBC']);
+  }));
+  const ws2=XLSX.utils.aoa_to_sheet(s2);ws2['!cols']=[{wch:30},{wch:18},{wch:7},{wch:13},{wch:40},{wch:5},{wch:12},{wch:14},{wch:16},{wch:16}];
+  XLSX.utils.book_append_sheet(wb,ws2,'By Supplier');
+  XLSX.writeFile(wb,(trip.name||'trip').replace(/\s+/g,'-').toLowerCase()+'-costs.xlsx');
+}
+
+// ══════════════════════════════════════════════════════
+//  EXPORT — PAYMENTS XLSX
+// ══════════════════════════════════════════════════════
+function exportPayXLSX(tid){
+  const trip=trips.find(x=>x.id===tid);if(!trip)return;
+  const wb=XLSX.utils.book_new();
+  // Sheet 1: Bookings summary
+  const s1=[['Supplier','Status','Ref','Contact','Email','Total AUD','Paid AUD','Balance AUD','% Paid']];
+  (trip.bookings||[]).forEach(bk=>{
+    const sup=trip.suppliers?.find(s=>s.id===bk.supplierId);
+    const st=getBookingPayStats(bk);
+    s1.push([sup?.name||'Unknown',bk.status,bk.ref||'',bk.contact||'',bk.email||'',st.total,st.paid,st.balance,st.total>0?Math.round(st.paid/st.total*100)+'%':'']);
+  });
+  const ws1=XLSX.utils.aoa_to_sheet(s1);ws1['!cols']=[{wch:30},{wch:12},{wch:16},{wch:18},{wch:28},{wch:14},{wch:12},{wch:14},{wch:8}];
+  XLSX.utils.book_append_sheet(wb,ws1,'Bookings');
+  // Sheet 2: Payment schedule
+  const s2=[['Supplier','Booking Ref','Milestone','Amount AUD','Due Date','Status','Paid Date']];
+  (trip.bookings||[]).forEach(bk=>{
+    const sup=trip.suppliers?.find(s=>s.id===bk.supplierId);
+    (bk.schedule||[]).forEach(s=>s2.push([sup?.name||'',bk.ref||'',s.label||'',s.amount||0,s.dueDate||'',s.status||'',s.paidDate||'']));
+  });
+  const ws2=XLSX.utils.aoa_to_sheet(s2);ws2['!cols']=[{wch:30},{wch:16},{wch:22},{wch:14},{wch:12},{wch:10},{wch:12}];
+  XLSX.utils.book_append_sheet(wb,ws2,'Payment Schedule');
+  // Sheet 3: Payments made
+  const s3=[['Supplier','Booking Ref','Date','Amount AUD','Method','Reference','Notes']];
+  (trip.bookings||[]).forEach(bk=>{
+    const sup=trip.suppliers?.find(s=>s.id===bk.supplierId);
+    (bk.payments||[]).forEach(p=>s3.push([sup?.name||'',bk.ref||'',p.date||'',p.amount||0,p.method||'',p.ref||'',p.notes||'']));
+  });
+  const ws3=XLSX.utils.aoa_to_sheet(s3);ws3['!cols']=[{wch:30},{wch:16},{wch:12},{wch:14},{wch:16},{wch:18},{wch:24}];
+  XLSX.utils.book_append_sheet(wb,ws3,'Payments Made');
+  XLSX.writeFile(wb,(trip.name||'trip').replace(/\s+/g,'-').toLowerCase()+'-payments.xlsx');
+}
+
+// ══════════════════════════════════════════════════════
+//  EXPORT — PDF (costs)
+// ══════════════════════════════════════════════════════
+function exportPDF(tid){
+  const trip=trips.find(x=>x.id===tid);if(!trip)return;
+  const guests=trip.guests||10;
+  const cats=calcTotals(trip,guests);
+  const grand=Object.values(cats).reduce((a,b)=>a+b,0);
+  const rows=(trip.suppliers||[]).map(sup=>{
+    let spp=0;
+    const ir=(sup.items||[]).map(item=>{
+      const pp=getPP(item,trip,guests);
+      if(!item.perNight&&pp!=null)spp+=pp;
+      const gv=item.perNight?(pp!=null?item.nights+' nts = '+money(pp*item.nights):'—'):(pp!=null?money(pp*guests):'—');
+      return`<tr><td style="color:#666;font-size:11px">D${item.day}</td><td><span style="font-size:9px;background:#eee;padding:1px 4px;border-radius:2px;margin-right:3px">${CAT[item.cat]?.label||''}</span>${item.est?'<span style="font-size:9px;background:#fef3c7;color:#92400e;padding:1px 4px;border-radius:2px;margin-right:3px">est</span>':''}${item.name}</td><td style="text-align:right">${pp!=null?money(Math.round(pp)):'TBC'}</td><td style="text-align:right">${gv}</td></tr>`;
+    }).join('');
+    return`<tr style="background:#f5f5f2"><td colspan="2" style="padding:5px 8px;font-weight:600;font-size:12px">${sup.name}${sup.loc?` <span style="color:#888;font-weight:400;font-size:10px">— ${sup.loc}</span>`:''}</td><td style="text-align:right;font-size:11px;padding:5px 7px">${spp>0?money(Math.round(spp))+' pp':''}</td><td style="text-align:right;font-size:11px;padding:5px 7px">${spp>0?money(Math.round(spp*guests)):''}</td></tr>${ir}`;
+  }).join('');
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${trip.name}</title>
+  <style>body{font-family:-apple-system,sans-serif;font-size:12px;margin:0;padding:1.5cm}h1{font-size:20px;font-weight:700;margin:0 0 3px}
+  .sub{font-size:12px;color:#666;margin-bottom:1rem}.meta{font-size:11px;color:#666;margin-bottom:1rem;display:flex;gap:1.5rem}
+  .cards{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:1rem}
+  .card{background:#f5f5f2;border-radius:5px;padding:.5rem .75rem}
+  .card .l{font-size:8px;text-transform:uppercase;letter-spacing:.07em;color:#888;margin-bottom:2px}
+  .card .v{font-size:14px;font-weight:700}.card.b{border:1.5px solid #8b1a2c}.card.b .v{color:#8b1a2c}
+  table{width:100%;border-collapse:collapse;font-size:11px}
+  th{font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:#888;padding:4px 7px;border-bottom:1px solid #ddd;text-align:left}
+  th:last-child,th:nth-child(3){text-align:right}td{padding:4px 7px;border-bottom:1px solid #eee;vertical-align:top}
+  @media print{@page{margin:1.2cm}}</style></head><body>
+  <h1>${trip.name}</h1><div class="sub">${trip.subtitle||''}</div>
+  <div class="meta"><span>📅 ${fmtRange(trip.start,trip.end)}</span><span>👥 ${guests} guests</span><span>💱 1 ${trip.currency||'ZAR'} = ${trip.fx} AUD</span><span>📈 Markup ${trip.markup||0}%</span></div>
+  <div class="cards">
+    <div class="card"><div class="l">Accommodation</div><div class="v">${money(Math.round(cats.accommodation))}</div></div>
+    <div class="card"><div class="l">Tastings</div><div class="v">${money(Math.round(cats.tasting))}</div></div>
+    <div class="card"><div class="l">Dining</div><div class="v">${money(Math.round(cats.dining))}</div></div>
+    <div class="card"><div class="l">Experiences</div><div class="v">${money(Math.round(cats.experience))}</div></div>
+    <div class="card b"><div class="l">Per person</div><div class="v">${money(Math.round(grand))}</div></div>
+    <div class="card b"><div class="l">Group total</div><div class="v">${money(Math.round(grand*guests))}</div></div>
+  </div>
+  <table><thead><tr><th>Day</th><th>Supplier / Item</th><th>Per Person</th><th>Group Total</th></tr></thead><tbody>${rows}</tbody></table>
+  <p style="margin-top:1rem;font-size:9px;color:#aaa">Generated ${new Date().toLocaleDateString('en-AU')} · By the Glass Trip Planner</p>
+  <script>window.onload=()=>window.print()<\/script></body></html>`;
+  const w=window.open('','_blank');w.document.write(html);w.document.close();
+}
+
+// ══════════════════════════════════════════════════════
+//  EXPORT — PAYMENTS PDF
+// ══════════════════════════════════════════════════════
+function exportPayPDF(tid){
+  const trip=trips.find(x=>x.id===tid);if(!trip)return;
+  const ps=getTripPayStats(trip);
+  const pct=ps.totalContracted>0?Math.round(ps.totalPaid/ps.totalContracted*100):0;
+  const rows=(trip.bookings||[]).map(bk=>{
+    const sup=trip.suppliers?.find(s=>s.id===bk.supplierId);
+    const st=getBookingPayStats(bk);
+    const schedRows=(bk.schedule||[]).map(s=>`<tr style="background:#fafaf8"><td></td><td style="padding-left:20px;color:#555;font-size:10px">${s.label||'Payment'}</td><td style="text-align:right;font-size:10px">${money(s.amount)}</td><td style="font-size:10px">${fmtDate(s.dueDate)}</td><td style="font-size:10px;font-weight:600;color:${s.status==='paid'?'#8b1a2c':s.status==='overdue'?'#7f1d1d':'#555'}">${s.status}</td></tr>`).join('');
+    return`<tr style="background:#f5f5f2"><td style="font-weight:600;font-size:12px;padding:5px 8px">${sup?.name||'Unknown'}</td><td><span style="font-size:9px;padding:1px 5px;border-radius:8px;background:${bk.status==='confirmed'?'#edf3ee':'#fef3c7'};color:${bk.status==='confirmed'?'#8b1a2c':'#92400e'}">${bk.status}</span></td><td style="text-align:right;font-size:11px;padding:5px 7px">${money(st.total)}</td><td style="font-size:11px;padding:5px 7px">${bk.ref||'—'}</td><td style="font-size:11px;font-weight:600;color:${st.balance>0?'#92400e':'#8b1a2c'};text-align:right;padding:5px 7px">${money(st.balance)} due</td></tr>${schedRows}`;
+  }).join('');
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${trip.name} — Payments</title>
+  <style>body{font-family:-apple-system,sans-serif;font-size:12px;margin:0;padding:1.5cm}h1{font-size:18px;font-weight:700;margin:0 0 3px}
+  .sub{font-size:12px;color:#666;margin-bottom:.875rem}
+  .cards{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:1rem}
+  .card{background:#f5f5f2;border-radius:5px;padding:.5rem .75rem}
+  .card .l{font-size:8px;text-transform:uppercase;letter-spacing:.07em;color:#888;margin-bottom:2px}
+  .card .v{font-size:13px;font-weight:700}
+  .prog{height:8px;background:#e4e4df;border-radius:4px;margin-bottom:1rem;overflow:hidden}
+  .prog-fill{height:100%;background:#8b1a2c;border-radius:4px}
+  table{width:100%;border-collapse:collapse;font-size:11px}
+  th{font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:#888;padding:4px 7px;border-bottom:1px solid #ddd;text-align:left}
+  td{padding:4px 7px;border-bottom:1px solid #eee}
+  @media print{@page{margin:1.2cm}}</style></head><body>
+  <h1>${trip.name} — Payment Report</h1>
+  <div class="sub">${fmtRange(trip.start,trip.end)}</div>
+  <div class="cards">
+    <div class="card"><div class="l">Contracted</div><div class="v">${money(ps.totalContracted)}</div></div>
+    <div class="card" style="border:1.5px solid #86efac"><div class="l">Paid</div><div class="v" style="color:#2d5a3d">${money(ps.totalPaid)}</div></div>
+    <div class="card" style="${ps.balance>0?'border:1.5px solid #f0c070':''}"><div class="l">Balance</div><div class="v" style="${ps.balance>0?'color:#92400e':''}">${money(ps.balance)}</div></div>
+    <div class="card" style="${ps.totalOverdue>0?'border:1.5px solid #fca5a5':''}"><div class="l">Overdue</div><div class="v" style="${ps.totalOverdue>0?'color:#7f1d1d':''}">${money(ps.totalOverdue)}</div></div>
+    <div class="card"><div class="l">Paid</div><div class="v">${pct}%</div></div>
+  </div>
+  <div class="prog"><div class="prog-fill" style="width:${pct}%"></div></div>
+  <table><thead><tr><th>Supplier</th><th>Status</th><th>Total</th><th>Reference</th><th>Balance</th></tr></thead><tbody>${rows}</tbody></table>
+  <p style="margin-top:1rem;font-size:9px;color:#aaa">Generated ${new Date().toLocaleDateString('en-AU')} · By the Glass Trip Planner</p>
+  <script>window.onload=()=>window.print()<\/script></body></html>`;
+  const w=window.open('','_blank');w.document.write(html);w.document.close();
+}
+
+// ══════════════════════════════════════════════════════
+//  SUPPLIER INVOICE UPLOAD & REVIEW
+// ══════════════════════════════════════════════════════
+let _invTripId=null, _invSupId=null, _invItems=[], _invParsed=null;
+
+function openSupInvoice(tid, sid){
+  _invTripId=tid; _invSupId=sid; _invItems=[];
+  const trip=trips.find(t=>t.id===tid);
+  const sup=trip?.suppliers?.find(s=>s.id===sid);
+  document.getElementById('inv-modal-title').textContent='Upload quote / invoice — '+( sup?.name||'Supplier');
+  document.getElementById('inv-modal-sub').textContent=(sup?.loc?sup.loc+' · ':'')+( sup?.day?'Day '+sup.day:'');
+  document.getElementById('inv-upload-zone').style.display='block';
+  document.getElementById('inv-review-zone').style.display='none';
+  document.getElementById('inv-apply-btn').style.display='none';
+  document.getElementById('inv-sel-summary').textContent='';
+  document.getElementById('inv-parsing-status').innerHTML='';
+  document.getElementById('inv-file').value='';
+  openModal('invModal');
+}
+
+function handleInvFile(input){ if(input.files&&input.files[0]) processInvFile(input.files[0]); }
+function handleInvDrop(ev){ ev.preventDefault(); document.getElementById('inv-upload-area').classList.remove('drag'); const f=ev.dataTransfer.files[0]; if(f) processInvFile(f); }
+
+function processInvFile(file){
+  const imgPdf=['application/pdf','image/jpeg','image/png','image/gif','image/webp'];
+  const xlsx=['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','application/vnd.ms-excel'];
+  const csv=['text/csv','text/plain','application/csv'];
+
+  if(imgPdf.includes(file.type)){
+    const reader=new FileReader();
+    reader.onload=e=>{ parseSupInvoice(file.name, e.target.result.split(',')[1], file.type, null); };
+    reader.readAsDataURL(file);
+  } else if(xlsx.includes(file.type)||file.name.endsWith('.xlsx')||file.name.endsWith('.xls')){
+    setInvStatus('loading','Reading spreadsheet...');
+    const reader=new FileReader();
+    reader.onload=e=>{
+      try{
+        const wb=XLSX.read(e.target.result,{type:'array'});
+        let text='';
+        wb.SheetNames.forEach(sn=>{
+          text+=`Sheet: ${sn}\n`;
+          text+=XLSX.utils.sheet_to_csv(wb.Sheets[sn])+'\n\n';
+        });
+        parseSupInvoice(file.name, null, 'text/plain', text);
+      }catch(err){ setInvStatus('error','Could not read spreadsheet. Try saving as CSV and uploading again.'); }
+    };
+    reader.readAsArrayBuffer(file);
+  } else if(csv.includes(file.type)||file.name.endsWith('.csv')){
+    setInvStatus('loading','Reading CSV...');
+    const reader=new FileReader();
+    reader.onload=e=>{ parseSupInvoice(file.name, null, 'text/plain', e.target.result); };
+    reader.readAsText(file);
+  } else {
+    alert('Please upload a PDF, image, Excel spreadsheet or CSV file.');
+  }
+}
+
+function setInvStatus(type, msg){
+  const cols={loading:'var(--blt)',ok:'var(--glt)',error:'var(--rlt)'};
+  const borders={loading:'#b0cef0',ok:'#86efac',error:'#fca5a5'};
+  document.getElementById('inv-parsing-status').innerHTML=`
+    <div style="display:flex;align-items:center;gap:10px;padding:.75rem 1rem;background:${cols[type]};border:1px solid ${borders[type]};border-radius:var(--r);font-size:12px">
+      ${type==='loading'?'<div class="spinner"></div>':''}
+      <span>${msg}</span>
+    </div>`;
+}
+
+async function parseSupInvoice(filename, b64, mediaType, textContent){
+  setInvStatus('loading', `Reading ${filename} — please wait...`);
+  const trip=trips.find(t=>t.id===_invTripId);
+  const sup=trip?.suppliers?.find(s=>s.id===_invSupId);
+  if(!trip||!sup){ setInvStatus('error','Supplier not found.'); return; }
+
+  const guests=trip.guests||10;
+  const plannerSummary=(sup.items||[]).map(it=>{
+    const pp=getPP(it,trip,guests);
+    return `- ${it.name}: currently $${pp!=null?Math.round(pp):'TBC'} pp (${it.cat})`;
+  }).join('\n');
+
+  const prompt=`You are reading a travel supplier quote, proforma invoice, or booking confirmation. Extract ALL information present in the document.
+
+The current cost planner has these items for this supplier:
+${plannerSummary}
+
+Return ONLY a JSON object with every field you can find (use null if not present):
+{
+  "supplierName": string,
+  "invoiceRef": string or null,
+  "reservationStatus": string or null (e.g. "Provisional", "Confirmed"),
+  "bookingDate": string or null (YYYY-MM-DD),
+  "invoiceDate": string or null (YYYY-MM-DD),
+  "currency": string (e.g. "AUD", "ZAR"),
+  "contact": { "name": string or null, "email": string or null, "phone": string or null },
+  "guestName": string or null,
+  "arrivalDate": string or null (YYYY-MM-DD),
+  "departureDate": string or null (YYYY-MM-DD),
+  "numberOfGuests": number or null,
+  "lineItems": [
+    {
+      "description": string,
+      "roomType": string or null,
+      "mealPlan": string or null,
+      "nettAmountPerPerson": number or null,
+      "nettAmountTotal": number or null,
+      "unit": string or null,
+      "numberOfUnits": number or null,
+      "matchedPlannerItem": string or null
+    }
+  ],
+  "additionalServices": [
+    { "name": string, "date": string or null, "guests": number or null, "amount": number or null }
+  ],
+  "totalAccommodation": number or null,
+  "totalServices": number or null,
+  "totalTax": number or null,
+  "totalNett": number or null,
+  "grandTotal": number or null,
+  "paymentSchedule": [
+    { "dueDate": string or null (YYYY-MM-DD), "amount": number or null, "description": string or null }
+  ],
+  "bankingDetails": {
+    "accountName": string or null, "accountNumber": string or null,
+    "bank": string or null, "branch": string or null, "branchCode": string or null, "accountType": string or null
+  },
+  "cancellationPolicy": [ { "description": string, "amount": number or null, "percentage": number or null, "date": string or null } ],
+  "inclusions": string or null,
+  "specialConditions": string or null,
+  "notes": string or null
+}
+Return only JSON, no other text.`;
+
+  // Build API message — text for spreadsheets, image/doc for PDF/images
+  let msgContent;
+  if(textContent){
+    msgContent=[{type:'text',text:`${prompt}\n\nDocument contents:\n${textContent.slice(0,8000)}`}];
+  } else {
+    const contentBlock=mediaType==='application/pdf'
+      ?{type:'document',source:{type:'base64',media_type:mediaType,data:b64}}
+      :{type:'image',source:{type:'base64',media_type:mediaType,data:b64}};
+    msgContent=[contentBlock,{type:'text',text:prompt}];
+  }
+
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2000,messages:[{role:'user',content:msgContent}]})
+    });
+    const data=await resp.json();
+    if(data.error){ throw new Error(data.error.message||'API error'); }
+    const text=(data.content||[]).map(c=>c.text||'').join('');
+    let parsed;
+    try{ parsed=JSON.parse(text.replace(/```json|```/g,'').trim()); }
+    catch{ throw new Error('Could not read invoice format'); }
+    setInvStatus('ok', `✓ Read — ${parsed.lineItems?.length||0} line items found. Review and confirm below.`);
+    buildInvReview(parsed, trip, sup);
+  }catch(e){
+    console.error('Invoice parse error:', e);
+    // Show helpful error with manual entry option
+    const isCors=e.message&&(e.message.includes('fetch')||e.message.includes('Failed')||e.message.includes('NetworkError')||e.message.includes('CORS'));
+    const msg=isCors
+      ?`<strong>Connection blocked.</strong> The AI reading service can't be reached when the file is opened locally. <br><br>
+         <strong>To fix:</strong> Host this file on a web server or GitHub Pages, or use the manual entry below to enter amounts from the invoice yourself.`
+      :`<strong>Could not read the file automatically.</strong> ${e.message||''}<br><br>Use manual entry below to enter the amounts from the invoice.`;
+    document.getElementById('inv-parsing-status').innerHTML=`
+      <div style="padding:.875rem 1rem;background:var(--rlt);border:1px solid #fca5a5;border-radius:var(--r);font-size:12px;color:var(--red);line-height:1.6">${msg}</div>`;
+    // Show manual entry panel
+    showManualEntry(trip, sup);
+  }
+}
+
+function showManualEntry(trip, sup){
+  const guests=trip.guests||10;
+  const mk=trip.markup||0;
+  _invItems=[];
+  _invParsed={};
+  _manSchedRows=[];
+
+  // Pre-populate from any known parsed data (_invParsed may have been partially set)
+  // Also generate the new-items section pre-filled with invoice lines
+  const plannerRows=(sup.items||[]).map((pi,i)=>{
+    const pp=getPP(pi,trip,guests);
+    const currentBase=pp!=null?Math.round(pp/(1+mk/100)):null;
+    _invItems.push({id:'m'+i,type:'match',plannerItemId:pi.id,plannerName:pi.name,currentBase,invNettPP:null,diff:null,isChange:false,selected:false});
+    return`<div class="inv-row" id="irow-m${i}" style="grid-template-columns:18px 1fr 105px 105px 80px">
+      <input type="checkbox" class="inv-check" onchange="toggleInvItem('m${i}',this.checked)">
+      <div>
+        <div style="font-size:12px;font-weight:500">${pi.name}</div>
+        <div style="font-size:10px;color:var(--ink3)">${pi.cat}${pi.perNight?' · per night':''}</div>
+      </div>
+      <div style="text-align:right;font-size:12px;color:var(--ink2);font-variant-numeric:tabular-nums">${currentBase!=null?money(currentBase):'TBC'}</div>
+      <div style="text-align:right">
+        <input type="number" class="inv-nett-inp" placeholder="Enter nett"
+          oninput="updateInvNett('m${i}',this.value,'${pi.id}',${currentBase||0},${mk});
+                   var cb=document.getElementById('irow-m${i}').querySelector('.inv-check');
+                   cb.checked=!!this.value; toggleInvItem('m${i}',!!this.value)">
+      </div>
+      <div style="text-align:right;font-size:11px;color:var(--ink3)" id="inv-diff-m${i}">—</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('inv-upload-zone').style.display='none';
+  document.getElementById('inv-review-zone').style.display='block';
+  document.getElementById('inv-review-zone').innerHTML=`
+
+    <!-- Invoice header -->
+    <div style="background:var(--parchment);border-bottom:1px solid var(--border);padding:.875rem 1.375rem">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--wine);margin-bottom:.625rem">Invoice / quote details</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-bottom:.625rem">
+        <div><label class="manual-lbl">Ref / booking no.</label><input id="man-ref" class="man-inp" placeholder="e.g. 61573"></div>
+        <div><label class="manual-lbl">Status</label>
+          <select id="man-status" class="man-inp"><option value="">— select —</option><option>Provisional</option><option>Confirmed</option><option>Pending</option><option>Tentative</option></select></div>
+        <div><label class="manual-lbl">Currency</label>
+          <select id="man-cur" class="man-inp"><option>AUD</option><option selected>ZAR</option><option>EUR</option><option>NZD</option><option>USD</option><option>GBP</option></select></div>
+        <div><label class="manual-lbl">Grand total (incl. VAT)</label><input id="man-total" type="number" class="man-inp" placeholder="0.00" style="text-align:right"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-bottom:.625rem">
+        <div><label class="manual-lbl">Arrival date</label><input id="man-arrival" type="date" class="man-inp"></div>
+        <div><label class="manual-lbl">Departure date</label><input id="man-depart" type="date" class="man-inp"></div>
+        <div><label class="manual-lbl">Guests on booking</label><input id="man-guests" type="number" class="man-inp" placeholder="e.g. 16"></div>
+        <div><label class="manual-lbl">Meal plan / inclusions</label><input id="man-meal" class="man-inp" placeholder="e.g. Lunch, Dinner, B&amp;B + 2 Game Drives"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+        <div><label class="manual-lbl">Contact name</label><input id="man-contact" class="man-inp" placeholder="e.g. Eva Kiherile"></div>
+        <div><label class="manual-lbl">Contact email</label><input id="man-email" class="man-inp" placeholder="e.g. res@aquilasafari.com"></div>
+        <div><label class="manual-lbl">Contact phone</label><input id="man-phone" class="man-inp" placeholder="e.g. +27 21 430 7260"></div>
+      </div>
+    </div>
+
+    <!-- Existing planner items to update -->
+    ${plannerRows?`<div style="background:var(--s2);padding:.375rem .875rem;border-bottom:1px solid var(--border)">
+      <div style="display:grid;grid-template-columns:18px 1fr 105px 105px 80px;gap:6px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--ink3)">
+        <div></div><div>Existing planner item</div><div style="text-align:right">Current pp</div><div style="text-align:right">Invoice nett pp</div><div style="text-align:right">Change</div>
+      </div>
+    </div>
+    <div id="inv-review-rows">${plannerRows}</div>`:'<div id="inv-review-rows"></div>'}
+
+    <!-- Add items from invoice not in planner -->
+    <div style="background:var(--parchment);border-top:2px solid var(--border);padding:.75rem 1.375rem">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--wine);margin-bottom:.625rem">
+        Add pricing lines from invoice not already in planner
+        <span style="font-size:10px;font-weight:400;color:var(--ink3);text-transform:none;letter-spacing:0;margin-left:8px">Enter nett amounts — markup applied automatically</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 120px 130px auto;gap:8px;margin-bottom:.5rem;align-items:center">
+        <input id="man-new-name" class="man-inp" placeholder="Item name (e.g. Tankwa Chalet ×7, Cheetah Experience, Picnic)">
+        <input id="man-new-nett" type="number" class="man-inp" placeholder="Nett pp (AUD)" style="text-align:right">
+        <select id="man-new-cat" class="man-inp">
+          <option value="accommodation">Accommodation</option>
+          <option value="tasting">Tasting</option>
+          <option value="dining">Dining</option>
+          <option value="experience">Experience / Activity</option>
+        </select>
+        <button class="btn g" style="white-space:nowrap" onclick="addManualNewItem('${trip.id}','${sup.id}')">＋ Add</button>
+      </div>
+      <div id="man-new-items-list" style="margin-top:.25rem"></div>
+      <div style="margin-top:.625rem;font-size:11px;color:var(--ink3);line-height:1.7">
+        <strong style="color:var(--ink2);font-size:12px">Quick-add from this invoice — click to add each line:</strong>
+        <div style="display:flex;flex-direction:column;gap:5px;margin-top:.5rem">
+          ${[
+            {name:'Tankwa Chalet ×7 units',nett:833,cat:'accommodation',note:'ZAR 176,400 ÷ 7 units ÷ 2 nights = ZAR 12,600/unit/night × 0.085'},
+            {name:'H3-Room 12',nett:662,cat:'accommodation',note:'ZAR 15,584 ÷ 2 nights = ZAR 7,792/night × 0.085'},
+            {name:'H3-Room 14',nett:662,cat:'accommodation',note:'ZAR 15,584 ÷ 2 nights = ZAR 7,792/night × 0.085'},
+            {name:'Cheetah Experience',nett:72,cat:'experience',note:'ZAR 13,600 ÷ 16 guests = ZAR 850 pp × 0.085'},
+            {name:'Picnic',nett:85,cat:'dining',note:'ZAR 15,920 ÷ 16 guests = ZAR 995 pp × 0.085'},
+          ].map(item=>`<div style="display:flex;align-items:center;gap:8px;padding:.375rem .625rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--r)">
+            <button class="btn sm g" style="flex-shrink:0;white-space:nowrap" onclick="quickAddInvItem('${item.name}',${item.nett},'${item.cat}')">＋ Add</button>
+            <div style="flex:1;min-width:0">
+              <span style="font-size:12px;font-weight:600;color:var(--ink)">${item.name}</span>
+              <span style="margin-left:6px;font-size:11px;font-weight:700;color:var(--wine)">AUD $${item.nett} nett pp</span>
+              <span style="margin-left:6px;font-size:10px;color:var(--ink3)">${item.note}</span>
+            </div>
+          </div>`).join('')}
+        </div>
+      </div>
+    </div>
+
+    <!-- Payment schedule -->
+    <div style="background:var(--parchment);border-top:2px solid var(--border);padding:.75rem 1.375rem">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--ink3)">Payment schedule</div>
+        <button class="btn sm" onclick="addManualSchedRow()">＋ Add milestone</button>
+      </div>
+      <div id="man-sched-list"><div style="font-size:11px;color:var(--ink3)">No milestones yet — click ＋ Add milestone or use quick-add:<br>
+        <button class="btn sm a" style="margin-top:.375rem" onclick="quickAddSched('Full payment',20155,'2026-04-20')">＋ Add: Full payment AUD $20,155 due 20 Apr 2026 <span style="font-size:9px">(ZAR 237,088 × 0.085)</span></button>
+      </div></div>
+    </div>
+
+    <!-- Banking details -->
+    <div style="background:var(--parchment);border-top:2px solid var(--border);padding:.75rem 1.375rem">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--ink3);margin-bottom:.625rem">Banking / payment details</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:.5rem">
+        <div><label class="manual-lbl">Account name</label><input id="man-bk-name" class="man-inp" placeholder="e.g. Inverdoorn Private Game Reserve (Pty) Ltd"></div>
+        <div><label class="manual-lbl">Account number</label><input id="man-bk-num" class="man-inp" placeholder="e.g. 1178928527"></div>
+        <div><label class="manual-lbl">Bank</label><input id="man-bk-bank" class="man-inp" placeholder="e.g. Nedbank"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+        <div><label class="manual-lbl">Branch</label><input id="man-bk-branch" class="man-inp" placeholder="e.g. Southern Peninsula"></div>
+        <div><label class="manual-lbl">Branch code</label><input id="man-bk-code" class="man-inp" placeholder="e.g. 123209"></div>
+        <div><label class="manual-lbl">Account type</label><input id="man-bk-type" class="man-inp" placeholder="e.g. Current"></div>
+      </div>
+    </div>
+
+    <!-- Cancellation policy -->
+    <div style="background:#fff8e6;border-top:2px solid #f0c070;padding:.75rem 1.375rem">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--amber);margin-bottom:.5rem">⚠ Cancellation policy</div>
+      <textarea id="man-cancel" class="man-inp" rows="3"
+        placeholder="e.g. 30% if cancelled on or after 20 Mar 2027 · 50% after 29 Mar 2027 · 100% after 12 Apr 2027"
+        style="width:100%;resize:vertical"></textarea>
+    </div>
+
+    <!-- Notes -->
+    <div style="background:var(--parchment);border-top:1px solid var(--border);padding:.75rem 1.375rem">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--ink3);margin-bottom:.5rem">Additional notes</div>
+      <textarea id="man-notes" class="man-inp" rows="2" placeholder="e.g. special requirements, dietary, access notes" style="width:100%;resize:vertical"></textarea>
+    </div>
+
+    <div style="padding:.5rem 1.375rem;background:var(--parchment);border-top:1px solid var(--border);font-size:11px;color:var(--ink3)">
+      ✓ Tick existing items to update prices · Add new invoice lines above · All data saves to Bookings &amp; Payments tab
+    </div>`;
+
+  document.getElementById('inv-apply-btn').style.display='block';
+  document.getElementById('inv-apply-btn').textContent='✓ Save invoice data';
+  document.getElementById('inv-apply-btn').onclick=saveManualInvoice;
+  updateInvSelSummary();
+}
+
+let _manSchedRows=[];
+function quickAddInvItem(name, nett, cat){
+  const i=_invItems.length;
+  _invItems.push({id:'mn'+i,type:'manualnew',invDesc:name,invNettPP:nett,cat,selected:true});
+  const el=document.getElementById('man-new-items-list');
+  if(el) el.insertAdjacentHTML('beforeend',`<div class="inv-row" id="irow-mn${i}" style="background:var(--glt);grid-template-columns:18px 1fr 105px 105px 80px">
+    <input type="checkbox" class="inv-check" checked onchange="toggleInvItem('mn${i}',this.checked)">
+    <div><div style="font-size:12px;font-weight:600">${name}</div><div style="font-size:10px;color:var(--green)">${cat} · from invoice · ready to add</div></div>
+    <div style="text-align:right;font-size:12px;color:var(--ink3)">—</div>
+    <div style="text-align:right;font-size:13px;font-weight:700;color:var(--green)">${money(nett)}</div>
+    <div style="text-align:right;font-size:11px;font-weight:700;color:var(--green)">✓ Ticked</div>
+  </div>`);
+  // Disable the quick-add button that was clicked
+  event.target.closest('div').querySelector('button').disabled=true;
+  event.target.closest('div').querySelector('button').textContent='✓ Added';
+  event.target.closest('div').querySelector('button').style.background='var(--glt)';
+  event.target.closest('div').querySelector('button').style.color='var(--green)';
+  event.target.closest('div').querySelector('button').style.border='1px solid #86efac';
+  updateInvSelSummary();
+}
+
+function quickAddSched(label, amount, dueDate){
+  _manSchedRows.push({label,amount,dueDate});
+  const el=document.getElementById('man-sched-list');
+  if(el) el.innerHTML='<div style="display:grid;grid-template-columns:1fr 120px 140px auto;gap:6px;align-items:center;padding:.375rem 0">'+
+    `<div style="font-size:12px;font-weight:600">${label}</div>
+     <div style="text-align:right;font-size:12px;font-weight:700">${money(amount)}</div>
+     <div style="text-align:right;font-size:12px;color:var(--ink2)">${fmtDate(dueDate)}</div>
+     <span style="font-size:11px;color:var(--green)">✓</span>`+
+  '</div>';
+  updateInvSelSummary();
+}
+
+function addManualNewItem(tid, sid){
+  const name=document.getElementById('man-new-name')?.value?.trim();
+  const nett=parseFloat(document.getElementById('man-new-nett')?.value)||0;
+  const cat=document.getElementById('man-new-cat')?.value||'dining';
+  if(!name||!nett){ alert('Enter both a name and a nett amount per person.'); return; }
+  const i=_invItems.length;
+  _invItems.push({id:'mn'+i,type:'manualnew',invDesc:name,invNettPP:nett,cat,selected:true});
+  const el=document.getElementById('man-new-items-list');
+  if(el) el.insertAdjacentHTML('beforeend',`<div class="inv-row" id="irow-mn${i}" style="background:var(--plt)">
+    <input type="checkbox" class="inv-check" checked onchange="toggleInvItem('mn${i}',this.checked)">
+    <div><div style="font-size:12px;font-weight:500">${name}</div><div style="font-size:10px;color:var(--purple)">${cat} · new item</div></div>
+    <div style="text-align:right;color:var(--ink3)">—</div>
+    <div style="text-align:right;font-size:12px;font-weight:600">${money(nett)}</div>
+    <div style="text-align:right;font-size:11px;color:var(--purple)">New</div>
+  </div>`);
+  document.getElementById('man-new-name').value='';
+  document.getElementById('man-new-nett').value='';
+  updateInvSelSummary();
+}
+function addManualSchedRow(){
+  const i=_manSchedRows.length;
+  _manSchedRows.push({label:'',amount:'',dueDate:''});
+  const el=document.getElementById('man-sched-list');
+  if(!el) return;
+  if(el.querySelector('div[style*="No milestones"]')) el.innerHTML='';
+  el.insertAdjacentHTML('beforeend',`<div style="display:grid;grid-template-columns:1fr 120px 140px auto;gap:6px;margin-bottom:5px;align-items:center" id="msr-${i}">
+    <input class="man-inp" placeholder="e.g. Deposit (30%)" oninput="_manSchedRows[${i}].label=this.value">
+    <input type="number" class="man-inp" placeholder="Amount (AUD)" style="text-align:right" oninput="_manSchedRows[${i}].amount=this.value">
+    <input type="date" class="man-inp" onchange="_manSchedRows[${i}].dueDate=this.value">
+    <span style="cursor:pointer;color:var(--ink3);font-size:16px;padding:0 4px" onclick="document.getElementById('msr-${i}').remove();_manSchedRows[${i}]=null">×</span>
+  </div>`);
+}
+
+function saveManualInvoice(){
+  const trip=trips.find(t=>t.id===_invTripId);
+  const sup=trip?.suppliers?.find(s=>s.id===_invSupId);
+  if(!trip||!sup) return;
+  const mk=trip.markup||0;
+  const sel=_invItems.filter(i=>i.selected);
+
+  // Price changes
+  let priceChanges=0;
+  sel.forEach(item=>{
+    if(item.type==='match'&&item.invNettPP!=null){
+      const newPP=Math.round(item.invNettPP*(1+mk/100));
+      if(!overrides[trip.id]) overrides[trip.id]={};
+      overrides[trip.id][item.plannerItemId]=newPP;
+      priceChanges++;
+    } else if((item.type==='new'||item.type==='manualnew')&&item.invNettPP!=null){
+      sup.items=sup.items||[];
+      sup.items.push({id:uid(),cat:item.cat||'dining',name:item.invDesc,audBase:item.invNettPP,est:false,day:sup.day||''});
+      priceChanges++;
+    }
+  });
+
+  // Find or create booking
+  if(!trip.bookings) trip.bookings=[];
+  let booking=trip.bookings.find(b=>b.supplierId===sup.id);
+  if(!booking){ booking={id:uid(),supplierId:sup.id,payments:[],schedule:[],docs:[]}; trip.bookings.push(booking); }
+
+  // Save all fields
+  const g=id=>document.getElementById(id)?.value?.trim()||null;
+  if(g('man-ref')) booking.ref=g('man-ref');
+  const st=g('man-status');
+  if(st) booking.status=st.toLowerCase().includes('confirm')?'confirmed':st.toLowerCase().includes('provis')?'pending':'tentative';
+  if(g('man-contact')) booking.contact=g('man-contact');
+  if(g('man-email')) booking.email=g('man-email');
+  if(g('man-phone')) booking.phone=g('man-phone');
+  if(g('man-total')) booking.totalAUD=parseFloat(g('man-total'))*(document.getElementById('man-cur')?.value==='AUD'?1:(trip.fx||0.085));
+  booking.currency=document.getElementById('man-cur')?.value||'ZAR';
+  const notes=[g('man-meal')?'Meal plan: '+g('man-meal'):'', g('man-notes')||''].filter(Boolean).join(' · ');
+  if(notes) booking.notes=notes;
+  if(g('man-cancel')) booking.cancellationPolicy=g('man-cancel');
+  if(g('man-arrival')) booking.arrivalDate=g('man-arrival');
+  if(g('man-depart')) booking.departureDate=g('man-depart');
+
+  // Banking
+  const bkName=g('man-bk-name'), bkNum=g('man-bk-num'), bkBank=g('man-bk-bank');
+  if(bkName||bkNum||bkBank) booking.bankingDetails={
+    accountName:bkName,accountNumber:bkNum,bank:bkBank,
+    branchCode:g('man-bk-branch'),accountType:g('man-bk-type'),swift:g('man-bk-swift')
+  };
+
+  // Payment schedule
+  const scheds=_manSchedRows.filter(s=>s&&(s.label||s.amount));
+  if(scheds.length) booking.schedule=scheds.map(s=>({id:uid(),label:s.label||'Payment',amount:parseFloat(s.amount)||0,dueDate:s.dueDate||'',status:'unpaid'}));
+
+  // Invoice note on supplier
+  const parts=[];
+  if(priceChanges) parts.push(`${priceChanges} price${priceChanges!==1?'s':''} updated`);
+  if(scheds.length) parts.push(`${scheds.length} payment milestone${scheds.length!==1?'s':''} saved`);
+  if(bkNum) parts.push('banking details saved');
+  if(g('man-cancel')) parts.push('cancellation policy saved');
+  sup.invoiceNote={type:'ok',label:`Invoice ${g('man-ref')?'#'+g('man-ref'):''} saved`,msg:(parts.join(' · ')||'Saved')+' · '+new Date().toLocaleDateString('en-AU')};
+
+  save();
+  closeModal('invModal');
+  _manSchedRows=[];
+  renderCosts(trip);
+
+  if(scheds.length||bkNum){
+    setTimeout(()=>{
+      if(confirm(`Invoice data saved.\n\n${parts.join('\n')}\n\nSwitch to Bookings & Payments to view?`)){
+        setMainTab('payments',document.querySelectorAll('.tab-pill')[1]);
+      }
+    },300);
+  }
+}
+
+function buildInvReview(parsed, trip, sup){
+  const guests=trip.guests||10;
+  const fx=trip.fx||0.085;
+  const mk=trip.markup||0;
+  _invItems=[];
+  _invParsed=parsed; // store for applyInvoiceChanges
+
+  const matched=new Set();
+  const reviewRows=[];
+  const newRows=[];
+
+  // Combine lineItems and additionalServices for matching
+  const allInvItems=[...(parsed.lineItems||[]),...(parsed.additionalServices||[]).map(s=>({
+    description:s.name, nettAmountTotal:s.amount, nettAmountPerPerson:null, unit:'service', matchedPlannerItem:null, isService:true
+  }))];
+
+  allInvItems.forEach((li,idx)=>{
+    const plannerItem=sup.items?.find(pi=>
+      !matched.has(pi.id)&&(
+        (li.matchedPlannerItem&&pi.name.toLowerCase().includes(li.matchedPlannerItem.toLowerCase().slice(0,8)))||
+        pi.name.toLowerCase().split(' ').some(w=>w.length>3&&li.description.toLowerCase().includes(w))
+      )
+    );
+
+    let invNettPP=null;
+    if(li.nettAmountPerPerson!=null) invNettPP=li.nettAmountPerPerson;
+    else if(li.nettAmountTotal!=null) invNettPP=li.nettAmountTotal/(li.numberOfUnits||1)/guests;
+
+    if(invNettPP!=null && parsed.currency && parsed.currency!=='AUD') invNettPP=invNettPP*fx;
+
+    if(plannerItem){
+      matched.add(plannerItem.id);
+      const currentPP=getPP(plannerItem,trip,guests);
+      const currentBase=currentPP!=null?currentPP/(1+mk/100):null;
+      const diff=invNettPP!=null&&currentBase!=null?invNettPP-currentBase:null;
+      const pct=currentBase>0&&diff!=null?Math.round(diff/currentBase*100):null;
+      const isChange=diff!=null&&Math.abs(diff)>0.5;
+      const item={id:'r'+idx,type:'match',plannerItemId:plannerItem.id,plannerName:plannerItem.name,invDesc:li.description,currentBase,invNettPP,diff,pct,selected:isChange,isChange,currency:parsed.currency};
+      _invItems.push(item);
+      const diffCls=!isChange?'color:var(--green)':(diff>0?'color:var(--amber)':'color:var(--blue)');
+      const diffTxt=!isChange?'✓ No change':(diff>0?`+${money(diff)} (+${pct}%)`:`${money(diff)} (${pct}%)`);
+      const subline=[li.mealPlan?'Meal plan: '+li.mealPlan:'',li.roomType?'Room: '+li.roomType:'',li.description!==plannerItem.name?'Invoice: '+li.description:''].filter(Boolean).join(' · ');
+      reviewRows.push(`<div class="inv-row" id="irow-${item.id}" style="${!isChange?'background:var(--glt)':'background:#fff8e6'}">
+        <input type="checkbox" class="inv-check" ${item.selected?'checked':''} ${!isChange?'disabled':''} onchange="toggleInvItem('${item.id}',this.checked)">
+        <div><div style="font-size:12px;font-weight:500">${plannerItem.name}</div>${subline?`<div style="font-size:10px;color:var(--ink3)">${subline}</div>`:''}</div>
+        <div style="text-align:right;font-size:12px;font-variant-numeric:tabular-nums;color:var(--ink2)">${currentBase!=null?money(Math.round(currentBase)):'—'}</div>
+        <div style="text-align:right"><input type="number" class="inv-nett-inp" value="${invNettPP!=null?Math.round(invNettPP):''}" placeholder="nett" oninput="updateInvNett('${item.id}',this.value,'${item.plannerItemId}',${currentBase||0},${mk})"></div>
+        <div style="text-align:right;font-size:11px;font-weight:700;${diffCls}">${diffTxt}</div>
+      </div>`);
+    } else {
+      const item={id:'n'+idx,type:'new',invDesc:li.description,invNettPP,selected:false,unit:li.unit,currency:parsed.currency,mealPlan:li.mealPlan||null};
+      _invItems.push(item);
+      const subline=[li.mealPlan?'Meal plan: '+li.mealPlan:'',li.nettAmountTotal?`Total: ${parsed.currency||''} ${li.nettAmountTotal.toLocaleString()}`:''].filter(Boolean).join(' · ');
+      newRows.push(`<div class="inv-row" style="background:var(--parchment)" id="irow-${item.id}">
+        <input type="checkbox" class="inv-check" onchange="toggleInvItem('${item.id}',this.checked)">
+        <div><div style="font-size:12px;font-weight:500">${li.description}</div>${subline?`<div style="font-size:10px;color:var(--ink3)">${subline}</div>`:''}</div>
+        <div style="text-align:right;font-size:12px;color:var(--ink3)">—</div>
+        <div style="text-align:right"><input type="number" class="inv-nett-inp" value="${invNettPP!=null?Math.round(invNettPP):''}" placeholder="nett pp" oninput="updateInvNett('${item.id}',this.value,null,0,${mk})"></div>
+        <div style="text-align:right;font-size:11px;font-weight:700;color:var(--purple)">New item</div>
+      </div>`);
+    }
+  });
+
+  (sup.items||[]).forEach(pi=>{
+    if(!matched.has(pi.id)){
+      const currentPP=getPP(pi,trip,guests);
+      const currentBase=currentPP!=null?currentPP/(1+mk/100):null;
+      reviewRows.push(`<div class="inv-row" style="opacity:.55">
+        <input type="checkbox" class="inv-check" disabled>
+        <div><div style="font-size:12px;font-weight:500">${pi.name}</div><div style="font-size:10px;color:var(--ink3)">Not found on this invoice</div></div>
+        <div style="text-align:right;font-size:12px;color:var(--ink2)">${currentBase!=null?money(Math.round(currentBase)):'—'}</div>
+        <div style="text-align:right;color:var(--ink3)">—</div>
+        <div style="text-align:right;font-size:11px;color:var(--ink3)">Unchanged</div>
+      </div>`);
+    }
+  });
+
+  document.getElementById('inv-review-rows').innerHTML=reviewRows.join('');
+  document.getElementById('inv-new-rows').innerHTML=newRows.join('');
+  const newSec=document.getElementById('inv-new-section');
+  if(newSec) newSec.style.display=newRows.length?'block':'none';
+
+  // ── Additional info panel (cancellation, banking, payment schedule, inclusions)
+  const extras=[];
+  if(parsed.reservationStatus) extras.push(`<span><strong>Status:</strong> ${parsed.reservationStatus}</span>`);
+  if(parsed.invoiceRef) extras.push(`<span><strong>Ref:</strong> ${parsed.invoiceRef}</span>`);
+  if(parsed.arrivalDate) extras.push(`<span><strong>Arrival:</strong> ${fmtDate(parsed.arrivalDate)}</span>`);
+  if(parsed.departureDate) extras.push(`<span><strong>Departure:</strong> ${fmtDate(parsed.departureDate)}</span>`);
+  if(parsed.numberOfGuests) extras.push(`<span><strong>Guests on booking:</strong> ${parsed.numberOfGuests}</span>`);
+  if(parsed.contact?.email) extras.push(`<span><strong>Contact:</strong> ${parsed.contact.name||''} ${parsed.contact.email}</span>`);
+
+  let extraInfoHTML='';
+
+  if(parsed.paymentSchedule?.length){
+    const rows=parsed.paymentSchedule.map(p=>`<div style="display:flex;justify-content:space-between;padding:.3rem 0;border-bottom:1px solid var(--border);font-size:12px">
+      <span>${p.description||'Payment'} · Due ${p.dueDate?fmtDate(p.dueDate):'TBD'}</span>
+      <strong>${parsed.currency||''} ${p.amount?.toLocaleString()||'—'}</strong>
+    </div>`).join('');
+    extraInfoHTML+=`<div style="margin-top:.75rem;background:var(--parchment);border:1px solid var(--border);border-radius:var(--r);overflow:hidden">
+      <div style="padding:.5rem .875rem;background:var(--s2);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--ink3)">Payment schedule (will be saved to Bookings & Payments)</div>
+      <div style="padding:.25rem .875rem">${rows}</div>
+    </div>`;
+  }
+
+  if(parsed.bankingDetails?.accountNumber){
+    const b=parsed.bankingDetails;
+    extraInfoHTML+=`<div style="margin-top:.75rem;background:var(--parchment);border:1px solid var(--border);border-radius:var(--r);overflow:hidden">
+      <div style="padding:.5rem .875rem;background:var(--s2);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--ink3)">Banking details (saved to booking record)</div>
+      <div style="padding:.5rem .875rem;font-size:12px;display:grid;grid-template-columns:1fr 1fr;gap:4px">
+        ${b.accountName?`<span><strong>Account:</strong> ${b.accountName}</span>`:''}
+        ${b.accountNumber?`<span><strong>Number:</strong> ${b.accountNumber}</span>`:''}
+        ${b.bank?`<span><strong>Bank:</strong> ${b.bank}</span>`:''}
+        ${b.branchCode?`<span><strong>Branch code:</strong> ${b.branchCode}</span>`:''}
+        ${b.accountType?`<span><strong>Type:</strong> ${b.accountType}</span>`:''}
+      </div>
+    </div>`;
+  }
+
+  if(parsed.cancellationPolicy?.length){
+    const rows=parsed.cancellationPolicy.map(p=>`<div style="font-size:12px;padding:.25rem 0;border-bottom:1px solid var(--border)">${p.description}${p.amount?` · <strong>${parsed.currency||''} ${p.amount.toLocaleString()}</strong>`:''}</div>`).join('');
+    extraInfoHTML+=`<div style="margin-top:.75rem;background:#fff8e6;border:1px solid #f0c070;border-radius:var(--r);overflow:hidden">
+      <div style="padding:.5rem .875rem;background:#fef3c7;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--amber)">⚠ Cancellation policy</div>
+      <div style="padding:.25rem .875rem">${rows}</div>
+    </div>`;
+  }
+
+  if(parsed.inclusions){
+    extraInfoHTML+=`<div style="margin-top:.75rem;background:var(--glt);border:1px solid #86efac;border-radius:var(--r);padding:.625rem .875rem;font-size:12px"><strong style="color:var(--green)">Inclusions:</strong> ${parsed.inclusions}</div>`;
+  }
+
+  if(parsed.specialConditions||parsed.notes){
+    extraInfoHTML+=`<div style="margin-top:.75rem;background:var(--parchment);border:1px solid var(--border);border-radius:var(--r);padding:.625rem .875rem;font-size:12px"><strong>Notes:</strong> ${parsed.specialConditions||parsed.notes}</div>`;
+  }
+
+  // Summary bar
+  const ups=_invItems.filter(i=>i.type==='match'&&i.diff>0.5);
+  const dns=_invItems.filter(i=>i.type==='match'&&i.diff<-0.5);
+  document.getElementById('inv-summary-bar').innerHTML=`
+    <div style="padding:.875rem 1.375rem;width:100%">
+      <div style="display:flex;gap:1.25rem;align-items:center;flex-wrap:wrap;margin-bottom:${extraInfoHTML?'.75rem':'0'}">
+        <div><strong>${parsed.supplierName||sup.name}</strong></div>
+        ${extras.map(e=>`<div style="color:var(--ink2)">${e}</div>`).join('')}
+        <div style="margin-left:auto;display:flex;gap:10px">
+          ${ups.length?`<span style="color:var(--amber);font-weight:600">↑ ${ups.length} increase${ups.length!==1?'s':''}</span>`:''}
+          ${dns.length?`<span style="color:var(--blue);font-weight:600">↓ ${dns.length} decrease${dns.length!==1?'s':''}</span>`:''}
+          ${parsed.grandTotal?`<span><strong>Invoice total: ${parsed.currency||''} ${parsed.grandTotal.toLocaleString()}</strong></span>`:''}
+          ${!ups.length&&!dns.length?`<span style="color:var(--green);font-weight:600">✓ All prices match</span>`:''}
+        </div>
+      </div>
+      ${extraInfoHTML}
+    </div>`;
+
+  document.getElementById('inv-upload-zone').style.display='none';
+  document.getElementById('inv-review-zone').style.display='block';
+  const changed=_invItems.filter(i=>i.isChange||i.type==='new');
+  document.getElementById('inv-apply-btn').style.display=changed.length||parsed.paymentSchedule?.length||parsed.bankingDetails?.accountNumber?'block':'none';
+  document.getElementById('inv-apply-btn').textContent=changed.length?'✓ Apply selected changes':'✓ Save invoice data to booking';
+  updateInvSelSummary();
+}
+
+function toggleInvItem(id, checked){
+  const item=_invItems.find(i=>i.id===id);
+  if(item) item.selected=checked;
+  const row=document.getElementById('irow-'+id);
+  if(row) row.style.background=checked?(item.type==='new'?'var(--plt)':'#fff8e6'):(item.isChange?'':'var(--glt)');
+  updateInvSelSummary();
+}
+function updateInvNett(id, val, plannerItemId, currentBase, mk){
+  const item=_invItems.find(i=>i.id===id);
+  if(!item) return;
+  const nett=parseFloat(val)||0;
+  item.invNettPP=nett;
+  if(plannerItemId&&currentBase!=null){
+    item.diff=nett-currentBase;
+    item.isChange=Math.abs(item.diff)>0.5;
+    const pct=currentBase>0?Math.round(item.diff/currentBase*100):0;
+    const diffEl=document.getElementById('inv-diff-'+id);
+    if(diffEl){
+      diffEl.textContent=item.isChange?(item.diff>0?`+${money(item.diff)} (+${pct}%)`: `${money(item.diff)} (${pct}%)`):'✓ Match';
+      diffEl.style.color=item.isChange?(item.diff>0?'var(--amber)':'var(--blue)'):'var(--green)';
+    }
+  }
+  updateInvSelSummary();
+}
+function updateInvSelSummary(){
+  const sel=_invItems.filter(i=>i.selected);
+  const el=document.getElementById('inv-sel-summary');
+  if(el) el.textContent=sel.length?`${sel.length} change${sel.length!==1?'s':''} selected`:'No changes selected';
+  const btn=document.getElementById('inv-apply-btn');
+  if(btn) btn.style.display=sel.length?'block':'none';
+}
+
+function applyInvoiceChanges(){
+  const trip=trips.find(t=>t.id===_invTripId);
+  const sup=trip?.suppliers?.find(s=>s.id===_invSupId);
+  if(!trip||!sup) return;
+  const mk=trip.markup||0;
+  const sel=_invItems.filter(i=>i.selected);
+  const parsed=_invParsed||{};
+
+  // 1. Update cost planner prices
+  let priceChanges=0;
+  sel.forEach(item=>{
+    if(item.type==='match'&&item.invNettPP!=null){
+      const newPP=Math.round(item.invNettPP*(1+mk/100));
+      if(!overrides[trip.id]) overrides[trip.id]={};
+      overrides[trip.id][item.plannerItemId]=newPP;
+      priceChanges++;
+    } else if(item.type==='new'&&item.invNettPP!=null){
+      sup.items=sup.items||[];
+      sup.items.push({id:uid(),cat:'dining',name:item.invDesc,audBase:item.invNettPP,est:false,day:sup.day||''});
+      priceChanges++;
+    }
+  });
+
+  // 2. Find or create a booking record for this supplier
+  if(!trip.bookings) trip.bookings=[];
+  let booking=trip.bookings.find(b=>b.supplierId===sup.id);
+  if(!booking){
+    booking={id:uid(),supplierId:sup.id,payments:[],schedule:[],docs:[]};
+    trip.bookings.push(booking);
+  }
+
+  // 3. Save all extracted invoice data to the booking
+  if(parsed.invoiceRef) booking.ref=parsed.invoiceRef;
+  if(parsed.reservationStatus) booking.status=
+    parsed.reservationStatus.toLowerCase().includes('confirm')?'confirmed':
+    parsed.reservationStatus.toLowerCase().includes('provis')?'pending':'tentative';
+  if(parsed.bookingDate) booking.confDate=parsed.bookingDate;
+  if(parsed.contact?.email) booking.email=parsed.contact.email;
+  if(parsed.contact?.phone) booking.phone=parsed.contact.phone;
+  if(parsed.contact?.name) booking.contact=parsed.contact.name;
+  if(parsed.grandTotal) booking.totalAUD=Math.round(parsed.grandTotal*(trip.fx||0.085));
+  booking.currency=parsed.currency||'ZAR';
+  if(parsed.inclusions) booking.inclusions=parsed.inclusions;
+
+  // Payment schedule
+  if(parsed.paymentSchedule?.length){
+    booking.schedule=(parsed.paymentSchedule||[]).map(p=>({
+      id:uid(),
+      label:p.description||'Payment',
+      amount:p.amount?Math.round(p.amount*(trip.fx||0.085)):0,
+      dueDate:p.dueDate||'',
+      status:'unpaid'
+    }));
+  }
+
+  // Banking details → save as booking notes addition
+  if(parsed.bankingDetails?.accountNumber){
+    const b=parsed.bankingDetails;
+    booking.bankingDetails=b;
+  }
+
+  // Cancellation policy
+  if(parsed.cancellationPolicy?.length){
+    booking.cancellationPolicy=(parsed.cancellationPolicy||[]).map(p=>p.description).join(' | ');
+  }
+
+  // Build invoice note for the supplier header
+  const parts=[];
+  if(priceChanges) parts.push(`${priceChanges} price${priceChanges!==1?'s':''} updated`);
+  if(parsed.paymentSchedule?.length) parts.push(`${parsed.paymentSchedule.length} payment milestones saved`);
+  if(parsed.bankingDetails?.accountNumber) parts.push('banking details saved');
+  if(parsed.cancellationPolicy?.length) parts.push('cancellation policy saved');
+
+  sup.invoiceNote={
+    type:'ok',
+    label:`Invoice ${parsed.invoiceRef?'#'+parsed.invoiceRef:''} applied`,
+    msg:parts.join(' · ')+` · ${new Date().toLocaleDateString('en-AU')}`
+  };
+
+  save();
+  closeModal('invModal');
+  renderCosts(trip);
+
+  // If anything was saved to bookings, show a tip
+  if(parsed.paymentSchedule?.length||parsed.bankingDetails?.accountNumber){
+    setTimeout(()=>{
+      if(confirm(`Invoice data saved successfully.\n\nPayment schedule, banking details${parsed.cancellationPolicy?.length?' and cancellation policy':''} have been saved to the Bookings & Payments tab for ${sup.name}.\n\nSwitch to Bookings & Payments to view?`)){
+        setMainTab('payments', document.querySelectorAll('.tab-pill')[1]);
+      }
+    }, 300);
+  }
+}
+
+function clearInvoiceNote(tid,sid){
+  const t=trips.find(x=>x.id===tid);
+  const s=t?.suppliers?.find(x=>x.id===sid);
+  if(s){ delete s.invoiceNote; save(); renderCosts(t); }
+}
+
+// ══════════════════════════════════════════════════════
+//  BACKUP & RESTORE (replaces old JSON import)
+// ══════════════════════════════════════════════════════
+function showBackupRestore(){
+  const el=document.getElementById('backup-count');
+  if(el) el.textContent=`(${trips.length} trip${trips.length!==1?'s':''} in planner)`;
+  document.getElementById('restore-filename').textContent='No file selected';
+  document.getElementById('restore-status').innerHTML='';
+  openModal('importModal');
+}
+function downloadBackup(){
+  const payload={version:2,exportedAt:new Date().toISOString(),trips,overrides};
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='wine-journeys-backup-'+new Date().toISOString().slice(0,10)+'.json';
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),5000);
+}
+function restoreFromFile(input){
+  const file=input.files[0];if(!file)return;
+  document.getElementById('restore-filename').textContent=file.name;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const payload=JSON.parse(e.target.result);
+      // Accept either a full backup or a single trip object
+      const incoming=payload.trips||[payload];
+      if(!Array.isArray(incoming)||!incoming[0]?.name) throw new Error('Not a valid backup file');
+      let added=0;
+      incoming.forEach(t=>{
+        if(!trips.find(x=>x.id===t.id)){
+          t.id=t.id||uid();
+          if(!t.bookings)t.bookings=[];
+          if(!t.hostCosts)t.hostCosts={room:0,meals:0,airfare:0,misc:0};
+          if(!t.extras)t.extras=[];
+          (t.suppliers||[]).forEach(s=>{s.id=s.id||uid();(s.items||[]).forEach(it=>it.id=it.id||uid());});
+          trips.push(t);added++;
+        }
+      });
+      if(payload.overrides) Object.assign(overrides,payload.overrides);
+      save();
+      document.getElementById('restore-status').innerHTML=`<div style="color:var(--green);font-size:12px;font-weight:600">✓ ${added} trip${added!==1?'s':''} restored successfully.</div>`;
+      renderSidebar();
+      if(added>0&&!activeId){activeId=trips[0]?.id;renderActive();}
+    }catch(err){
+      document.getElementById('restore-status').innerHTML=`<div style="color:var(--red);font-size:12px">Could not read backup file. Please check the file is a Wine Journeys backup.</div>`;
+    }
+  };
+  reader.readAsText(file);
+}
+
+// ══════════════════════════════════════════════════════
+//  TOGGLE / MODALS
+// ══════════════════════════════════════════════════════
+function toggleSec(bid,cid){
+  const b=document.getElementById(bid),c=document.getElementById(cid);
+  if(!b)return;const col=b.classList.toggle('col');if(c)c.textContent=col?'▸':'▾';
+}
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
+
+// ══════════════════════════════════════════════════════
+//  BOOT
+// ══════════════════════════════════════════════════════
+load();
+renderSidebar();
+if(trips.length){activeId=trips[0].id;renderActive();}
+</script>
+</body>
+</html>
