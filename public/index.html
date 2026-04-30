@@ -18,7 +18,7 @@
   --green:#2d5a3d;--glt:#edf3ee;
   --r:8px;--rl:14px;
 }
-html{scroll-behavior:smooth}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
 body{font-family:'Jost',sans-serif;font-size:15px;background:var(--cream);color:var(--charcoal);line-height:1.6}
 .serif{font-family:'Cormorant Garamond',serif}
 a{text-decoration:none;color:inherit}
@@ -273,6 +273,22 @@ footer{background:var(--charcoal);padding:3rem 1.5rem 2rem}
 .modal-success.show{display:block}
 .modal-note{font-size:10px;color:var(--mist);margin-top:.625rem;text-align:center}
 
+/* HAMBURGER MENU */
+.nav-burger{display:none;flex-direction:column;justify-content:center;gap:5px;width:40px;height:40px;cursor:pointer;margin-left:auto;padding:6px;border-radius:6px;transition:background .15s}
+.nav-burger:hover{background:rgba(255,255,255,.12)}
+.nav-burger span{display:block;height:2px;background:#fff;border-radius:2px;transition:all .25s}
+.nav-burger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.nav-burger.open span:nth-child(2){opacity:0;transform:scaleX(0)}
+.nav-burger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.mobile-menu{display:none;position:fixed;top:72px;left:0;right:0;background:var(--wine-dk);z-index:850;padding:12px 0 18px;box-shadow:0 8px 24px rgba(0,0,0,.35);border-top:1px solid rgba(255,255,255,.1)}
+.mobile-menu.open{display:block}
+.mobile-menu a,.mobile-menu .mm-link{display:block;padding:11px 28px;font-size:14px;font-weight:500;color:rgba(255,255,255,.85);cursor:pointer;transition:all .15s;letter-spacing:.03em}
+.mobile-menu a:hover,.mobile-menu .mm-link:hover{background:rgba(255,255,255,.07);color:#fff}
+.mm-divider{height:1px;background:rgba(255,255,255,.1);margin:8px 0}
+.mm-portal{display:flex;gap:10px;padding:10px 28px}
+.mm-portal a{flex:1;text-align:center;padding:10px;border-radius:7px;font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase}
+.mm-portal .mm-guest{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.3)}
+.mm-portal .mm-admin{background:var(--gold);color:var(--wine-dk);border:1px solid var(--gold)}
 @media(max-width:900px){
   .cat-grid,.ov-grid,.inc-grid,.footer-inner,.stats-inner{grid-template-columns:1fr}
   .ov-grid .sidebar{position:static}
@@ -281,6 +297,8 @@ footer{background:var(--charcoal);padding:3rem 1.5rem 2rem}
   .frow,.frow.three{grid-template-columns:1fr}
   .nav-links{display:none}
   .nav-portal-btns{display:none}
+  .nav-burger{display:flex}
+  .nav-cta{display:none}
 }
 </style>
 </head>
@@ -304,8 +322,25 @@ footer{background:var(--charcoal);padding:3rem 1.5rem 2rem}
       <a class="nav-portal-btn admin" href="/login/?tab=admin">⚙️ Admin Login</a>
     </div>
     <button class="nav-cta" onclick="openBrochure()">Get Brochure</button>
+    <div class="nav-burger" id="navBurger" onclick="toggleMobileMenu()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </div>
   </div>
 </nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <div class="mm-link" onclick="filterTours('signature');closeMobileMenu()">🏆 Signature Tours</div>
+  <div class="mm-link" onclick="filterTours('package');closeMobileMenu()">🛎️ Packages</div>
+  <div class="mm-link" onclick="filterTours('cruise');closeMobileMenu()">🚢 Wine Cruises</div>
+  <div class="mm-link" onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'});closeMobileMenu()">About Us</div>
+  <div class="mm-link" onclick="openBrochure();closeMobileMenu()">📋 Request Brochure</div>
+  <div class="mm-divider"></div>
+  <div class="mm-portal">
+    <a class="mm-guest" href="/login/">🧳 Guest Login</a>
+    <a class="mm-admin" href="/login/?tab=admin">⚙️ Admin</a>
+  </div>
+</div>
 
 <!-- HERO -->
 <section class="hero">
@@ -1167,9 +1202,33 @@ document.getElementById('brochureModal').addEventListener('click',function(e){
   if(e.target===this)closeBrochure();
 });
 
+// ── MOBILE MENU ──
+function toggleMobileMenu(){
+  const burger=document.getElementById('navBurger');
+  const menu=document.getElementById('mobileMenu');
+  const isOpen=menu.classList.toggle('open');
+  burger.classList.toggle('open',isOpen);
+  document.body.style.overflow=isOpen?'hidden':'';
+}
+function closeMobileMenu(){
+  document.getElementById('navBurger').classList.remove('open');
+  document.getElementById('mobileMenu').classList.remove('open');
+  document.body.style.overflow='';
+}
+// Close mobile menu on outside click
+document.addEventListener('click',function(e){
+  const menu=document.getElementById('mobileMenu');
+  const burger=document.getElementById('navBurger');
+  if(menu.classList.contains('open')&&!menu.contains(e.target)&&!burger.contains(e.target)){
+    closeMobileMenu();
+  }
+});
+
 // Nav scroll effect
 window.addEventListener('scroll',function(){
   document.getElementById('mainNav').classList.toggle('scrolled',scrollY>40);
+  // Close mobile menu on scroll
+  if(document.getElementById('mobileMenu').classList.contains('open'))closeMobileMenu();
 },{ passive:true });
 
 // ── INIT ──
