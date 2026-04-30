@@ -316,7 +316,7 @@ footer{background:var(--charcoal);padding:3rem 1.5rem 2rem}
     <h1 class="hero-title">Journey Through the<br><em>World's Finest</em><br>Wine Regions</h1>
     <p class="hero-sub">Bespoke small-group tours, curated holiday packages and luxury wine cruises — all led by passionate wine experts.</p>
     <div class="hero-actions">
-      <button class="btn-hp" onclick="document.getElementById('tours').scrollIntoView({behavior:'smooth'})">Explore Tours</button>
+      <button class="btn-hp" onclick="document.getElementById('toursGrid').scrollIntoView({behavior:'smooth',block:'start'})">Explore Tours</button>
       <button class="btn-hs" onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'})">Our Story</button>
     </div>
   </div>
@@ -336,7 +336,7 @@ footer{background:var(--charcoal);padding:3rem 1.5rem 2rem}
         <div class="cat-icon">🏆</div>
         <h2 class="cat-title serif">Signature<br>Wine Tours</h2>
         <p class="cat-desc">Immersive journeys to the world's iconic wine regions</p>
-        <div class="cat-count">3 Tours Available</div>
+        <div class="cat-count">5 Tours Available</div>
       </div>
     </div>
     <div class="cat-tile" onclick="filterTours('package')">
@@ -356,7 +356,7 @@ footer{background:var(--charcoal);padding:3rem 1.5rem 2rem}
         <div class="cat-icon">🚢</div>
         <h2 class="cat-title serif">Wine<br>Cruises</h2>
         <p class="cat-desc">River and ocean voyages through legendary wine country</p>
-        <div class="cat-count">3 Cruises Available</div>
+        <div class="cat-count">5 Cruises Available</div>
       </div>
     </div>
   </div>
@@ -816,7 +816,7 @@ function filterTours(cat,btn){
     });
   }
   renderCards(cat);
-  if(!btn)document.getElementById('tours').scrollIntoView({behavior:'smooth'});
+  if(!btn)document.getElementById('toursGrid').scrollIntoView({behavior:'smooth',block:'start'});
 }
 
 function showHome(){closeDetail();window.scrollTo({top:0,behavior:'smooth'});}
