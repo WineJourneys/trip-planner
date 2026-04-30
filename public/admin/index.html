@@ -2097,18 +2097,22 @@ function sheetCatChange(i){
 
 function costImportSelected(){
   if(!costCurrData){toast('Create or load a tour first');return;}
-  const fieldMap={hostWages:'costHostWages',hostAirfares:'costHostAirfares',preTourAccomm:'costPreTourAccomm',
-    driverVan:'costDriverVan',driverAccomm:'costDriverAccomm',marketing:'costMarketing',
-    foodCost:'costFoodCost',drinksCost:'costDrinksCost',toursCost:'costToursCost',varMisc:'costVarMisc',fixedMisc:'costFixedMisc'};
+  // Field IDs use 'ct' prefix — must match actual form inputs
+  const fieldMap={
+    hostWages:'ctHostWages', hostAirfares:'ctHostAirfares', preTourAccomm:'ctPreTour',
+    driverVan:'ctDriverVan', driverAccomm:'ctDriverAccomm', marketing:'ctMarketing',
+    foodCost:'ctFoodCost', drinksCost:'ctDrinksCost', toursCost:'ctToursCost',
+    varMisc:'ctVarMisc', fixedMisc:'ctFixedMisc'
+  };
   let n=0;
   _sheetRows.forEach((r,i)=>{
-    if(!document.getElementById('isc'+i).checked)return;
+    const chk=document.getElementById('isc'+i);
+    if(!chk||!chk.checked)return;
     const cat=document.getElementById('isCat'+i).value;
     if(cat==='skip')return;
     if(cat==='hotel'){
-      costCurrData.hotels=costCurrData.hotels||[];
-      costCurrData.hotels.push({name:r.label,twin:r.amount,single:+(r.amount*1.4).toFixed(2),nights:1});
-      costRenderHotels();
+      // Add a hotel row directly into the UI
+      costAddHotelRow({name:r.label,twin:r.amount,single:+(r.amount*1.4).toFixed(2),nights:1});
     } else {
       const fid=fieldMap[cat];
       const el=fid&&document.getElementById(fid);
@@ -2117,9 +2121,9 @@ function costImportSelected(){
     n++;
   });
   closeModal('importSheetModal');
-  costCalculateAndRender();
+  costCalc();
   costSaveSilent();
-  toast(`${n} line${n!==1?'s':''} imported into costing ✓`);
+  toast(n?`${n} line${n!==1?'s':''} imported into costing ✓`:'Nothing selected to import');
 }
 
 /* =========================================================
