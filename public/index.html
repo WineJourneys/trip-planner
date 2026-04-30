@@ -806,7 +806,15 @@ function renderCards(filter){
 
 function filterTours(cat,btn){
   document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
-  if(btn)btn.classList.add('active');
+  if(btn){
+    btn.classList.add('active');
+  } else {
+    // Sync filter button active state when called from nav/tile without btn reference
+    document.querySelectorAll('.filter-btn').forEach(b=>{
+      const oc=b.getAttribute('onclick')||'';
+      if(cat==='all'?oc.includes("'all'"):oc.includes("'"+cat+"'"))b.classList.add('active');
+    });
+  }
   renderCards(cat);
   if(!btn)document.getElementById('tours').scrollIntoView({behavior:'smooth'});
 }
@@ -890,7 +898,7 @@ function buildOverview(t){
           <div><div class="ss-lbl">Group Size</div><div class="ss-val">${t.grp}</div></div>
           <div><div class="ss-lbl">Departures</div><div class="ss-val">${t.dep}</div></div>
         </div>
-        <button class="btn-book" onclick="setTab('booking',null)">Book This Journey →</button>
+        <button class="btn-book" onclick="setTab('booking',null)">${t.cat==='cruise'?'Enquire Now →':'Book This Journey →'}</button>
       </div>
     </div>`;
 }
