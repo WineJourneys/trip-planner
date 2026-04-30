@@ -37,6 +37,12 @@ img{display:block;max-width:100%}
 .nav-link:hover{color:#fff;background:rgba(255,255,255,.12)}
 .nav-cta{padding:8px 20px;background:var(--gold);color:var(--wine-dk);border-radius:6px;font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;transition:all .15s;border:none}
 .nav-cta:hover{background:#dbb85a}
+.nav-portal-btns{display:flex;gap:8px;align-items:center;margin-right:10px}
+.nav-portal-btn{display:inline-flex;align-items:center;gap:5px;padding:8px 14px;border-radius:6px;font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;text-decoration:none;cursor:pointer;transition:all .2s;white-space:nowrap;border:1.5px solid}
+.nav-portal-btn.guest{background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.35)}
+.nav-portal-btn.guest:hover{background:rgba(255,255,255,.22);border-color:rgba(255,255,255,.7)}
+.nav-portal-btn.admin{background:var(--gold);color:var(--wine-dk);border-color:var(--gold)}
+.nav-portal-btn.admin:hover{background:#dbb85a;border-color:#dbb85a}
 
 /* HERO */
 .hero{height:100vh;min-height:640px;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
@@ -274,6 +280,7 @@ footer{background:var(--charcoal);padding:3rem 1.5rem 2rem}
   .footer-inner{grid-template-columns:1fr 1fr}
   .frow,.frow.three{grid-template-columns:1fr}
   .nav-links{display:none}
+  .nav-portal-btns{display:none}
 }
 </style>
 </head>
@@ -291,7 +298,10 @@ footer{background:var(--charcoal);padding:3rem 1.5rem 2rem}
       <div class="nav-link" onclick="filterTours('package')">Packages</div>
       <div class="nav-link" onclick="filterTours('cruise')">Cruises</div>
       <div class="nav-link" onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'})">About</div>
-      <a class="nav-link" href="/login/" style="text-decoration:none;color:inherit">My Journey</a>
+    </div>
+    <div class="nav-portal-btns">
+      <a class="nav-portal-btn guest" href="/login/">🧳 Guest Login</a>
+      <a class="nav-portal-btn admin" href="/login/?tab=admin">⚙️ Admin Login</a>
     </div>
     <button class="nav-cta" onclick="openBrochure()">Get Brochure</button>
   </div>
@@ -398,7 +408,8 @@ footer{background:var(--charcoal);padding:3rem 1.5rem 2rem}
       <li><a href="mailto:tours@winejourneys.au">Contact Us</a></li>
     </ul></div>
     <div class="footer-col"><h4>Portals</h4><ul>
-      <li><a href="/login/">My Journey (Client Login)</a></li>
+      <li><a href="/login/">🧳 Guest Login</a></li>
+      <li><a href="/login/?tab=admin">⚙️ Admin Login</a></li>
       <li><a href="mailto:tours@winejourneys.au">tours@winejourneys.au</a></li>
       <li><a href="tel:+61731868488">+61 7 3186 8488</a></li>
     </ul></div>
