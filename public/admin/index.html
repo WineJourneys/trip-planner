@@ -168,6 +168,15 @@ tr:hover td{background:#faf8f3}
 /* RESPONSIVE TWEAKS */
 @media(max-width:900px){.stat-grid{grid-template-columns:1fr 1fr}.main{padding:20px}.tour-grid-admin{grid-template-columns:1fr 1fr}}
 @media(max-width:650px){.stat-grid{grid-template-columns:1fr}.sidebar{width:100%;position:relative;height:auto}.main{margin-left:0}}
+/* COST LINE ITEMS TABLE */
+.cost-lines-hdr{display:grid;grid-template-columns:1fr 195px 105px 32px;gap:8px;padding:0 0 6px;border-bottom:1.5px solid #f0ebe0;margin-bottom:8px}
+.cost-lines-hdr span{font-size:10px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:.7px}
+.cost-line-row{display:grid;grid-template-columns:1fr 195px 105px 32px;gap:8px;align-items:center;margin-bottom:6px}
+.cost-line-row input[type=text]{padding:7px 9px;border:1.5px solid #e0d5c5;border-radius:6px;font-size:12.5px;outline:none;transition:border .2s;width:100%}
+.cost-line-row input[type=number]{padding:7px 9px;border:1.5px solid #e0d5c5;border-radius:6px;font-size:12.5px;outline:none;transition:border .2s;width:100%;text-align:right}
+.cost-line-row input:focus{border-color:#8b6914}
+.cost-line-row select{padding:7px 9px;border:1.5px solid #e0d5c5;border-radius:6px;font-size:11.5px;outline:none;width:100%;background:#fff}
+.cost-line-row select:focus{border-color:#8b6914}
 /* SPREADSHEET IMPORT MODAL */
 .sheet-import-table{width:100%;border-collapse:collapse;font-size:12.5px}
 .sheet-import-table th{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#888;padding:8px 10px;border-bottom:2px solid #f0ebe0;text-align:left;background:#faf8f3}
@@ -404,6 +413,21 @@ tr:hover td{background:#faf8f3}
                   <input type="file" accept=".xlsx,.xls,.csv,.ods,.xlsb,.xlsm,.numbers,.pdf" style="position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer" onchange="costUploadDocs(this)">
                   <span class="btn btn-outline" style="pointer-events:none;white-space:nowrap">⬆ Choose File</span>
                 </label>
+              </div>
+            </div>
+
+            <!-- COST LINE ITEMS -->
+            <div class="cost-section" id="costLinesSection">
+              <div class="cost-section-title" style="justify-content:space-between">
+                <span>📋 Cost Line Items</span>
+                <button class="btn btn-outline btn-sm" onclick="costAddLine()" style="font-size:11px;padding:4px 10px">+ Add Line</button>
+              </div>
+              <div id="costLinesEmpty" style="font-size:12px;color:#aaa;text-align:center;padding:12px 0">No line items yet — import a spreadsheet / PDF above, or click <strong>+ Add Line</strong> to enter costs manually</div>
+              <div id="costLinesTable" style="display:none">
+                <div class="cost-lines-hdr">
+                  <span>Description</span><span>Category</span><span style="text-align:right">Amount</span><span></span>
+                </div>
+                <div id="costLinesList"></div>
               </div>
             </div>
 
@@ -1471,7 +1495,7 @@ function costCollectInputs(){
     const inp=row.querySelectorAll('input');
     hotels.push({name:inp[0].value,twin:Number(inp[1].value)||0,single:Number(inp[2].value)||0,nights:Number(inp[3].value)||1});
   });
-  return{
+  const data={
     tourName:document.getElementById('ctTourName').value.trim(),
     tourCurrency:document.getElementById('ctCurrency').value,
     eurAudRate:Number(document.getElementById('ctRate').value)||1,
@@ -1496,8 +1520,27 @@ function costCollectInputs(){
     varMisc:Number(document.getElementById('ctVarMisc').value)||0,
     departures:costCurrData?[...(costCurrData.departures||[])]: [],
     documents:costCurrData?[...(costCurrData.documents||[])]: [],
+    lines:costCurrData?[...(costCurrData.lines||[])]: [],
     notes:document.getElementById('ctNotes').value
   };
+  // Fold line items into their respective cost categories (additive to manual fields)
+  const _lines=(costCurrData&&costCurrData.lines)||[];
+  _lines.forEach(l=>{
+    const amt=l.amount||0;
+    if(l.cat==='hotel')data.hotels.push({name:l.desc||'',twin:amt,single:+(amt*1.4).toFixed(2),nights:1});
+    else if(l.cat==='hostWages')data.hostWages+=amt;
+    else if(l.cat==='hostAirfares')data.hostAirfares+=amt;
+    else if(l.cat==='preTourAccomm')data.preTourAccomm+=amt;
+    else if(l.cat==='driverVan')data.driverVan+=amt;
+    else if(l.cat==='driverAccomm')data.driverAccomm+=amt;
+    else if(l.cat==='marketing')data.marketing+=amt;
+    else if(l.cat==='foodCost')data.foodCost+=amt;
+    else if(l.cat==='drinksCost')data.drinksCost+=amt;
+    else if(l.cat==='toursCost')data.toursCost+=amt;
+    else if(l.cat==='varMisc')data.varMisc+=amt;
+    else if(l.cat==='fixedMisc')data.fixedMisc+=amt;
+  });
+  return data;
 }
 
 function populateCostForm(d){
@@ -1525,9 +1568,11 @@ function populateCostForm(d){
   document.getElementById('ctNotes').value=d.notes||'';
   document.getElementById('ctHotels').innerHTML='';
   (d.hotels||[{name:'',twin:0,single:0,nights:4}]).forEach(h=>costAddHotelRow(h));
+  costCurrData.lines=costCurrData.lines||[];
   costUpdateLabels();
   costRenderDepartures();
   costRenderDocs();
+  costLinesRender();
   costCalc();
 }
 
@@ -1720,6 +1765,7 @@ function costSaveSilent(){
   const data=costCollectInputs();
   data.departures=costCurrData.departures||[];
   data.documents=costCurrData.documents||[];
+  data.lines=costCurrData.lines||[];
   const tours=getCostTours();
   tours[costCurrentId]=data;
   saveCostTours(tours);
@@ -1931,6 +1977,59 @@ function toast(msg){
 }
 
 /* =========================================================
+   COST LINE ITEMS — editable list stored in costCurrData.lines
+   ========================================================= */
+function costLinesRender(){
+  if(!costCurrData)return;
+  const lines=costCurrData.lines||[];
+  const emptyEl=document.getElementById('costLinesEmpty');
+  const tableEl=document.getElementById('costLinesTable');
+  const listEl=document.getElementById('costLinesList');
+  if(!emptyEl)return;
+  if(!lines.length){emptyEl.style.display='block';tableEl.style.display='none';return;}
+  emptyEl.style.display='none';
+  tableEl.style.display='block';
+  listEl.innerHTML=lines.map((l,i)=>{
+    const catOpts=_SHEET_CATS.filter(c=>c.v!=='skip').map(c=>`<option value="${c.v}"${c.v===l.cat?' selected':''}>${c.l}</option>`).join('');
+    const desc=(l.desc||'').replace(/"/g,'&quot;');
+    return`<div class="cost-line-row" id="clr${i}">
+      <input type="text" value="${desc}" placeholder="Description" onchange="costLineUpdate(${i},'desc',this.value)">
+      <select onchange="costLineUpdate(${i},'cat',this.value)">${catOpts}</select>
+      <input type="number" value="${l.amount||0}" min="0" step="0.01" onchange="costLineUpdate(${i},'amount',this.value)">
+      <button class="btn-icon" onclick="costLineDelete(${i})" title="Remove" style="color:#ccc;font-size:14px">✕</button>
+    </div>`;
+  }).join('');
+  costCalc();
+}
+
+function costAddLine(){
+  if(!costCurrData){toast('Create or load a tour first');return;}
+  costCurrData.lines=costCurrData.lines||[];
+  costCurrData.lines.push({desc:'',cat:'fixedMisc',amount:0});
+  costLinesRender();
+  // Focus the new description input
+  const rows=document.querySelectorAll('#costLinesList .cost-line-row');
+  if(rows.length){const inp=rows[rows.length-1].querySelector('input[type=text]');if(inp)inp.focus();}
+}
+
+function costLineDelete(i){
+  if(!costCurrData||!costCurrData.lines)return;
+  costCurrData.lines.splice(i,1);
+  costLinesRender();
+  costSaveSilent();
+}
+
+function costLineUpdate(i,field,val){
+  if(!costCurrData||!costCurrData.lines)return;
+  const line=costCurrData.lines[i];
+  if(!line)return;
+  if(field==='amount')line.amount=parseFloat(val)||0;
+  else line[field]=val;
+  costCalc();
+  costSaveSilent();
+}
+
+/* =========================================================
    SPREADSHEET & PDF IMPORT
    ========================================================= */
 // Initialise PDF.js worker (runs once after DOM ready)
@@ -2097,33 +2196,20 @@ function sheetCatChange(i){
 
 function costImportSelected(){
   if(!costCurrData){toast('Create or load a tour first');return;}
-  // Field IDs use 'ct' prefix — must match actual form inputs
-  const fieldMap={
-    hostWages:'ctHostWages', hostAirfares:'ctHostAirfares', preTourAccomm:'ctPreTour',
-    driverVan:'ctDriverVan', driverAccomm:'ctDriverAccomm', marketing:'ctMarketing',
-    foodCost:'ctFoodCost', drinksCost:'ctDrinksCost', toursCost:'ctToursCost',
-    varMisc:'ctVarMisc', fixedMisc:'ctFixedMisc'
-  };
+  costCurrData.lines=costCurrData.lines||[];
   let n=0;
   _sheetRows.forEach((r,i)=>{
     const chk=document.getElementById('isc'+i);
     if(!chk||!chk.checked)return;
     const cat=document.getElementById('isCat'+i).value;
     if(cat==='skip')return;
-    if(cat==='hotel'){
-      // Add a hotel row directly into the UI
-      costAddHotelRow({name:r.label,twin:r.amount,single:+(r.amount*1.4).toFixed(2),nights:1});
-    } else {
-      const fid=fieldMap[cat];
-      const el=fid&&document.getElementById(fid);
-      if(el){const cur=parseFloat(el.value)||0;el.value=+(cur+r.amount).toFixed(2);}
-    }
+    costCurrData.lines.push({desc:r.label,cat,amount:r.amount});
     n++;
   });
   closeModal('importSheetModal');
-  costCalc();
+  costLinesRender();
   costSaveSilent();
-  toast(n?`${n} line${n!==1?'s':''} imported into costing ✓`:'Nothing selected to import');
+  toast(n?`${n} line${n!==1?'s':''} added to Cost Line Items ✓`:'Nothing selected to import');
 }
 
 /* =========================================================
