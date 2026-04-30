@@ -177,8 +177,8 @@ tr:hover td{background:#faf8f3}
 .lm.lm-bold .lm-v{font-size:22px}
 .sup-section{margin-bottom:1.25rem}
 .sup-hdr{display:flex;align-items:center;gap:10px;padding:0.6rem 0.75rem;border-radius:8px;background:#f4f1eb;cursor:pointer;user-select:none}
-.sup-hdr h2{font-size:14px;font-weight:500;color:#1a0a00;flex:1;margin:0;outline:none;border-bottom:1px solid transparent;transition:border-color .15s}
-.sup-hdr h2:focus{border-bottom-color:#8b6914}
+.sup-hdr .sup-name{font-size:14px;font-weight:500;color:#1a0a00;flex:1;margin:0;padding:0;outline:none;border-bottom:1px solid transparent;transition:border-color .15s;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.sup-hdr .sup-name:focus{border-bottom-color:#8b6914}
 .sup-hdr .sup-day{font-size:12px;color:#666;margin-right:8px;white-space:nowrap}
 .sup-hdr .sup-tot{font-size:14px;font-weight:500;color:#1a0a00;white-space:nowrap}
 .sup-hdr .sup-tog{font-size:11px;color:#aaa;margin-left:6px}
@@ -2011,6 +2011,17 @@ function _toVisCat(cat){
   if(cat==='driverVan'||cat==='driverAccomm')return'experience';
   return'operational';
 }
+function _toTitleCase(s){
+  // If string is NOT already mixed-case (i.e. it's all-caps or all-lower), convert to title case
+  const hasLower=/[a-z]/.test(s), hasUpper=/[A-Z]/.test(s);
+  if(hasLower&&hasUpper)return s; // already mixed – leave alone
+  // Title-case: capitalise first letter of each word, lowercase the rest
+  // Preserve small connector words unless they start the string
+  const lowers=new Set(['a','an','the','and','or','but','of','in','on','at','to','for','by','with','from']);
+  return s.toLowerCase().replace(/\b\w+/g,(w,i)=>
+    (i===0||!lowers.has(w))?w.charAt(0).toUpperCase()+w.slice(1):w
+  );
+}
 function _guessSupplier(desc){
   let s=desc;
   // Strip weekday (just the word + comma/space, NOT the following digits)
@@ -2018,10 +2029,12 @@ function _guessSupplier(desc){
   // Strip date like "12 April 2027" or "April 12, 2027" or just "12 April"
   s=s.replace(/^\d{1,2}\s+(january|february|march|april|may|june|july|august|september|october|november|december|jan|feb|mar|apr|jun|jul|aug|sep|oct|nov|dec)[a-z]*[\s,\d]*/i,'');
   s=s.replace(/^(january|february|march|april|may|june|july|august|september|october|november|december|jan|feb|mar|apr|jun|jul|aug|sep|oct|nov|dec)[a-z]*[\s,\d]+/i,'');
-  // Strip "Check in", "Check out", "Day X", standalone ordinals
+  // Strip "Check in", "Check out", "Day X", "STAY", "1 of 2 nights", standalone ordinals
   s=s.replace(/^(check\s*in|check\s*out|day\s*\d+)[,.\s]*/i,'');
-  s=s.replace(/^\d+\s*/,'').trim();
-  return s.split(/\s+/).slice(0,4).join(' ').replace(/[,;:]$/,'').trim()||'Other';
+  s=s.replace(/^stay\s*[-–—]?\s*/i,'');
+  s=s.replace(/^\d+\s*(of\s*\d+\s*)?(night[s]?\s*)?/i,'').trim();
+  const raw=s.split(/\s+/).slice(0,5).join(' ').replace(/[,;:]$/,'').trim()||'Other';
+  return _toTitleCase(raw);
 }
 function _guessDay(desc){
   // Look for "Day 1", "Day 1-2", ordinal dates like "12 April" → just return empty for now
@@ -2116,11 +2129,11 @@ function costLinesRender(){
     const supEsc=sup.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
     return`<div class="sup-section">
       <div class="sup-hdr" onclick="toggleSupSection('${supKey}')">
-        <h2 contenteditable="true" spellcheck="false" data-orig="${supEsc}"
+        <span class="sup-name" contenteditable="true" spellcheck="false" data-orig="${supEsc}"
           title="Click to rename"
           onclick="event.stopPropagation()"
           onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}"
-          onblur="costRenameSup(this.dataset.orig,this.textContent.trim());this.dataset.orig=this.textContent.trim()">${supEsc}</h2>
+          onblur="costRenameSup(this.dataset.orig,this.textContent.trim());this.dataset.orig=this.textContent.trim()">${supEsc}</span>
         ${dayMeta?`<span class="sup-day">${dayMeta}</span>`:''}
         <span class="sup-tot">${fmt(supPP)} pp</span>
         <span class="sup-tog" id="stog_${supKey}">▾</span>
