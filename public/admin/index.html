@@ -168,36 +168,37 @@ tr:hover td{background:#faf8f3}
 /* RESPONSIVE TWEAKS */
 @media(max-width:900px){.stat-grid{grid-template-columns:1fr 1fr}.main{padding:20px}.tour-grid-admin{grid-template-columns:1fr 1fr}}
 @media(max-width:650px){.stat-grid{grid-template-columns:1fr}.sidebar{width:100%;position:relative;height:auto}.main{margin-left:0}}
-/* COST LINE ITEMS — exact match to reference pricing tool */
-.lines-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:1.5rem}
-.lm{background:#f4f1eb;border-radius:8px;padding:0.875rem 1rem}
-.lm .lm-l{font-size:12px;color:#666;margin-bottom:4px}
-.lm .lm-v{font-size:20px;font-weight:500;color:#1a0a00}
-.lm.lm-bold{border:0.5px solid #e0d5c5}
-.lm.lm-bold .lm-v{font-size:22px}
-.sup-section{margin-bottom:1.25rem}
-.sup-hdr{display:flex;align-items:center;gap:10px;padding:0.6rem 0.75rem;border-radius:8px;background:#f4f1eb;cursor:pointer;user-select:none}
-.sup-hdr .sup-name{font-size:14px;font-weight:500;color:#1a0a00;flex:1;margin:0;padding:0;outline:none;border-bottom:1px solid transparent;transition:border-color .15s;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
-.sup-hdr .sup-name:focus{border-bottom-color:#8b6914}
-.sup-hdr .sup-day{font-size:12px;color:#666;margin-right:8px;white-space:nowrap}
-.sup-hdr .sup-tot{font-size:14px;font-weight:500;color:#1a0a00;white-space:nowrap}
-.sup-hdr .sup-tog{font-size:11px;color:#aaa;margin-left:6px}
-.sup-body{border:0.5px solid #ede7d8;border-top:none;border-radius:0 0 8px 8px;margin-bottom:2px}
-.sup-tbl{width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed}
-.sup-tbl th{font-size:11px;font-weight:500;color:#aaa;text-align:left;padding:5px 8px;border-bottom:0.5px solid #ede7d8}
-.sup-tbl th.num,.sup-tbl td.num{text-align:right;font-variant-numeric:tabular-nums}
-.sup-tbl td{padding:5px 8px;border-bottom:0.5px solid #ede7d8;color:#1a0a00;vertical-align:middle}
-.sup-tbl tr:last-child td{border-bottom:none}
-.sup-tbl tr:hover td{background:#faf5e9}
-.day-badge{display:inline-block;font-size:10px;padding:1px 5px;border-radius:3px;background:#f4f1eb;color:#666;white-space:nowrap;margin-right:4px}
-.cat-badge{display:inline-block;font-size:10px;padding:1px 5px;border-radius:3px;margin-right:4px}
-.est-badge{display:inline-block;font-size:10px;padding:1px 5px;border-radius:3px;background:#fff8e1;color:#e65100}
-.price-wrap{display:flex;align-items:center;justify-content:flex-end;gap:3px}
-.price-input{width:72px;text-align:right;font-size:13px;font-variant-numeric:tabular-nums;border:0.5px solid #e0d5c5;border-radius:4px;padding:3px 5px;background:#fff;color:#1a0a00;outline:none}
-.price-input:focus{border-color:#8b6914}
-.price-input.ov{color:#1565c0;border-color:#90caf9}
-.currency{font-size:12px;color:#aaa}
-.group-total{font-size:13px;color:#1a0a00;font-variant-numeric:tabular-nums}
+/* COST LINE ITEMS — scoped to #costLinesList to avoid h2/global conflicts */
+#costLinesList .summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:1.5rem}
+#costLinesList .metric{background:#f4f1eb;border-radius:8px;padding:0.875rem 1rem}
+#costLinesList .metric .label{font-size:12px;color:#666;margin-bottom:4px}
+#costLinesList .metric .value{font-size:20px;font-weight:500;color:#1a0a00}
+#costLinesList .metric.bold{border:0.5px solid #e0d5c5}
+#costLinesList .metric.bold .value{font-size:22px}
+#costLinesList .cl-section{margin-bottom:1.25rem}
+#costLinesList .cl-hdr{display:flex;align-items:center;gap:10px;padding:0.6rem 0.75rem;border-radius:8px;background:#f4f1eb;cursor:pointer;user-select:none}
+#costLinesList .cl-hdr h2{font-size:14px;font-weight:500;color:#1a0a00;flex:1;margin:0;padding:0;line-height:1.3;outline:none;border-bottom:1px solid transparent;transition:border-color .15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+#costLinesList .cl-hdr h2:focus{border-bottom-color:#8b6914}
+#costLinesList .cl-hdr .cl-meta{font-size:12px;color:#666;white-space:nowrap}
+#costLinesList .cl-hdr .cl-tot{font-size:14px;font-weight:500;color:#1a0a00;white-space:nowrap}
+#costLinesList .cl-hdr .cl-tog{font-size:11px;color:#aaa;margin-left:4px}
+#costLinesList .cl-body{border:0.5px solid #ede7d8;border-top:none;border-radius:0 0 8px 8px;margin-bottom:2px}
+#costLinesList .cl-body.collapsed{display:none}
+#costLinesList .items-table{width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed}
+#costLinesList .items-table th{font-size:11px;font-weight:500;color:#aaa;text-align:left;padding:5px 8px;border-bottom:0.5px solid #ede7d8}
+#costLinesList .items-table th.num,#costLinesList .items-table td.num{text-align:right;font-variant-numeric:tabular-nums}
+#costLinesList .items-table td{padding:5px 8px;border-bottom:0.5px solid #ede7d8;color:#1a0a00;vertical-align:middle}
+#costLinesList .items-table tr:last-child td{border-bottom:none}
+#costLinesList .items-table tr:hover td{background:#faf5e9}
+#costLinesList .day-badge{display:inline-block;font-size:10px;padding:1px 5px;border-radius:3px;background:#f4f1eb;color:#666;white-space:nowrap;margin-right:4px}
+#costLinesList .cat-badge{display:inline-block;font-size:10px;padding:1px 5px;border-radius:3px;margin-right:4px}
+#costLinesList .est-badge{display:inline-block;font-size:10px;padding:1px 5px;border-radius:3px;background:#fff8e1;color:#e65100;margin-right:4px}
+#costLinesList .price-wrap{display:flex;align-items:center;justify-content:flex-end;gap:3px}
+#costLinesList .price-input{width:72px;text-align:right;font-size:13px;font-variant-numeric:tabular-nums;border:0.5px solid #e0d5c5;border-radius:4px;padding:3px 5px;background:#fff;color:#1a0a00;outline:none}
+#costLinesList .price-input:focus{border-color:#8b6914}
+#costLinesList .price-input.ov{color:#1565c0;border-color:#90caf9}
+#costLinesList .currency{font-size:12px;color:#aaa}
+#costLinesList .group-total{font-size:13px;color:#1a0a00;font-variant-numeric:tabular-nums}
 /* SPREADSHEET IMPORT MODAL */
 .sheet-import-table{width:100%;border-collapse:collapse;font-size:12.5px}
 .sheet-import-table th{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#888;padding:8px 10px;border-bottom:2px solid #f0ebe0;text-align:left;background:#faf8f3}
@@ -2056,21 +2057,27 @@ function costLinesRender(){
 
   const guests=Number(document.getElementById('ctTargetPax')?.value)||10;
 
-  // Category totals for summary
+  // Snapshot collapsed state before re-render
+  const wasCollapsed={};
+  document.querySelectorAll('#costLinesList .cl-body').forEach(el=>{
+    if(el.id)wasCollapsed[el.id]=el.classList.contains('collapsed');
+  });
+
+  // Category totals
   const catTotals={accommodation:0,tasting:0,dining:0,experience:0,operational:0};
   lines.forEach(l=>{catTotals[_toVisCat(l.cat)]+=(l.amount||0);});
   const grandPP=Object.values(catTotals).reduce((a,b)=>a+b,0);
 
-  const summaryHtml=`<div class="lines-summary">
-    <div class="lm"><div class="lm-l">Accommodation</div><div class="lm-v">${fmt(catTotals.accommodation)}</div></div>
-    <div class="lm"><div class="lm-l">Wine Tastings</div><div class="lm-v">${fmt(catTotals.tasting)}</div></div>
-    <div class="lm"><div class="lm-l">Dining &amp; Drinks</div><div class="lm-v">${fmt(catTotals.dining)}</div></div>
-    <div class="lm"><div class="lm-l">Transport &amp; Exp</div><div class="lm-v">${fmt(catTotals.experience)}</div></div>
-    <div class="lm lm-bold"><div class="lm-l">Total per person</div><div class="lm-v">${fmt(grandPP)}</div></div>
-    <div class="lm lm-bold"><div class="lm-l">Total (${guests} guests)</div><div class="lm-v">${fmt(grandPP*guests)}</div></div>
+  const summaryHtml=`<div class="summary-grid">
+    <div class="metric"><div class="label">Accommodation</div><div class="value">${fmt(catTotals.accommodation)}</div></div>
+    <div class="metric"><div class="label">Wine Tastings</div><div class="value">${fmt(catTotals.tasting)}</div></div>
+    <div class="metric"><div class="label">Dining &amp; Drinks</div><div class="value">${fmt(catTotals.dining)}</div></div>
+    <div class="metric"><div class="label">Transport &amp; Exp</div><div class="value">${fmt(catTotals.experience)}</div></div>
+    <div class="metric bold"><div class="label">Total per person</div><div class="value">${fmt(grandPP)}</div></div>
+    <div class="metric bold"><div class="label">Total (${guests} guests)</div><div class="value">${fmt(grandPP*guests)}</div></div>
   </div>`;
 
-  // Build supplier groups preserving import order
+  // Group lines by supplier, preserving import order
   const groupMap={},groupOrder=[];
   lines.forEach((l,i)=>{
     const sup=(l.supplier||'Other').trim();
@@ -2082,25 +2089,24 @@ function costLinesRender(){
     const items=groupMap[sup];
     const supPP=items.reduce((a,l)=>a+(l.amount||0),0);
     const supKey='s'+btoa(unescape(encodeURIComponent(sup))).replace(/[^a-z0-9]/gi,'').slice(0,12);
-    // Build day range for header meta
-    const days=items.map(l=>l.day||'').filter(Boolean);
-    const dayMeta=days.length?'Day '+[...new Set(days)].join(', '):'';
+    const days=[...new Set(items.map(l=>l.day||'').filter(Boolean))];
+    const dayMeta=days.length?'Day '+days.join(' & '):'';
+    const bodyId='sbdy_'+supKey;
+    const collapsed=wasCollapsed[bodyId]?' collapsed':'';
 
     const rowsHtml=items.map(l=>{
-      const vc=_toVisCat(l.cat);
-      const vci=_VIS_CATS[vc];
+      const vci=_VIS_CATS[_toVisCat(l.cat)];
       const catBadge=`<span class="cat-badge" style="background:${vci.color}18;color:${vci.color}">${vci.label}</span>`;
-      const estBadge=l.est?` <span class="est-badge">est</span>`:'';
-      const dayTxt=l.day?`D${l.day}`:'—';
+      const estBadge=l.est?`<span class="est-badge">est</span>`:'';
       const grpAmt=(l.amount||0)*guests;
       const grpTxt=l.perNight?`${l.nights||1} nts = $${Math.round((l.amount||0)*(l.nights||1)*guests).toLocaleString()}`:`$${Math.round(grpAmt).toLocaleString()}`;
       const isOv=l.origAmount!==undefined&&l.amount!==l.origAmount;
       const catSel=_SHEET_CATS.filter(c=>c.v!=='skip').map(c=>`<option value="${c.v}"${c.v===l.cat?' selected':''}>${c.l}</option>`).join('');
-      const descEsc=(l.desc||'').replace(/"/g,'&quot;');
+      const descEsc=(l.desc||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;');
       const dayEsc=(l.day||'').replace(/"/g,'&quot;');
       return`<tr>
         <td style="width:52px">
-          <input type="text" value="${dayEsc}" placeholder="—" title="Day"
+          <input type="text" value="${dayEsc}" placeholder="—"
             style="width:38px;padding:1px 4px;border:0.5px solid #e0d5c5;border-radius:3px;font-size:10px;outline:none;text-align:center;background:#f4f1eb;color:#666"
             onchange="costLineUpdate(${l._i},'day',this.value);costLinesRender()"
             onfocus="this.style.borderColor='#8b6914'" onblur="this.style.borderColor='#e0d5c5'">
@@ -2110,7 +2116,8 @@ function costLinesRender(){
           <input type="text" value="${descEsc}" placeholder="Description"
             style="border:none;outline:none;font-size:13px;background:transparent;color:#1a0a00;width:calc(100% - 10px);margin-top:2px;display:block"
             onchange="costLineUpdate(${l._i},'desc',this.value)">
-          <select style="font-size:11px;padding:1px 5px;border:0.5px solid #e0d5c5;border-radius:3px;outline:none;background:#fff;color:#666;margin-top:3px;max-width:220px" onchange="costLineUpdate(${l._i},'cat',this.value)">${catSel}</select>
+          <select style="font-size:11px;padding:1px 5px;border:0.5px solid #e0d5c5;border-radius:3px;outline:none;background:#fff;color:#666;margin-top:3px;max-width:220px"
+            onchange="costLineUpdate(${l._i},'cat',this.value)">${catSel}</select>
         </td>
         <td class="num" style="width:115px">
           <div class="price-wrap">
@@ -2127,19 +2134,19 @@ function costLinesRender(){
     }).join('');
 
     const supEsc=sup.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
-    return`<div class="sup-section">
-      <div class="sup-hdr" onclick="toggleSupSection('${supKey}')">
-        <span class="sup-name" contenteditable="true" spellcheck="false" data-orig="${supEsc}"
-          title="Click to rename"
+    return`<div class="cl-section">
+      <div class="cl-hdr" onclick="toggleSupSection('${supKey}')">
+        <h2 contenteditable="true" spellcheck="false" data-orig="${supEsc}"
+          title="Click to rename supplier"
           onclick="event.stopPropagation()"
           onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}"
-          onblur="costRenameSup(this.dataset.orig,this.textContent.trim());this.dataset.orig=this.textContent.trim()">${supEsc}</span>
-        ${dayMeta?`<span class="sup-day">${dayMeta}</span>`:''}
-        <span class="sup-tot">${fmt(supPP)} pp</span>
-        <span class="sup-tog" id="stog_${supKey}">▾</span>
+          onblur="costRenameSup(this.dataset.orig,this.textContent.trim());this.dataset.orig=this.textContent.trim()">${supEsc}</h2>
+        ${dayMeta?`<span class="cl-meta">${dayMeta}</span>`:''}
+        <span class="cl-tot">${fmt(supPP)} pp</span>
+        <span class="cl-tog" id="stog_${supKey}">▾</span>
       </div>
-      <div class="sup-body" id="sbdy_${supKey}">
-        <table class="sup-tbl">
+      <div class="cl-body${collapsed}" id="${bodyId}">
+        <table class="items-table">
           <thead><tr>
             <th style="width:52px">Day</th>
             <th>Item</th>
@@ -2168,9 +2175,8 @@ function toggleSupSection(key){
   const body=document.getElementById('sbdy_'+key);
   const tog=document.getElementById('stog_'+key);
   if(!body)return;
-  const hidden=body.style.display==='none';
-  body.style.display=hidden?'':'none';
-  if(tog)tog.textContent=hidden?'▾':'▸';
+  const nowCollapsed=body.classList.toggle('collapsed');
+  if(tog)tog.textContent=nowCollapsed?'▸':'▾';
 }
 
 function costAddLine(){
