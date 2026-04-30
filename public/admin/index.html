@@ -168,33 +168,36 @@ tr:hover td{background:#faf8f3}
 /* RESPONSIVE TWEAKS */
 @media(max-width:900px){.stat-grid{grid-template-columns:1fr 1fr}.main{padding:20px}.tour-grid-admin{grid-template-columns:1fr 1fr}}
 @media(max-width:650px){.stat-grid{grid-template-columns:1fr}.sidebar{width:100%;position:relative;height:auto}.main{margin-left:0}}
-/* COST LINE ITEMS — SUPPLIER GROUPED */
-.lines-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-bottom:16px}
-.lm{background:#faf8f3;border-radius:8px;padding:10px 12px}
-.lm .lm-l{font-size:10.5px;color:#888;margin-bottom:3px}
-.lm .lm-v{font-size:16px;font-weight:700;color:#1a0a00}
-.lm.lm-bold{border:1.5px solid #e0d5c5}
-.lm.lm-bold .lm-v{color:#8b6914;font-size:18px}
-.sup-section{margin-bottom:8px;border:0.5px solid #e8e0cc;border-radius:9px;overflow:hidden}
-.sup-hdr{display:flex;align-items:center;padding:9px 14px;background:#faf8f3;cursor:pointer;user-select:none;gap:8px}
-.sup-hdr h4{font-size:13.5px;font-weight:600;color:#1a0a00;flex:1;margin:0}
-.sup-hdr .sup-day{font-size:12px;color:#999;white-space:nowrap}
-.sup-hdr .sup-tot{font-size:14px;font-weight:700;color:#1a0a00;white-space:nowrap;margin-left:4px}
-.sup-hdr .sup-tog{font-size:11px;color:#bbb;margin-left:6px}
-.sup-body{border-top:0.5px solid #e8e0cc}
+/* COST LINE ITEMS — exact match to reference pricing tool */
+.lines-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:1.5rem}
+.lm{background:#f4f1eb;border-radius:8px;padding:0.875rem 1rem}
+.lm .lm-l{font-size:12px;color:#666;margin-bottom:4px}
+.lm .lm-v{font-size:20px;font-weight:500;color:#1a0a00}
+.lm.lm-bold{border:0.5px solid #e0d5c5}
+.lm.lm-bold .lm-v{font-size:22px}
+.sup-section{margin-bottom:1.25rem}
+.sup-hdr{display:flex;align-items:center;gap:10px;padding:0.6rem 0.75rem;border-radius:8px;background:#f4f1eb;cursor:pointer;user-select:none}
+.sup-hdr h2{font-size:14px;font-weight:500;color:#1a0a00;flex:1;margin:0;outline:none;border-bottom:1px solid transparent;transition:border-color .15s}
+.sup-hdr h2:focus{border-bottom-color:#8b6914}
+.sup-hdr .sup-day{font-size:12px;color:#666;margin-right:8px;white-space:nowrap}
+.sup-hdr .sup-tot{font-size:14px;font-weight:500;color:#1a0a00;white-space:nowrap}
+.sup-hdr .sup-tog{font-size:11px;color:#aaa;margin-left:6px}
+.sup-body{border:0.5px solid #ede7d8;border-top:none;border-radius:0 0 8px 8px;margin-bottom:2px}
 .sup-tbl{width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed}
-.sup-tbl th{font-size:11px;font-weight:500;color:#aaa;padding:5px 10px;border-bottom:0.5px solid #ede7d8;text-align:left}
-.sup-tbl th.r,.sup-tbl td.r{text-align:right}
-.sup-tbl td{padding:7px 10px;border-bottom:0.5px solid #f0ebe0;vertical-align:middle;color:#1a0a00}
+.sup-tbl th{font-size:11px;font-weight:500;color:#aaa;text-align:left;padding:5px 8px;border-bottom:0.5px solid #ede7d8}
+.sup-tbl th.num,.sup-tbl td.num{text-align:right;font-variant-numeric:tabular-nums}
+.sup-tbl td{padding:5px 8px;border-bottom:0.5px solid #ede7d8;color:#1a0a00;vertical-align:middle}
 .sup-tbl tr:last-child td{border-bottom:none}
 .sup-tbl tr:hover td{background:#faf5e9}
-.day-badge{display:inline-block;font-size:10px;padding:2px 6px;border-radius:3px;background:#f0ebe0;color:#666;white-space:nowrap}
-.vis-badge{display:inline-block;font-size:10px;padding:2px 6px;border-radius:4px;margin-right:4px;font-weight:500;white-space:nowrap}
-.est-pill{display:inline-block;font-size:10px;padding:2px 5px;border-radius:3px;background:#fff8e1;color:#e65100;margin-right:4px}
-.pp-inp{width:72px;text-align:right;font-size:14px;border:0.5px solid #d0c8b8;border-radius:5px;padding:4px 6px;outline:none;background:#fff;font-variant-numeric:tabular-nums}
-.pp-inp:focus{border-color:#8b6914}
-.pp-inp.ov{color:#1565c0;border-color:#90caf9}
-.grp-tot{font-size:13px;font-weight:500;color:#333;font-variant-numeric:tabular-nums}
+.day-badge{display:inline-block;font-size:10px;padding:1px 5px;border-radius:3px;background:#f4f1eb;color:#666;white-space:nowrap;margin-right:4px}
+.cat-badge{display:inline-block;font-size:10px;padding:1px 5px;border-radius:3px;margin-right:4px}
+.est-badge{display:inline-block;font-size:10px;padding:1px 5px;border-radius:3px;background:#fff8e1;color:#e65100}
+.price-wrap{display:flex;align-items:center;justify-content:flex-end;gap:3px}
+.price-input{width:72px;text-align:right;font-size:13px;font-variant-numeric:tabular-nums;border:0.5px solid #e0d5c5;border-radius:4px;padding:3px 5px;background:#fff;color:#1a0a00;outline:none}
+.price-input:focus{border-color:#8b6914}
+.price-input.ov{color:#1565c0;border-color:#90caf9}
+.currency{font-size:12px;color:#aaa}
+.group-total{font-size:13px;color:#1a0a00;font-variant-numeric:tabular-nums}
 /* SPREADSHEET IMPORT MODAL */
 .sheet-import-table{width:100%;border-collapse:collapse;font-size:12.5px}
 .sheet-import-table th{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#888;padding:8px 10px;border-bottom:2px solid #f0ebe0;text-align:left;background:#faf8f3}
@@ -2073,55 +2076,51 @@ function costLinesRender(){
     const rowsHtml=items.map(l=>{
       const vc=_toVisCat(l.cat);
       const vci=_VIS_CATS[vc];
-      const badge=`<span class="vis-badge" style="background:${vci.color}1a;color:${vci.color}">${vci.label}</span>`;
-      const estPill=l.est?`<span class="est-pill">est</span>`:'';
-      const dayBadge=l.day?`<span class="day-badge">D${l.day}</span>`:`<span class="day-badge">—</span>`;
+      const catBadge=`<span class="cat-badge" style="background:${vci.color}18;color:${vci.color}">${vci.label}</span>`;
+      const estBadge=l.est?` <span class="est-badge">est</span>`:'';
+      const dayTxt=l.day?`D${l.day}`:'—';
       const grpAmt=(l.amount||0)*guests;
-      const grpTxt=l.perNight?`${l.nights||1} nts = ${fmt((l.amount||0)*(l.nights||1)*guests)}`:`${fmt(grpAmt)}`;
+      const grpTxt=l.perNight?`${l.nights||1} nts = $${Math.round((l.amount||0)*(l.nights||1)*guests).toLocaleString()}`:`$${Math.round(grpAmt).toLocaleString()}`;
       const isOv=l.origAmount!==undefined&&l.amount!==l.origAmount;
       const catSel=_SHEET_CATS.filter(c=>c.v!=='skip').map(c=>`<option value="${c.v}"${c.v===l.cat?' selected':''}>${c.l}</option>`).join('');
       const descEsc=(l.desc||'').replace(/"/g,'&quot;');
       const dayEsc=(l.day||'').replace(/"/g,'&quot;');
       return`<tr>
-        <td style="width:54px;text-align:center">
-          <input type="text" value="${dayEsc}" placeholder="—" title="Day number"
-            style="width:42px;padding:3px 4px;border:0.5px solid #e0d5c5;border-radius:4px;font-size:10px;outline:none;text-align:center;background:#faf8f3"
+        <td style="width:52px">
+          <input type="text" value="${dayEsc}" placeholder="—" title="Day"
+            style="width:38px;padding:1px 4px;border:0.5px solid #e0d5c5;border-radius:3px;font-size:10px;outline:none;text-align:center;background:#f4f1eb;color:#666"
             onchange="costLineUpdate(${l._i},'day',this.value);costLinesRender()"
             onfocus="this.style.borderColor='#8b6914'" onblur="this.style.borderColor='#e0d5c5'">
         </td>
         <td>
-          <div style="display:flex;align-items:center;flex-wrap:wrap;gap:2px;margin-bottom:3px">${badge}${estPill}</div>
+          ${catBadge}${estBadge}
           <input type="text" value="${descEsc}" placeholder="Description"
-            style="border:none;outline:none;font-size:13px;width:100%;background:transparent;color:#1a0a00"
+            style="border:none;outline:none;font-size:13px;background:transparent;color:#1a0a00;width:calc(100% - 10px);margin-top:2px;display:block"
             onchange="costLineUpdate(${l._i},'desc',this.value)">
-          <div style="margin-top:4px">
-            <select style="font-size:11px;padding:2px 6px;border:0.5px solid #e0d5c5;border-radius:4px;outline:none;background:#fff;color:#555;max-width:240px" onchange="costLineUpdate(${l._i},'cat',this.value)">${catSel}</select>
-          </div>
+          <select style="font-size:11px;padding:1px 5px;border:0.5px solid #e0d5c5;border-radius:3px;outline:none;background:#fff;color:#666;margin-top:3px;max-width:220px" onchange="costLineUpdate(${l._i},'cat',this.value)">${catSel}</select>
         </td>
-        <td class="r" style="width:125px;white-space:nowrap">
-          <div style="display:flex;align-items:center;justify-content:flex-end;gap:3px">
-            <span style="color:#aaa;font-size:12px">$</span>
-            <input class="pp-inp${isOv?' ov':''}" type="number" min="0" step="1" value="${Math.round(l.amount||0)}"
+        <td class="num" style="width:115px">
+          <div class="price-wrap">
+            <span class="currency">$</span>
+            <input class="price-input${isOv?' ov':''}" type="number" min="0" step="1" value="${Math.round(l.amount||0)}"
               oninput="costLineUpdate(${l._i},'amount',this.value)"
               ondblclick="costLineReset(${l._i})" title="Double-click to reset to original">
-            ${l.perNight?'<span style="font-size:11px;color:#aaa">/nt</span>':''}
+            ${l.perNight?'<span style="font-size:11px;color:#aaa">/night</span>':''}
           </div>
         </td>
-        <td class="r" style="width:115px"><span class="grp-tot">${grpTxt}</span></td>
-        <td style="width:28px"><button class="btn-icon" onclick="costLineDelete(${l._i})" style="color:#ddd;font-size:12px" title="Remove">✕</button></td>
+        <td class="num" style="width:130px"><span class="group-total">${grpTxt}</span></td>
+        <td style="width:28px"><button class="btn-icon" onclick="costLineDelete(${l._i})" style="color:#ddd;font-size:11px" title="Remove">✕</button></td>
       </tr>`;
     }).join('');
 
     const supEsc=sup.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
     return`<div class="sup-section">
       <div class="sup-hdr" onclick="toggleSupSection('${supKey}')">
-        <h4 contenteditable="true" spellcheck="false" data-orig="${supEsc}"
-          title="Click to rename this supplier group"
+        <h2 contenteditable="true" spellcheck="false" data-orig="${supEsc}"
+          title="Click to rename"
           onclick="event.stopPropagation()"
           onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}"
-          onblur="costRenameSup(this.dataset.orig,this.textContent.trim());this.dataset.orig=this.textContent.trim()"
-          style="cursor:text;outline:none;border-bottom:1px dashed transparent;transition:border .15s"
-          onfocus="this.style.borderBottomColor='#8b6914'" onblurCapture="this.style.borderBottomColor='transparent'">${supEsc}</h4>
+          onblur="costRenameSup(this.dataset.orig,this.textContent.trim());this.dataset.orig=this.textContent.trim()">${supEsc}</h2>
         ${dayMeta?`<span class="sup-day">${dayMeta}</span>`:''}
         <span class="sup-tot">${fmt(supPP)} pp</span>
         <span class="sup-tog" id="stog_${supKey}">▾</span>
@@ -2129,10 +2128,10 @@ function costLinesRender(){
       <div class="sup-body" id="sbdy_${supKey}">
         <table class="sup-tbl">
           <thead><tr>
-            <th style="width:54px">Day</th>
+            <th style="width:52px">Day</th>
             <th>Item</th>
-            <th class="r" style="width:125px">Per person</th>
-            <th class="r" style="width:115px">Group total</th>
+            <th class="num" style="width:115px">Per person</th>
+            <th class="num" style="width:130px">Group total</th>
             <th style="width:28px"></th>
           </tr></thead>
           <tbody>${rowsHtml}</tbody>
