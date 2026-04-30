@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Wine Journeys — Admin Portal</title>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Segoe UI',Arial,sans-serif;background:#f4f1eb;color:#2c2c2c;min-height:100vh}
@@ -166,6 +167,16 @@ tr:hover td{background:#faf8f3}
 /* RESPONSIVE TWEAKS */
 @media(max-width:900px){.stat-grid{grid-template-columns:1fr 1fr}.main{padding:20px}.tour-grid-admin{grid-template-columns:1fr 1fr}}
 @media(max-width:650px){.stat-grid{grid-template-columns:1fr}.sidebar{width:100%;position:relative;height:auto}.main{margin-left:0}}
+/* SPREADSHEET IMPORT MODAL */
+.sheet-import-table{width:100%;border-collapse:collapse;font-size:12.5px}
+.sheet-import-table th{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#888;padding:8px 10px;border-bottom:2px solid #f0ebe0;text-align:left;background:#faf8f3}
+.sheet-import-table td{padding:7px 10px;border-bottom:1px solid #f5f0e8;vertical-align:middle}
+.sheet-import-table tr:hover td{background:#faf5e9}
+.sheet-import-table select{padding:5px 8px;border:1.5px solid #e0d5c5;border-radius:5px;font-size:12px;outline:none;min-width:200px}
+.sheet-import-table select:focus{border-color:#8b6914}
+.sheet-import-table .amt-cell{font-weight:600;color:#2e7d32;white-space:nowrap;text-align:right}
+.sheet-import-skip td{opacity:.35;text-decoration:line-through}
+.import-sub{font-size:12.5px;color:#666;margin-bottom:6px}
 </style>
 </head>
 <body>
@@ -1697,18 +1708,30 @@ function costSaveSilent(){
 }
 
 /* Documents */
+const _SHEET_EXTS=['xlsx','xls','csv','ods','xlsm','xlsb','numbers'];
+function _isSpreadsheet(name){return _SHEET_EXTS.includes(name.split('.').pop().toLowerCase());}
+
 function costUploadDocs(input){
   if(!costCurrData){toast('Create or load a tour first');return;}
   const files=Array.from(input.files);
   if(!files.length)return;
   costCurrData.documents=costCurrData.documents||[];
+  const spreadsheets=files.filter(f=>_isSpreadsheet(f.name));
   let done=0;
   files.forEach(f=>{
     const reader=new FileReader();
     reader.onload=e=>{
       costCurrData.documents.push({name:f.name,type:f.type,size:f.size,data:e.target.result,uploadedAt:new Date().toISOString()});
       done++;
-      if(done===files.length){costRenderDocs();costSaveSilent();toast(`${done} file${done>1?'s':''} attached`);}
+      if(done===files.length){
+        costRenderDocs();costSaveSilent();
+        if(spreadsheets.length){
+          toast(`${done} file${done>1?'s':''} attached — reading spreadsheet…`);
+          costParseSpreadsheet(spreadsheets[0]);
+        } else {
+          toast(`${done} file${done>1?'s':''} attached`);
+        }
+      }
     };
     reader.readAsDataURL(f);
   });
@@ -1887,6 +1910,140 @@ function toast(msg){
 }
 
 /* =========================================================
+   SPREADSHEET IMPORT
+   ========================================================= */
+function costParseSpreadsheet(file){
+  if(typeof XLSX==='undefined'){toast('SheetJS library not loaded — try refreshing');return;}
+  const rdr=new FileReader();
+  rdr.onload=e=>{
+    try{
+      const wb=XLSX.read(new Uint8Array(e.target.result),{type:'array'});
+      const ws=wb.Sheets[wb.SheetNames[0]];
+      const raw=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+      const rows=_sheetBuildRows(raw);
+      if(!rows.length){toast('No cost items detected in spreadsheet');return;}
+      _sheetShowModal(rows,file.name);
+    }catch(err){toast('Could not parse spreadsheet: '+err.message);}
+  };
+  rdr.readAsArrayBuffer(file);
+}
+
+function _sheetBuildRows(raw){
+  const results=[];
+  raw.forEach(row=>{
+    if(!row||row.length<2)return;
+    let label='',amount=null,currency='AUD';
+    row.forEach(cell=>{
+      if(typeof cell==='string'){
+        const t=cell.trim();
+        if(t&&!label&&t.length>1&&!/^\d[\d,.\s]*$/.test(t))label=t;
+        if(/\bEUR\b/i.test(t))currency='EUR';
+        if(/\bUSD\b/i.test(t))currency='USD';
+        // extract number from strings like "$1,200.00"
+        if(amount===null){const m=t.replace(/[$€,]/g,'').match(/^\d+(\.\d+)?$/);if(m)amount=parseFloat(m[0]);}
+      } else if(typeof cell==='number'&&cell>0&&amount===null){
+        amount=cell;
+      }
+    });
+    if(!label||amount===null||amount<=0)return;
+    // skip obvious header rows
+    if(/^(description|item|cost|amount|total|price|category|detail)$/i.test(label.trim()))return;
+    results.push({label,amount,currency,cat:_sheetDetectCat(label)});
+  });
+  return results;
+}
+
+function _sheetDetectCat(label){
+  const l=label.toLowerCase();
+  if(/\b(host wage|guide wage|host salary|guide salary|guide fee|host fee|lead guide|hosting fee)\b/.test(l))return'hostWages';
+  if(/\b(host airfare|host flight|guide flight|guide airfare|host air ticket|flights? for (host|guide))\b/.test(l))return'hostAirfares';
+  if(/\b(pre.?tour accomm|pre.?tour hotel|host accomm|pre.?departure accomm|pre.?tour accommodation)\b/.test(l))return'preTourAccomm';
+  if(/\b(driver accomm|driver hotel|driver accommodation|driver lodg)\b/.test(l))return'driverAccomm';
+  if(/\b(driver|van hire|coach hire|vehicle hire|transfer cost|bus hire|bus cost|transport cost|charter)\b/.test(l))return'driverVan';
+  if(/\b(market|adverti|promot|social media|facebook ads|instagram|google ads|digital ads)\b/.test(l))return'marketing';
+  if(/\b(hotel|accommodation|lodge|resort|motel|hostel|room(s)?|villa|b&b|bnb|pension|chalet|inn)\b/.test(l))return'hotel';
+  if(/\b(food|meal|meals|dining|breakfast|lunch|dinner|cater|restaurant|cuisine|cuisine)\b/.test(l))return'foodCost';
+  if(/\b(wine|drink|drinks|beverage|beverages|glass|glasses|alcohol|beer|champagne|cocktail|spirits?|tasting (fee|cost))\b/.test(l))return'drinksCost';
+  if(/\b(tour|winery|cellar door|excursion|experience|tasting|activity|activities|sightseeing|entrance|visit)\b/.test(l))return'toursCost';
+  if(/\b(misc|miscellaneous|sundry|general|various|other)\b/.test(l)&&/\b(var|variable|per person|pp|per guest|per pax)\b/.test(l))return'varMisc';
+  return'fixedMisc';
+}
+
+const _SHEET_CATS=[
+  {v:'hostWages',    l:'Host Wages (AUD)'},
+  {v:'hostAirfares', l:'Host Airfares ×hosts (AUD)'},
+  {v:'preTourAccomm',l:'Pre-Tour Accommodation (EUR)'},
+  {v:'driverVan',    l:'Driver / Van Transfer (EUR)'},
+  {v:'driverAccomm', l:'Driver Accommodation (EUR)'},
+  {v:'marketing',    l:'Marketing (AUD)'},
+  {v:'hotel',        l:'Hotel Twin pp/night (EUR) → adds hotel row'},
+  {v:'foodCost',     l:'Food Cost pp/night (EUR)'},
+  {v:'drinksCost',   l:'Drinks Cost pp/glass (EUR)'},
+  {v:'toursCost',    l:'Tours / Excursions pp (EUR)'},
+  {v:'varMisc',      l:'Variable Misc pp/night (EUR)'},
+  {v:'fixedMisc',    l:'Fixed Misc (AUD)'},
+  {v:'skip',         l:'— Skip this row —'}
+];
+
+let _sheetRows=[];
+function _sheetShowModal(rows,filename){
+  _sheetRows=rows;
+  document.getElementById('importSheetFilename').textContent=filename;
+  document.getElementById('importSheetCount').textContent=rows.length+' item'+(rows.length!==1?'s':'')+' detected';
+  const opts=_SHEET_CATS.map(c=>`<option value="${c.v}">${c.l}</option>`).join('');
+  document.getElementById('importSheetRows').innerHTML=rows.map((r,i)=>{
+    const sel=_SHEET_CATS.map(c=>`<option value="${c.v}"${c.v===r.cat?' selected':''}>${c.l}</option>`).join('');
+    const sym=r.currency==='EUR'?'€':r.currency==='USD'?'$US':'$';
+    return`<tr id="isr${i}">
+      <td style="text-align:center"><input type="checkbox" id="isc${i}" checked onchange="sheetRowToggle(${i})"></td>
+      <td style="max-width:220px;word-break:break-word;font-size:12px">${r.label}</td>
+      <td><select id="isCat${i}" onchange="sheetCatChange(${i})">${sel}</select></td>
+      <td class="amt-cell">${sym}${r.amount.toLocaleString('en-AU',{minimumFractionDigits:2,maximumFractionDigits:2})}</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('importSheetModal').classList.add('open');
+}
+
+function sheetRowToggle(i){
+  document.getElementById('isr'+i).classList.toggle('sheet-import-skip',!document.getElementById('isc'+i).checked);
+}
+function sheetSelectAll(chk){
+  _sheetRows.forEach((_,i)=>{document.getElementById('isc'+i).checked=chk;sheetRowToggle(i);});
+}
+function sheetCatChange(i){
+  const v=document.getElementById('isCat'+i).value;
+  document.getElementById('isc'+i).checked=v!=='skip';
+  sheetRowToggle(i);
+}
+
+function costImportSelected(){
+  if(!costCurrData){toast('Create or load a tour first');return;}
+  const fieldMap={hostWages:'costHostWages',hostAirfares:'costHostAirfares',preTourAccomm:'costPreTourAccomm',
+    driverVan:'costDriverVan',driverAccomm:'costDriverAccomm',marketing:'costMarketing',
+    foodCost:'costFoodCost',drinksCost:'costDrinksCost',toursCost:'costToursCost',varMisc:'costVarMisc',fixedMisc:'costFixedMisc'};
+  let n=0;
+  _sheetRows.forEach((r,i)=>{
+    if(!document.getElementById('isc'+i).checked)return;
+    const cat=document.getElementById('isCat'+i).value;
+    if(cat==='skip')return;
+    if(cat==='hotel'){
+      costCurrData.hotels=costCurrData.hotels||[];
+      costCurrData.hotels.push({name:r.label,twin:r.amount,single:+(r.amount*1.4).toFixed(2),nights:1});
+      costRenderHotels();
+    } else {
+      const fid=fieldMap[cat];
+      const el=fid&&document.getElementById(fid);
+      if(el){const cur=parseFloat(el.value)||0;el.value=+(cur+r.amount).toFixed(2);}
+    }
+    n++;
+  });
+  closeModal('importSheetModal');
+  costCalculateAndRender();
+  costSaveSilent();
+  toast(`${n} line${n!==1?'s':''} imported into costing ✓`);
+}
+
+/* =========================================================
    BOOT
    ========================================================= */
 if(localStorage.getItem(SESSION_KEY)==='1'){
@@ -1898,5 +2055,31 @@ if(localStorage.getItem(SESSION_KEY)==='1'){
   window.location.replace('/login/?tab=admin');
 }
 </script>
+<!-- SPREADSHEET IMPORT MODAL -->
+<div class="modal-overlay" id="importSheetModal">
+  <div class="modal" style="width:800px;max-width:96vw">
+    <h3>📊 Import from Spreadsheet</h3>
+    <p class="import-sub"><strong id="importSheetFilename"></strong> &mdash; <span id="importSheetCount"></span></p>
+    <p class="import-sub" style="margin-bottom:14px">Review the detected cost items. Adjust the category mapping for each row, then click <strong>Import Selected</strong> to apply them to the costing form.</p>
+    <div style="max-height:360px;overflow-y:auto;border:1px solid #f0ebe0;border-radius:8px">
+      <table class="sheet-import-table">
+        <thead>
+          <tr>
+            <th style="width:36px;text-align:center"><input type="checkbox" checked title="Select / deselect all" onchange="sheetSelectAll(this.checked)"></th>
+            <th>Description (from spreadsheet)</th>
+            <th>Map to Cost Field</th>
+            <th style="text-align:right">Amount</th>
+          </tr>
+        </thead>
+        <tbody id="importSheetRows"></tbody>
+      </table>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('importSheetModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="costImportSelected()">✓ Import Selected</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
