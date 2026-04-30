@@ -2009,9 +2009,14 @@ function _toVisCat(cat){
   return'operational';
 }
 function _guessSupplier(desc){
-  let s=desc.replace(/^(monday|tuesday|wednesday|thursday|friday|saturday|sunday)[,.\s\d]*/i,'');
-  s=s.replace(/^\d+\s+(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*[\s\d,]*/i,'');
-  s=s.replace(/^(check in|check out|day\s*\d+)[,.\s]*/i,'');
+  let s=desc;
+  // Strip weekday (just the word + comma/space, NOT the following digits)
+  s=s.replace(/^(monday|tuesday|wednesday|thursday|friday|saturday|sunday)[,\s]+/i,'');
+  // Strip date like "12 April 2027" or "April 12, 2027" or just "12 April"
+  s=s.replace(/^\d{1,2}\s+(january|february|march|april|may|june|july|august|september|october|november|december|jan|feb|mar|apr|jun|jul|aug|sep|oct|nov|dec)[a-z]*[\s,\d]*/i,'');
+  s=s.replace(/^(january|february|march|april|may|june|july|august|september|october|november|december|jan|feb|mar|apr|jun|jul|aug|sep|oct|nov|dec)[a-z]*[\s,\d]+/i,'');
+  // Strip "Check in", "Check out", "Day X", standalone ordinals
+  s=s.replace(/^(check\s*in|check\s*out|day\s*\d+)[,.\s]*/i,'');
   s=s.replace(/^\d+\s*/,'').trim();
   return s.split(/\s+/).slice(0,4).join(' ').replace(/[,;:]$/,'').trim()||'Other';
 }
@@ -2107,9 +2112,16 @@ function costLinesRender(){
       </tr>`;
     }).join('');
 
+    const supEsc=sup.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
     return`<div class="sup-section">
       <div class="sup-hdr" onclick="toggleSupSection('${supKey}')">
-        <h4>${sup}</h4>
+        <h4 contenteditable="true" spellcheck="false" data-orig="${supEsc}"
+          title="Click to rename this supplier group"
+          onclick="event.stopPropagation()"
+          onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}"
+          onblur="costRenameSup(this.dataset.orig,this.textContent.trim());this.dataset.orig=this.textContent.trim()"
+          style="cursor:text;outline:none;border-bottom:1px dashed transparent;transition:border .15s"
+          onfocus="this.style.borderBottomColor='#8b6914'" onblurCapture="this.style.borderBottomColor='transparent'">${supEsc}</h4>
         ${dayMeta?`<span class="sup-day">${dayMeta}</span>`:''}
         <span class="sup-tot">${fmt(supPP)} pp</span>
         <span class="sup-tog" id="stog_${supKey}">▾</span>
@@ -2131,6 +2143,13 @@ function costLinesRender(){
 
   listEl.innerHTML=summaryHtml+sectionsHtml;
   costCalc();
+}
+
+function costRenameSup(oldName,newName){
+  if(!costCurrData||!costCurrData.lines||!newName||newName===oldName)return;
+  costCurrData.lines.forEach(l=>{if((l.supplier||'Other')===oldName)l.supplier=newName;});
+  costLinesRender();
+  costSaveSilent();
 }
 
 function toggleSupSection(key){
