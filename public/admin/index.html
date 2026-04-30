@@ -169,34 +169,32 @@ tr:hover td{background:#faf8f3}
 @media(max-width:900px){.stat-grid{grid-template-columns:1fr 1fr}.main{padding:20px}.tour-grid-admin{grid-template-columns:1fr 1fr}}
 @media(max-width:650px){.stat-grid{grid-template-columns:1fr}.sidebar{width:100%;position:relative;height:auto}.main{margin-left:0}}
 /* COST LINE ITEMS — SUPPLIER GROUPED */
-.lines-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-bottom:14px}
+.lines-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-bottom:16px}
 .lm{background:#faf8f3;border-radius:8px;padding:10px 12px}
 .lm .lm-l{font-size:10.5px;color:#888;margin-bottom:3px}
 .lm .lm-v{font-size:16px;font-weight:700;color:#1a0a00}
 .lm.lm-bold{border:1.5px solid #e0d5c5}
 .lm.lm-bold .lm-v{color:#8b6914;font-size:18px}
-.sup-section{margin-bottom:8px;border:1px solid #f0ebe0;border-radius:10px;overflow:hidden}
-.sup-hdr{display:flex;align-items:center;justify-content:space-between;padding:9px 14px;background:#faf8f3;cursor:pointer;user-select:none;gap:10px}
-.sup-hdr h4{font-size:13px;font-weight:600;color:#1a0a00;flex:1;margin:0}
-.sup-hdr .sup-tot{font-size:13px;font-weight:700;color:#8b6914;white-space:nowrap}
+.sup-section{margin-bottom:8px;border:0.5px solid #e8e0cc;border-radius:9px;overflow:hidden}
+.sup-hdr{display:flex;align-items:center;padding:9px 14px;background:#faf8f3;cursor:pointer;user-select:none;gap:8px}
+.sup-hdr h4{font-size:13.5px;font-weight:600;color:#1a0a00;flex:1;margin:0}
+.sup-hdr .sup-day{font-size:12px;color:#999;white-space:nowrap}
+.sup-hdr .sup-tot{font-size:14px;font-weight:700;color:#1a0a00;white-space:nowrap;margin-left:4px}
 .sup-hdr .sup-tog{font-size:11px;color:#bbb;margin-left:6px}
-.sup-body{border-top:1px solid #f0ebe0}
-.sup-tbl{width:100%;border-collapse:collapse;font-size:12.5px}
-.sup-tbl th{font-size:10px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:.7px;padding:6px 10px;border-bottom:1px solid #f0ebe0;text-align:left}
+.sup-body{border-top:0.5px solid #e8e0cc}
+.sup-tbl{width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed}
+.sup-tbl th{font-size:11px;font-weight:500;color:#aaa;padding:5px 10px;border-bottom:0.5px solid #ede7d8;text-align:left}
 .sup-tbl th.r,.sup-tbl td.r{text-align:right}
-.sup-tbl td{padding:7px 10px;border-bottom:1px solid #f5f0e8;vertical-align:middle}
+.sup-tbl td{padding:7px 10px;border-bottom:0.5px solid #f0ebe0;vertical-align:middle;color:#1a0a00}
 .sup-tbl tr:last-child td{border-bottom:none}
 .sup-tbl tr:hover td{background:#faf5e9}
-.vis-badge{display:inline-block;font-size:10px;padding:2px 6px;border-radius:4px;margin-right:4px;font-weight:600;white-space:nowrap}
+.day-badge{display:inline-block;font-size:10px;padding:2px 6px;border-radius:3px;background:#f0ebe0;color:#666;white-space:nowrap}
+.vis-badge{display:inline-block;font-size:10px;padding:2px 6px;border-radius:4px;margin-right:4px;font-weight:500;white-space:nowrap}
 .est-pill{display:inline-block;font-size:10px;padding:2px 5px;border-radius:3px;background:#fff8e1;color:#e65100;margin-right:4px}
-.pp-inp{width:70px;text-align:right;font-size:13px;border:1px solid #e0d5c5;border-radius:5px;padding:4px 7px;outline:none;background:#fff}
+.pp-inp{width:72px;text-align:right;font-size:14px;border:0.5px solid #d0c8b8;border-radius:5px;padding:4px 6px;outline:none;background:#fff;font-variant-numeric:tabular-nums}
 .pp-inp:focus{border-color:#8b6914}
 .pp-inp.ov{color:#1565c0;border-color:#90caf9}
-.grp-tot{font-size:12.5px;font-weight:500;color:#555}
-/* add-line row styles (flat form for manual entry) */
-.add-line-row{display:grid;grid-template-columns:1fr 190px 90px 32px;gap:8px;align-items:center;padding:8px 10px;background:#f9f7f2;border-top:1px solid #f0ebe0}
-.add-line-row input,.add-line-row select{padding:6px 9px;border:1.5px solid #e0d5c5;border-radius:6px;font-size:12.5px;outline:none;width:100%}
-.add-line-row input:focus,.add-line-row select:focus{border-color:#8b6914}
+.grp-tot{font-size:13px;font-weight:500;color:#333;font-variant-numeric:tabular-nums}
 /* SPREADSHEET IMPORT MODAL */
 .sheet-import-table{width:100%;border-collapse:collapse;font-size:12.5px}
 .sheet-import-table th{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#888;padding:8px 10px;border-bottom:2px solid #f0ebe0;text-align:left;background:#faf8f3}
@@ -2017,6 +2015,12 @@ function _guessSupplier(desc){
   s=s.replace(/^\d+\s*/,'').trim();
   return s.split(/\s+/).slice(0,4).join(' ').replace(/[,;:]$/,'').trim()||'Other';
 }
+function _guessDay(desc){
+  // Look for "Day 1", "Day 1-2", ordinal dates like "12 April" → just return empty for now
+  const m=desc.match(/\bday\s*(\d+(?:[–\-]\d+)?)/i);
+  if(m)return m[1];
+  return'';
+}
 
 function costLinesRender(){
   if(!costCurrData)return;
@@ -2048,45 +2052,57 @@ function costLinesRender(){
   // Build supplier groups preserving import order
   const groupMap={},groupOrder=[];
   lines.forEach((l,i)=>{
-    const sup=l.supplier||'Other';
+    const sup=(l.supplier||'Other').trim();
     if(!groupMap[sup]){groupMap[sup]=[];groupOrder.push(sup);}
     groupMap[sup].push({...l,_i:i});
   });
 
-  const catOpts=_SHEET_CATS.filter(c=>c.v!=='skip').map(c=>`<option value="${c.v}">${c.l}</option>`).join('');
-
   const sectionsHtml=groupOrder.map(sup=>{
     const items=groupMap[sup];
     const supPP=items.reduce((a,l)=>a+(l.amount||0),0);
-    const supKey=sup.replace(/\W+/g,'_');
+    const supKey='s'+btoa(unescape(encodeURIComponent(sup))).replace(/[^a-z0-9]/gi,'').slice(0,12);
+    // Build day range for header meta
+    const days=items.map(l=>l.day||'').filter(Boolean);
+    const dayMeta=days.length?'Day '+[...new Set(days)].join(', '):'';
 
     const rowsHtml=items.map(l=>{
       const vc=_toVisCat(l.cat);
       const vci=_VIS_CATS[vc];
       const badge=`<span class="vis-badge" style="background:${vci.color}1a;color:${vci.color}">${vci.label}</span>`;
       const estPill=l.est?`<span class="est-pill">est</span>`:'';
+      const dayBadge=l.day?`<span class="day-badge">D${l.day}</span>`:`<span class="day-badge">—</span>`;
       const grpAmt=(l.amount||0)*guests;
-      const grpTxt=l.perNight?`${l.nights||1} nts = ${fmt(grpAmt*(l.nights||1)/guests*guests)}`:`${fmt(grpAmt)}`;
+      const grpTxt=l.perNight?`${l.nights||1} nts = ${fmt((l.amount||0)*(l.nights||1)*guests)}`:`${fmt(grpAmt)}`;
       const isOv=l.origAmount!==undefined&&l.amount!==l.origAmount;
       const catSel=_SHEET_CATS.filter(c=>c.v!=='skip').map(c=>`<option value="${c.v}"${c.v===l.cat?' selected':''}>${c.l}</option>`).join('');
       const descEsc=(l.desc||'').replace(/"/g,'&quot;');
-      const supEsc=(l.supplier||'').replace(/"/g,'&quot;');
+      const dayEsc=(l.day||'').replace(/"/g,'&quot;');
       return`<tr>
-        <td style="width:120px"><input type="text" value="${supEsc}" placeholder="Supplier"
-          style="width:110px;padding:3px 6px;border:1px solid #e0d5c5;border-radius:4px;font-size:11px;outline:none;background:#fff"
-          onchange="costLineUpdate(${l._i},'supplier',this.value)" onfocus="this.style.borderColor='#8b6914'" onblur="this.style.borderColor='#e0d5c5'"></td>
-        <td>${badge}${estPill}<input type="text" value="${descEsc}" placeholder="Description"
-          style="border:none;outline:none;font-size:12.5px;width:calc(100% - 120px);background:transparent;min-width:120px"
-          onchange="costLineUpdate(${l._i},'desc',this.value)">
-          <div style="margin-top:3px"><select style="font-size:11px;padding:2px 5px;border:1px solid #e0d5c5;border-radius:4px;outline:none;max-width:220px;background:#fff" onchange="costLineUpdate(${l._i},'cat',this.value)">${catSel}</select></div>
+        <td style="width:54px;text-align:center">
+          <input type="text" value="${dayEsc}" placeholder="—" title="Day number"
+            style="width:42px;padding:3px 4px;border:0.5px solid #e0d5c5;border-radius:4px;font-size:10px;outline:none;text-align:center;background:#faf8f3"
+            onchange="costLineUpdate(${l._i},'day',this.value);costLinesRender()"
+            onfocus="this.style.borderColor='#8b6914'" onblur="this.style.borderColor='#e0d5c5'">
         </td>
-        <td class="r" style="width:120px;white-space:nowrap">
-          <span style="color:#999;font-size:12px">$</span>
-          <input class="pp-inp${isOv?' ov':''}" type="number" min="0" step="1" value="${Math.round(l.amount||0)}"
-            oninput="costLineUpdate(${l._i},'amount',this.value)"
-            ondblclick="costLineReset(${l._i})" title="Double-click to reset to original">
+        <td>
+          <div style="display:flex;align-items:center;flex-wrap:wrap;gap:2px;margin-bottom:3px">${badge}${estPill}</div>
+          <input type="text" value="${descEsc}" placeholder="Description"
+            style="border:none;outline:none;font-size:13px;width:100%;background:transparent;color:#1a0a00"
+            onchange="costLineUpdate(${l._i},'desc',this.value)">
+          <div style="margin-top:4px">
+            <select style="font-size:11px;padding:2px 6px;border:0.5px solid #e0d5c5;border-radius:4px;outline:none;background:#fff;color:#555;max-width:240px" onchange="costLineUpdate(${l._i},'cat',this.value)">${catSel}</select>
+          </div>
         </td>
-        <td class="r" style="width:110px"><span class="grp-tot">${grpTxt}</span></td>
+        <td class="r" style="width:125px;white-space:nowrap">
+          <div style="display:flex;align-items:center;justify-content:flex-end;gap:3px">
+            <span style="color:#aaa;font-size:12px">$</span>
+            <input class="pp-inp${isOv?' ov':''}" type="number" min="0" step="1" value="${Math.round(l.amount||0)}"
+              oninput="costLineUpdate(${l._i},'amount',this.value)"
+              ondblclick="costLineReset(${l._i})" title="Double-click to reset to original">
+            ${l.perNight?'<span style="font-size:11px;color:#aaa">/nt</span>':''}
+          </div>
+        </td>
+        <td class="r" style="width:115px"><span class="grp-tot">${grpTxt}</span></td>
         <td style="width:28px"><button class="btn-icon" onclick="costLineDelete(${l._i})" style="color:#ddd;font-size:12px" title="Remove">✕</button></td>
       </tr>`;
     }).join('');
@@ -2094,15 +2110,17 @@ function costLinesRender(){
     return`<div class="sup-section">
       <div class="sup-hdr" onclick="toggleSupSection('${supKey}')">
         <h4>${sup}</h4>
+        ${dayMeta?`<span class="sup-day">${dayMeta}</span>`:''}
         <span class="sup-tot">${fmt(supPP)} pp</span>
         <span class="sup-tog" id="stog_${supKey}">▾</span>
       </div>
       <div class="sup-body" id="sbdy_${supKey}">
         <table class="sup-tbl">
           <thead><tr>
-            <th style="width:120px">Supplier</th><th>Item / Category</th>
-            <th class="r" style="width:120px">Per person</th>
-            <th class="r" style="width:110px">Group total</th>
+            <th style="width:54px">Day</th>
+            <th>Item</th>
+            <th class="r" style="width:125px">Per person</th>
+            <th class="r" style="width:115px">Group total</th>
             <th style="width:28px"></th>
           </tr></thead>
           <tbody>${rowsHtml}</tbody>
@@ -2127,7 +2145,7 @@ function toggleSupSection(key){
 function costAddLine(){
   if(!costCurrData){toast('Create or load a tour first');return;}
   costCurrData.lines=costCurrData.lines||[];
-  costCurrData.lines.push({desc:'',cat:'fixedMisc',amount:0,supplier:'Other',est:false});
+  costCurrData.lines.push({desc:'',cat:'fixedMisc',amount:0,supplier:'Other',day:'',est:false});
   costLinesRender();
 }
 
@@ -2301,11 +2319,13 @@ function _sheetShowModal(rows,filename){
     const sel=_SHEET_CATS.map(c=>`<option value="${c.v}"${c.v===r.cat?' selected':''}>${c.l}</option>`).join('');
     const sym=r.currency==='EUR'?'€':r.currency==='USD'?'$US':'$';
     const supGuess=_guessSupplier(r.label).replace(/"/g,'&quot;');
+    const dayGuess=_guessDay(r.label);
     return`<tr id="isr${i}">
       <td style="text-align:center"><input type="checkbox" id="isc${i}" checked onchange="sheetRowToggle(${i})"></td>
       <td style="word-break:break-word;font-size:12px">${r.label}</td>
       <td><select id="isCat${i}" onchange="sheetCatChange(${i})">${sel}</select></td>
       <td><input type="text" id="isSup${i}" value="${supGuess}" placeholder="e.g. Mount Nelson" style="padding:5px 7px;border:1.5px solid #e0d5c5;border-radius:5px;font-size:12px;width:100%;outline:none" onfocus="this.style.borderColor='#8b6914'" onblur="this.style.borderColor='#e0d5c5'"></td>
+      <td><input type="text" id="isDay${i}" value="${dayGuess}" placeholder="1" style="padding:5px 6px;border:1.5px solid #e0d5c5;border-radius:5px;font-size:12px;width:100%;outline:none;text-align:center" onfocus="this.style.borderColor='#8b6914'" onblur="this.style.borderColor='#e0d5c5'"></td>
       <td class="amt-cell">${sym}${r.amount.toLocaleString('en-AU',{minimumFractionDigits:2,maximumFractionDigits:2})}</td>
     </tr>`;
   }).join('');
@@ -2334,8 +2354,10 @@ function costImportSelected(){
     const cat=document.getElementById('isCat'+i).value;
     if(cat==='skip')return;
     const supEl=document.getElementById('isSup'+i);
+    const dayEl=document.getElementById('isDay'+i);
     const supplier=(supEl&&supEl.value.trim())||_guessSupplier(r.label);
-    costCurrData.lines.push({desc:r.label,cat,amount:r.amount,origAmount:r.amount,supplier,est:false});
+    const day=(dayEl&&dayEl.value.trim())||'';
+    costCurrData.lines.push({desc:r.label,cat,amount:r.amount,origAmount:r.amount,supplier,day,est:false});
     n++;
   });
   closeModal('importSheetModal');
@@ -2368,9 +2390,10 @@ if(localStorage.getItem(SESSION_KEY)==='1'){
           <tr>
             <th style="width:36px;text-align:center"><input type="checkbox" checked title="Select / deselect all" onchange="sheetSelectAll(this.checked)"></th>
             <th>Description (from spreadsheet)</th>
-            <th style="width:195px">Map to Cost Field</th>
-            <th style="width:140px">Supplier / Venue</th>
-            <th style="width:80px;text-align:right">Amount</th>
+            <th style="width:185px">Map to Cost Field</th>
+            <th style="width:130px">Supplier / Venue</th>
+            <th style="width:48px">Day</th>
+            <th style="width:75px;text-align:right">Amount</th>
           </tr>
         </thead>
         <tbody id="importSheetRows"></tbody>
