@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Wine Journeys — Admin Portal</title>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Segoe UI',Arial,sans-serif;background:#f4f1eb;color:#2c2c2c;min-height:100vh}
@@ -389,6 +390,23 @@ tr:hover td{background:#faf8f3}
               </div>
             </div>
 
+            <!-- SPREADSHEET IMPORT SHORTCUT -->
+            <div class="cost-section" style="padding:14px 18px;margin-bottom:14px">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap">
+                <div style="display:flex;align-items:center;gap:12px">
+                  <span style="font-size:22px">📊</span>
+                  <div>
+                    <div style="font-size:13px;font-weight:700;color:#1a0a00">Import costs from a spreadsheet or PDF</div>
+                    <div style="font-size:12px;color:#888;margin-top:2px">Attach a quote, budget or supplier document — it will be read and each cost line mapped into the form</div>
+                  </div>
+                </div>
+                <label style="cursor:pointer;position:relative">
+                  <input type="file" accept=".xlsx,.xls,.csv,.ods,.xlsb,.xlsm,.numbers,.pdf" style="position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer" onchange="costUploadDocs(this)">
+                  <span class="btn btn-outline" style="pointer-events:none;white-space:nowrap">⬆ Choose File</span>
+                </label>
+              </div>
+            </div>
+
             <!-- B: Fixed Costs -->
             <div class="cost-section">
               <div class="cost-section-title">📌 Fixed Costs</div>
@@ -526,7 +544,7 @@ tr:hover td{background:#faf8f3}
                 <div style="pointer-events:none">
                   <div style="font-size:32px;margin-bottom:8px">📁</div>
                   <p style="font-size:13px;color:#888;font-weight:600">Click to upload or drag &amp; drop files</p>
-                  <p style="font-size:11px;color:#aaa;margin-top:4px">PDFs, Word docs, spreadsheets, images — any type accepted</p>
+                  <p style="font-size:11px;color:#aaa;margin-top:4px">Spreadsheets &amp; PDFs will be auto-parsed for cost lines · Any other file type saved as attachment</p>
                 </div>
               </div>
             </div>
@@ -1710,13 +1728,14 @@ function costSaveSilent(){
 /* Documents */
 const _SHEET_EXTS=['xlsx','xls','csv','ods','xlsm','xlsb','numbers'];
 function _isSpreadsheet(name){return _SHEET_EXTS.includes(name.split('.').pop().toLowerCase());}
+function _isPDF(name){return name.split('.').pop().toLowerCase()==='pdf';}
 
 function costUploadDocs(input){
   if(!costCurrData){toast('Create or load a tour first');return;}
   const files=Array.from(input.files);
   if(!files.length)return;
   costCurrData.documents=costCurrData.documents||[];
-  const spreadsheets=files.filter(f=>_isSpreadsheet(f.name));
+  const parseable=files.find(f=>_isSpreadsheet(f.name)||_isPDF(f.name));
   let done=0;
   files.forEach(f=>{
     const reader=new FileReader();
@@ -1725,9 +1744,11 @@ function costUploadDocs(input){
       done++;
       if(done===files.length){
         costRenderDocs();costSaveSilent();
-        if(spreadsheets.length){
-          toast(`${done} file${done>1?'s':''} attached — reading spreadsheet…`);
-          costParseSpreadsheet(spreadsheets[0]);
+        if(parseable){
+          const label=_isPDF(parseable.name)?'PDF':'spreadsheet';
+          toast(`${done} file${done>1?'s':''} attached — reading ${label}…`);
+          if(_isSpreadsheet(parseable.name))costParseSpreadsheet(parseable);
+          else costParsePDF(parseable);
         } else {
           toast(`${done} file${done>1?'s':''} attached`);
         }
@@ -1910,8 +1931,66 @@ function toast(msg){
 }
 
 /* =========================================================
-   SPREADSHEET IMPORT
+   SPREADSHEET & PDF IMPORT
    ========================================================= */
+// Initialise PDF.js worker (runs once after DOM ready)
+(function initPDFjs(){
+  const poll=setInterval(()=>{
+    if(typeof pdfjsLib!=='undefined'){
+      pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+      clearInterval(poll);
+    }
+  },200);
+})();
+
+async function costParsePDF(file){
+  if(typeof pdfjsLib==='undefined'){toast('PDF library not loaded — try refreshing');return;}
+  try{
+    const buf=await file.arrayBuffer();
+    const pdf=await pdfjsLib.getDocument({data:buf}).promise;
+    const allLines=[];
+    for(let p=1;p<=pdf.numPages;p++){
+      const page=await pdf.getPage(p);
+      const tc=await page.getTextContent();
+      // Group text items by y-position (round to nearest 4px) to reconstruct lines
+      const byY={};
+      tc.items.forEach(item=>{
+        const y=Math.round(item.transform[5]/4)*4;
+        if(!byY[y])byY[y]=[];
+        byY[y].push({x:item.transform[4],text:item.str});
+      });
+      // Sort y desc (PDF y-axis is bottom-up, so higher y = earlier on page)
+      Object.keys(byY).map(Number).sort((a,b)=>b-a).forEach(y=>{
+        const text=byY[y].sort((a,b)=>a.x-b.x).map(i=>i.text).join(' ').trim();
+        if(text)allLines.push(text);
+      });
+    }
+    const rows=_pdfBuildRows(allLines);
+    if(!rows.length){toast('No cost items detected in PDF — try a spreadsheet instead');return;}
+    _sheetShowModal(rows,file.name);
+  }catch(err){toast('Could not read PDF: '+err.message);}
+}
+
+function _pdfBuildRows(lines){
+  const results=[];
+  lines.forEach(line=>{
+    // Match: anything, then a number (possibly $1,200.00 or 1200.00 or 1,200)
+    // Allow for currency symbol before or after amount
+    const m=line.match(/^(.+?)\s+[$€£]?\s*([\d]{1,3}(?:,\d{3})*(?:\.\d{1,2})?|\d+(?:\.\d{1,2})?)\s*(?:[$€£]|AUD|EUR|USD|NZD|ZAR)?$/);
+    if(!m)return;
+    const label=m[1].trim();
+    const amount=parseFloat(m[2].replace(/,/g,''));
+    if(!label||!amount||amount<=0)return;
+    if(label.length<3||/^[\d\s.,$/€£%\-]+$/.test(label))return;
+    // Skip obvious totals/headers/page numbers
+    if(/^(total|sub.?total|gst|tax|inc\b|excl\b|page\s*\d|grand total|\d+\.?)$/i.test(label.trim()))return;
+    let currency='AUD';
+    if(/€|EUR\b/i.test(line))currency='EUR';
+    results.push({label,amount,currency,cat:_sheetDetectCat(label)});
+  });
+  return results;
+}
+
 function costParseSpreadsheet(file){
   if(typeof XLSX==='undefined'){toast('SheetJS library not loaded — try refreshing');return;}
   const rdr=new FileReader();
@@ -2058,7 +2137,7 @@ if(localStorage.getItem(SESSION_KEY)==='1'){
 <!-- SPREADSHEET IMPORT MODAL -->
 <div class="modal-overlay" id="importSheetModal">
   <div class="modal" style="width:800px;max-width:96vw">
-    <h3>📊 Import from Spreadsheet</h3>
+    <h3>📊 Import Cost Lines</h3>
     <p class="import-sub"><strong id="importSheetFilename"></strong> &mdash; <span id="importSheetCount"></span></p>
     <p class="import-sub" style="margin-bottom:14px">Review the detected cost items. Adjust the category mapping for each row, then click <strong>Import Selected</strong> to apply them to the costing form.</p>
     <div style="max-height:360px;overflow-y:auto;border:1px solid #f0ebe0;border-radius:8px">
