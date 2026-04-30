@@ -98,15 +98,58 @@ tr:hover td{background:#faf8f3}
 .search-bar{display:flex;gap:10px;margin-bottom:18px;align-items:center}
 .search-bar input{flex:1;padding:9px 14px;border:1.5px solid #e0d5c5;border-radius:8px;font-size:13.5px;outline:none;transition:border .2s}
 .search-bar input:focus{border-color:#8b6914}
-/* COSTING */
-.cost-controls{display:flex;gap:16px;align-items:flex-end;margin-bottom:20px;flex-wrap:wrap}
-.cost-item-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 40px;gap:8px;align-items:center;margin-bottom:8px}
-.cost-item-row input,.cost-item-row select{padding:8px 10px;border:1.5px solid #e0d5c5;border-radius:6px;font-size:13px;outline:none;width:100%}
-.cost-item-row input:focus{border-color:#8b6914}
-.cost-total-row{display:flex;justify-content:flex-end;gap:32px;padding:14px 0;border-top:2px solid #e0d5c5;margin-top:8px}
-.cost-total-row .total-item{text-align:right}
-.cost-total-row .total-label{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:1px}
-.cost-total-row .total-value{font-size:18px;font-weight:700;color:#1a0a00;margin-top:2px}
+/* COSTING — FULL REBUILD */
+.cost-layout{display:grid;grid-template-columns:230px 1fr;gap:20px;align-items:start}
+.cost-tours-panel{background:#fff;border-radius:12px;padding:16px;box-shadow:0 1px 6px rgba(0,0,0,0.06);position:sticky;top:20px;max-height:calc(100vh - 80px);overflow-y:auto}
+.cost-tours-panel h4{font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px}
+.cost-tour-item{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:7px;cursor:pointer;transition:background .15s;font-size:13px;color:#444;border:1px solid transparent;margin-bottom:3px}
+.cost-tour-item:hover{background:#faf5e9}
+.cost-tour-item.active{background:rgba(139,105,20,0.1);color:#8b6914;font-weight:600;border-color:rgba(139,105,20,0.2)}
+.cost-tour-del{font-size:12px;color:#ccc;cursor:pointer;padding:2px 5px;border-radius:3px;opacity:0;transition:opacity .15s,color .15s;background:none;border:none}
+.cost-tour-item:hover .cost-tour-del{opacity:1}
+.cost-tour-del:hover{color:#c62828!important}
+.cost-section{background:#fff;border-radius:12px;padding:20px 22px;box-shadow:0 1px 6px rgba(0,0,0,0.06);margin-bottom:16px}
+.cost-section-title{font-size:11px;font-weight:700;color:#8b6914;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px;padding-bottom:10px;border-bottom:1.5px solid #f0ebe0;display:flex;align-items:center;gap:6px}
+.cost-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cost-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.cost-field{display:flex;flex-direction:column;gap:4px}
+.cost-field label{font-size:10.5px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.8px}
+.cost-field input,.cost-field select{padding:8px 10px;border:1.5px solid #e0d5c5;border-radius:6px;font-size:13px;outline:none;transition:border .2s;width:100%;background:#fff}
+.cost-field input:focus,.cost-field select:focus{border-color:#8b6914}
+.cost-field input[readonly]{background:#f4f1eb;color:#888}
+.cost-hint{font-size:10px;color:#bbb;margin-top:1px}
+.hotel-hdr{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 36px;gap:8px;margin-bottom:5px}
+.hotel-hdr span{font-size:10px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:.7px}
+.hotel-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 36px;gap:8px;align-items:center;margin-bottom:7px}
+.hotel-row input{padding:7px 9px;border:1.5px solid #e0d5c5;border-radius:6px;font-size:12.5px;outline:none;transition:border .2s;width:100%}
+.hotel-row input:focus{border-color:#8b6914}
+.hotel-row input[readonly]{background:#f4f1eb;color:#888}
+.cost-results{background:linear-gradient(135deg,#1a0a00 0%,#3d1f00 100%);border-radius:12px;padding:22px;margin-bottom:16px}
+.cost-results h4{font-size:11px;font-weight:700;color:#c9a84c;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px}
+.cost-result-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.cri{background:rgba(255,255,255,0.08);border-radius:8px;padding:14px}
+.cri-label{font-size:10px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px}
+.cri-value{font-size:20px;font-weight:700;color:#fff}
+.cri-value.hl{color:#c9a84c;font-size:24px}
+.cost-profit-table{width:100%;border-collapse:collapse;font-size:12.5px}
+.cost-profit-table th{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#888;padding:8px 10px;border-bottom:2px solid #f0ebe0;text-align:right}
+.cost-profit-table th:first-child{text-align:left}
+.cost-profit-table td{padding:7px 10px;border-bottom:1px solid #f5f0e8;text-align:right}
+.cost-profit-table td:first-child{text-align:left;font-weight:600}
+.cost-profit-table tr.pp td{background:#f0faf2}
+.cost-profit-table tr.pn td{background:#fff5f5}
+.cost-profit-table tr.pt td{background:#fff8e8;font-weight:700}
+.departure-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#faf8f3;border-radius:8px;margin-bottom:7px;border:1px solid #e8e0cc}
+.cost-upload-area{border:2px dashed #e0d5c5;border-radius:8px;padding:20px;text-align:center;cursor:pointer;transition:border-color .2s;position:relative;margin-top:10px}
+.cost-upload-area:hover{border-color:#8b6914}
+.cost-upload-area input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.cost-doc-item{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:#faf8f3;border-radius:8px;margin-bottom:6px;border:1px solid #e8e0cc;font-size:13px}
+.live-rate-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;background:#f0faf2;border:1px solid #a8d5b5;border-radius:6px;font-size:11.5px;color:#2e7d32}
+.budget-table{width:100%;border-collapse:collapse;font-size:13px}
+.budget-table th{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#888;padding:8px 10px;border-bottom:2px solid #f0ebe0;text-align:right}
+.budget-table th:first-child{text-align:left}
+.budget-table td{padding:8px 10px;border-bottom:1px solid #f5f0e8;text-align:right}
+.budget-table td:first-child{text-align:left;font-weight:600}
 /* TOUR GRID */
 .tour-grid-admin{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
 .tour-card-admin{background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,0.07)}
@@ -249,29 +292,242 @@ tr:hover td{background:#faf8f3}
     <!-- TOUR COSTING -->
     <div id="sec-costing" class="section">
       <div class="page-header">
-        <div><h2>Tour Costing</h2><p>Calculate per-person pricing with margin</p></div>
-        <div style="display:flex;gap:10px">
+        <div><h2>Tour Costing</h2><p>Full pricing model with fixed, variable &amp; host costs</p></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-outline" onclick="costFetchRates()">🔄 Live Rates</button>
           <button class="btn btn-outline" onclick="window.print()">🖨 Print</button>
-          <button class="btn btn-primary" onclick="saveCosting()">💾 Save</button>
+          <button class="btn btn-primary" onclick="costSaveTour()">💾 Save Tour</button>
         </div>
       </div>
-      <div class="card">
-        <div class="cost-controls">
-          <div class="form-group"><label>Tour</label><select id="costTour" style="min-width:200px" onchange="loadSavedCosting()"></select></div>
-          <div class="form-group"><label>Pax (people)</label><input type="number" id="costPax" value="12" min="1" oninput="recalcCosting()"></div>
-          <div class="form-group"><label>Margin %</label><input type="number" id="costMargin" value="20" min="0" max="100" oninput="recalcCosting()"></div>
-          <button class="btn btn-outline btn-sm" onclick="addCostItem()">+ Add Item</button>
+      <div class="cost-layout">
+        <!-- Left: Tour List -->
+        <div>
+          <div class="cost-tours-panel">
+            <h4>Saved Tours</h4>
+            <button class="btn btn-primary" style="width:100%;justify-content:center;margin-bottom:12px;font-size:12px" onclick="costNewTour()">+ New Tour</button>
+            <div id="costTourList"><p style="font-size:12px;color:#aaa;text-align:center;padding:6px 0">No tours saved yet</p></div>
+          </div>
         </div>
-        <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 40px;gap:8px;margin-bottom:6px">
-          <div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:1px">Item / Description</div>
-          <div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:1px">Category</div>
-          <div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:1px">Total Cost AUD</div>
-          <div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:1px">Per Person</div>
-          <div></div>
-        </div>
-        <div id="costItems"></div>
-        <div class="cost-total-row" id="costTotals"></div>
-      </div>
+        <!-- Right: Form + Results -->
+        <div>
+          <!-- Empty state -->
+          <div id="costNoTour" style="text-align:center;padding:60px 20px;background:#fff;border-radius:12px;color:#aaa;box-shadow:0 1px 6px rgba(0,0,0,0.06)">
+            <div style="font-size:48px;margin-bottom:12px">🧮</div>
+            <p style="font-size:15px;font-weight:600;color:#555">No tour selected</p>
+            <p style="font-size:13px;margin-top:6px">Click <strong>+ New Tour</strong> or select a saved tour from the list</p>
+          </div>
+          <!-- Form (hidden until tour loaded) -->
+          <div id="costTourHeader" style="display:none">
+            <!-- Header bar -->
+            <div class="cost-section" style="padding:14px 18px;margin-bottom:14px">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap">
+                <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:240px">
+                  <span style="font-size:10.5px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.8px;white-space:nowrap">Tour Name</span>
+                  <input type="text" id="ctTourName" placeholder="e.g. Burgundy Wine Tour 2026" style="padding:7px 12px;border:1.5px solid #e0d5c5;border-radius:6px;font-size:13.5px;outline:none;flex:1;transition:border .2s" oninput="costCalc()" onfocus="this.style.borderColor='#8b6914'" onblur="this.style.borderColor='#e0d5c5'">
+                </div>
+                <div id="costLiveRateDisplay" style="display:none">
+                  <span class="live-rate-badge">📡 <span id="costLiveRateText">Loading...</span></span>
+                </div>
+              </div>
+            </div>
+
+            <!-- A: Tour Setup -->
+            <div class="cost-section">
+              <div class="cost-section-title">🏷 Tour Setup</div>
+              <div class="cost-grid">
+                <div class="cost-field">
+                  <label>Currency</label>
+                  <select id="ctCurrency" onchange="costCalc();costUpdateLabels()">
+                    <option value="EUR">EUR — Euro</option>
+                    <option value="USD">USD — US Dollar</option>
+                    <option value="GBP">GBP — British Pound</option>
+                    <option value="NZD">NZD — New Zealand Dollar</option>
+                    <option value="ZAR">ZAR — South African Rand</option>
+                  </select>
+                </div>
+                <div class="cost-field">
+                  <label id="ctRateLabel">EUR → AUD Rate</label>
+                  <input type="number" id="ctRate" value="1.65" step="0.0001" min="0.0001" oninput="costCalc()">
+                  <span class="cost-hint" id="ctLiveHint"></span>
+                </div>
+                <div class="cost-field">
+                  <label>Tour Nights</label>
+                  <input type="number" id="ctNights" value="8" min="1" oninput="costCalc()">
+                </div>
+                <div class="cost-field">
+                  <label>Target Pax (pricing base)</label>
+                  <input type="number" id="ctTargetPax" value="12" min="1" oninput="costCalc()">
+                </div>
+                <div class="cost-field">
+                  <label>Max Pax</label>
+                  <input type="number" id="ctMaxPax" value="18" min="1" oninput="costCalc()">
+                </div>
+                <div class="cost-field">
+                  <label>Margin %</label>
+                  <input type="number" id="ctMargin" value="20" min="0" max="99" step="0.5" oninput="costCalc()">
+                </div>
+                <div class="cost-field">
+                  <label>Number of Hosts/Staff</label>
+                  <input type="number" id="ctNumHosts" value="2" min="0" oninput="costCalc()">
+                </div>
+                <div class="cost-field">
+                  <label>Hosts Priced Into Tour</label>
+                  <input type="number" id="ctHostsToPrice" value="2" min="0" oninput="costCalc()">
+                  <span class="cost-hint">Pro-rated into guest sale price</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- B: Fixed Costs -->
+            <div class="cost-section">
+              <div class="cost-section-title">📌 Fixed Costs</div>
+              <div class="cost-grid">
+                <div class="cost-field">
+                  <label>Host Wages — AUD total</label>
+                  <input type="number" id="ctHostWages" value="0" step="100" min="0" oninput="costCalc()">
+                </div>
+                <div class="cost-field">
+                  <label>Host Airfares — AUD each</label>
+                  <input type="number" id="ctHostAirfares" value="0" step="100" min="0" oninput="costCalc()">
+                </div>
+                <div class="cost-field">
+                  <label id="ctDriverVanLbl">Driver &amp; Van (EUR total)</label>
+                  <input type="number" id="ctDriverVan" value="0" step="100" min="0" oninput="costCalc()">
+                </div>
+                <div class="cost-field">
+                  <label id="ctDriverAccommLbl">Driver Accommodation (EUR)</label>
+                  <input type="number" id="ctDriverAccomm" value="0" step="50" min="0" oninput="costCalc()">
+                </div>
+                <div class="cost-field">
+                  <label id="ctPreTourLbl">Pre-Tour Host Accom. (EUR)</label>
+                  <input type="number" id="ctPreTour" value="0" step="50" min="0" oninput="costCalc()">
+                </div>
+                <div class="cost-field">
+                  <label>Marketing — AUD</label>
+                  <input type="number" id="ctMarketing" value="0" step="100" min="0" oninput="costCalc()">
+                </div>
+                <div class="cost-field">
+                  <label>Misc Fixed — AUD</label>
+                  <input type="number" id="ctFixedMisc" value="0" step="100" min="0" oninput="costCalc()">
+                </div>
+              </div>
+            </div>
+
+            <!-- C: Variable Costs -->
+            <div class="cost-section">
+              <div class="cost-section-title">📊 Variable Costs per Person</div>
+              <div style="margin-bottom:18px">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+                  <span style="font-size:12px;font-weight:700;color:#555">🏨 Hotel Accommodation</span>
+                  <button class="btn btn-outline btn-sm" onclick="costAddHotel()">+ Add Hotel</button>
+                </div>
+                <div class="hotel-hdr">
+                  <span>Hotel / Region</span>
+                  <span id="ctHotelTwinHdr">Twin/Night (EUR)</span>
+                  <span id="ctHotelSingleHdr">Single/Night (EUR)</span>
+                  <span>Nights</span>
+                  <span></span>
+                </div>
+                <div id="ctHotels"></div>
+              </div>
+              <div class="cost-grid">
+                <div class="cost-field">
+                  <label id="ctFoodLbl">Food per Day (EUR/person)</label>
+                  <input type="number" id="ctFoodCost" value="0" step="5" min="0" oninput="costCalc()">
+                </div>
+                <div class="cost-field">
+                  <label id="ctToursLbl">Aggregate Tour Costs (EUR/person)</label>
+                  <input type="number" id="ctToursCost" value="0" step="50" min="0" oninput="costCalc()">
+                </div>
+                <div class="cost-field">
+                  <label id="ctDrinksLbl">Drinks per Glass (EUR)</label>
+                  <input type="number" id="ctDrinksCost" value="0" step="1" min="0" oninput="costCalc()">
+                </div>
+                <div class="cost-field">
+                  <label>Glasses per Day / person</label>
+                  <input type="number" id="ctDrinksGlasses" value="3" step="1" min="0" oninput="costCalc()">
+                </div>
+                <div class="cost-field">
+                  <label id="ctVarMiscLbl">Misc per Day (EUR/person)</label>
+                  <input type="number" id="ctVarMisc" value="0" step="5" min="0" oninput="costCalc()">
+                </div>
+              </div>
+            </div>
+
+            <!-- D: Results -->
+            <div class="cost-results">
+              <h4>💰 Pricing Summary — at Target Pax</h4>
+              <div class="cost-result-grid">
+                <div class="cri"><div class="cri-label">Sale Price (Twin Share)</div><div class="cri-value hl" id="crSalePrice">$0</div></div>
+                <div class="cri"><div class="cri-label">Single Supplement</div><div class="cri-value" id="crSingleSupp">$0</div></div>
+                <div class="cri"><div class="cri-label">Cost / Person at Target</div><div class="cri-value" id="crCostPP">$0</div></div>
+                <div class="cri"><div class="cri-label">Variable Cost / Person</div><div class="cri-value" id="crVarCost">$0</div></div>
+                <div class="cri"><div class="cri-label">Total Costs to Cover</div><div class="cri-value" id="crFixedTotal">$0</div></div>
+                <div class="cri"><div class="cri-label">Break-Even Pax</div><div class="cri-value" id="crBreakEven">—</div></div>
+              </div>
+            </div>
+
+            <!-- E: Profitability Table -->
+            <div class="cost-section">
+              <div class="cost-section-title">📈 Profitability by Pax Count</div>
+              <div style="overflow-x:auto">
+                <table class="cost-profit-table">
+                  <thead><tr><th>Guests</th><th>Revenue</th><th>Total Costs</th><th>Contribution</th><th>Profit / (Loss)</th><th>Margin %</th></tr></thead>
+                  <tbody id="costProfitBody"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- F: Budget Breakdown -->
+            <div class="cost-section">
+              <div class="cost-section-title">💼 Budget Breakdown (at Target Pax)</div>
+              <div style="overflow-x:auto">
+                <table class="budget-table">
+                  <thead><tr><th>Category</th><th>AUD Amount</th><th>% of Budget</th></tr></thead>
+                  <tbody id="costBudgetBody"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- G: Departures -->
+            <div class="cost-section">
+              <div class="cost-section-title">✈️ Departure Dates</div>
+              <div id="costDepartures"></div>
+              <div style="display:flex;gap:10px;margin-top:12px;align-items:flex-end;flex-wrap:wrap">
+                <div class="cost-field" style="flex:0 0 190px">
+                  <label>New Departure Date</label>
+                  <input type="date" id="ctNewDep">
+                </div>
+                <div class="cost-field" style="flex:0 0 200px">
+                  <label>Label (optional)</label>
+                  <input type="text" id="ctNewDepNote" placeholder="e.g. Spring departure">
+                </div>
+                <button class="btn btn-outline" style="margin-bottom:1px" onclick="costAddDeparture()">+ Add Departure</button>
+              </div>
+            </div>
+
+            <!-- H: Documents -->
+            <div class="cost-section">
+              <div class="cost-section-title">📎 Attached Documents</div>
+              <div id="costDocs"></div>
+              <div class="cost-upload-area">
+                <input type="file" id="ctDocUpload" multiple onchange="costUploadDocs(this)">
+                <div style="pointer-events:none">
+                  <div style="font-size:32px;margin-bottom:8px">📁</div>
+                  <p style="font-size:13px;color:#888;font-weight:600">Click to upload or drag &amp; drop files</p>
+                  <p style="font-size:11px;color:#aaa;margin-top:4px">PDFs, Word docs, spreadsheets, images — any type accepted</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- I: Notes -->
+            <div class="cost-section">
+              <div class="cost-section-title">📝 Tour Notes</div>
+              <textarea id="ctNotes" rows="4" style="width:100%;padding:10px 12px;border:1.5px solid #e0d5c5;border-radius:8px;font-size:13px;outline:none;resize:vertical;font-family:inherit;transition:border .2s" placeholder="Internal notes, inclusions/exclusions, supplier contacts, important dates..." onfocus="this.style.borderColor='#8b6914'" onblur="this.style.borderColor='#e0d5c5'"></textarea>
+            </div>
+          </div><!-- /costTourHeader -->
+        </div><!-- /right col -->
+      </div><!-- /cost-layout -->
     </div>
 
     <!-- SUPPLIER PAYMENTS -->
@@ -547,7 +803,7 @@ function initApp(){
 }
 
 function populateTourSelects(){
-  ['bTour','costTour','sTour'].forEach(id=>{
+  ['bTour','sTour'].forEach(id=>{
     const el=document.getElementById(id);
     if(!el)return;
     el.innerHTML='';
@@ -574,7 +830,7 @@ function showSection(name){
   if(name==='clients')renderClients();
   if(name==='crm')renderLeads();
   if(name==='suppliers')renderSuppliers();
-  if(name==='costing')loadSavedCosting();
+  if(name==='costing')costRenderTourList();
 }
 
 /* =========================================================
@@ -1095,78 +1351,420 @@ function exportLeadsCSV(){
 }
 
 /* =========================================================
-   TOUR COSTING
+   TOUR COSTING — FULL REBUILD (ref: wj_pricing.html logic)
    ========================================================= */
-function initCosting(){
-  const sel=document.getElementById('costTour');
-  if(sel)sel.addEventListener('change',loadSavedCosting);
-  loadSavedCosting();
+let costCurrData=null,costCurrentId=null,costLiveRates=null;
+
+function getCostTours(){return JSON.parse(localStorage.getItem('wj_cost_tours')||'{}');}
+function saveCostTours(d){localStorage.setItem('wj_cost_tours',JSON.stringify(d));}
+
+function initCosting(){costRenderTourList();}
+
+function costRenderTourList(){
+  const tours=getCostTours();
+  const ids=Object.keys(tours);
+  const el=document.getElementById('costTourList');
+  if(!el)return;
+  if(ids.length===0){
+    el.innerHTML='<p style="font-size:12px;color:#aaa;text-align:center;padding:6px 0">No tours saved yet</p>';
+    return;
+  }
+  el.innerHTML=ids.map(id=>`
+    <div class="cost-tour-item ${id===costCurrentId?'active':''}" onclick="costLoadTour('${id}')">
+      <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1">${tours[id].tourName||id}</span>
+      <button class="cost-tour-del" onclick="event.stopPropagation();costDeleteTour('${id}')" title="Delete tour">✕</button>
+    </div>`).join('');
 }
 
-function getCostingData(){return JSON.parse(localStorage.getItem('wj_costsheet')||'{}');}
-function saveCostingData(d){localStorage.setItem('wj_costsheet',JSON.stringify(d));}
-
-function loadSavedCosting(){
-  const tourId=document.getElementById('costTour')?.value;
-  if(!tourId)return;
-  const all=getCostingData();
-  const saved=all[tourId];
-  document.getElementById('costPax').value=saved?.pax||12;
-  document.getElementById('costMargin').value=saved?.margin||20;
-  document.getElementById('costItems').innerHTML='';
-  (saved?.items||[{desc:'',cat:'accommodation',total:0}]).forEach(item=>addCostItem(item));
-  recalcCosting();
+function costNewTour(){
+  costCurrentId=null;
+  costCurrData={
+    tourName:'',tourCurrency:'EUR',eurAudRate:1.65,tourNights:8,
+    targetPax:12,maxPax:18,margin:20,numHosts:2,hostsToPrice:2,
+    hostWages:0,hostAirfares:0,driverVan:0,driverAccomm:0,preTourAccomm:0,
+    marketing:0,fixedMisc:0,
+    hotels:[{name:'',twin:0,single:0,nights:4}],
+    foodCost:0,toursCost:0,drinksCost:0,drinksGlasses:3,varMisc:0,
+    departures:[],documents:[],notes:''
+  };
+  costShowForm();
+  populateCostForm(costCurrData);
+  costRenderTourList();
 }
 
-function saveCosting(){
-  const tourId=document.getElementById('costTour').value;
-  const all=getCostingData();
-  all[tourId]={pax:Number(document.getElementById('costPax').value)||12,margin:Number(document.getElementById('costMargin').value)||20,items:getCostItems()};
-  saveCostingData(all);
-  toast('Costing saved');
+function costLoadTour(id){
+  const tours=getCostTours();
+  if(!tours[id])return;
+  costCurrentId=id;
+  costCurrData=JSON.parse(JSON.stringify(tours[id]));
+  costShowForm();
+  populateCostForm(costCurrData);
+  costRenderTourList();
 }
 
-function getCostItems(){
-  return Array.from(document.querySelectorAll('#costItems .cost-item-row')).map(row=>{
-    const inputs=row.querySelectorAll('input,select');
-    return{desc:inputs[0].value,cat:inputs[1].value,total:Number(inputs[2].value)||0};
+function costShowForm(){
+  document.getElementById('costNoTour').style.display='none';
+  document.getElementById('costTourHeader').style.display='';
+}
+
+function costSaveTour(){
+  const tourName=document.getElementById('ctTourName').value.trim();
+  if(!tourName){toast('Please enter a tour name');return;}
+  const data=costCollectInputs();
+  data.tourName=tourName;
+  const id=costCurrentId||('tour_'+Date.now());
+  costCurrentId=id;
+  costCurrData=data;
+  const tours=getCostTours();
+  tours[id]=data;
+  saveCostTours(tours);
+  costRenderTourList();
+  toast('Tour costing saved ✓');
+}
+
+function costDeleteTour(id){
+  if(!confirm('Delete this tour costing? This cannot be undone.'))return;
+  const tours=getCostTours();
+  delete tours[id];
+  saveCostTours(tours);
+  if(costCurrentId===id){
+    costCurrentId=null;costCurrData=null;
+    document.getElementById('costNoTour').style.display='';
+    document.getElementById('costTourHeader').style.display='none';
+  }
+  costRenderTourList();
+  toast('Tour deleted');
+}
+
+function costCollectInputs(){
+  const hotels=[];
+  document.querySelectorAll('#ctHotels .hotel-row').forEach(row=>{
+    const inp=row.querySelectorAll('input');
+    hotels.push({name:inp[0].value,twin:Number(inp[1].value)||0,single:Number(inp[2].value)||0,nights:Number(inp[3].value)||1});
   });
+  return{
+    tourName:document.getElementById('ctTourName').value.trim(),
+    tourCurrency:document.getElementById('ctCurrency').value,
+    eurAudRate:Number(document.getElementById('ctRate').value)||1,
+    tourNights:Number(document.getElementById('ctNights').value)||1,
+    targetPax:Number(document.getElementById('ctTargetPax').value)||1,
+    maxPax:Number(document.getElementById('ctMaxPax').value)||1,
+    margin:Number(document.getElementById('ctMargin').value)||0,
+    numHosts:Number(document.getElementById('ctNumHosts').value)||0,
+    hostsToPrice:Number(document.getElementById('ctHostsToPrice').value)||0,
+    hostWages:Number(document.getElementById('ctHostWages').value)||0,
+    hostAirfares:Number(document.getElementById('ctHostAirfares').value)||0,
+    driverVan:Number(document.getElementById('ctDriverVan').value)||0,
+    driverAccomm:Number(document.getElementById('ctDriverAccomm').value)||0,
+    preTourAccomm:Number(document.getElementById('ctPreTour').value)||0,
+    marketing:Number(document.getElementById('ctMarketing').value)||0,
+    fixedMisc:Number(document.getElementById('ctFixedMisc').value)||0,
+    hotels,
+    foodCost:Number(document.getElementById('ctFoodCost').value)||0,
+    toursCost:Number(document.getElementById('ctToursCost').value)||0,
+    drinksCost:Number(document.getElementById('ctDrinksCost').value)||0,
+    drinksGlasses:Number(document.getElementById('ctDrinksGlasses').value)||0,
+    varMisc:Number(document.getElementById('ctVarMisc').value)||0,
+    departures:costCurrData?[...(costCurrData.departures||[])]: [],
+    documents:costCurrData?[...(costCurrData.documents||[])]: [],
+    notes:document.getElementById('ctNotes').value
+  };
 }
 
-function addCostItem(item){
+function populateCostForm(d){
+  document.getElementById('ctTourName').value=d.tourName||'';
+  document.getElementById('ctCurrency').value=d.tourCurrency||'EUR';
+  document.getElementById('ctRate').value=d.eurAudRate||1.65;
+  document.getElementById('ctNights').value=d.tourNights||8;
+  document.getElementById('ctTargetPax').value=d.targetPax||12;
+  document.getElementById('ctMaxPax').value=d.maxPax||18;
+  document.getElementById('ctMargin').value=d.margin||20;
+  document.getElementById('ctNumHosts').value=d.numHosts||0;
+  document.getElementById('ctHostsToPrice').value=d.hostsToPrice||0;
+  document.getElementById('ctHostWages').value=d.hostWages||0;
+  document.getElementById('ctHostAirfares').value=d.hostAirfares||0;
+  document.getElementById('ctDriverVan').value=d.driverVan||0;
+  document.getElementById('ctDriverAccomm').value=d.driverAccomm||0;
+  document.getElementById('ctPreTour').value=d.preTourAccomm||0;
+  document.getElementById('ctMarketing').value=d.marketing||0;
+  document.getElementById('ctFixedMisc').value=d.fixedMisc||0;
+  document.getElementById('ctFoodCost').value=d.foodCost||0;
+  document.getElementById('ctToursCost').value=d.toursCost||0;
+  document.getElementById('ctDrinksCost').value=d.drinksCost||0;
+  document.getElementById('ctDrinksGlasses').value=d.drinksGlasses||3;
+  document.getElementById('ctVarMisc').value=d.varMisc||0;
+  document.getElementById('ctNotes').value=d.notes||'';
+  document.getElementById('ctHotels').innerHTML='';
+  (d.hotels||[{name:'',twin:0,single:0,nights:4}]).forEach(h=>costAddHotelRow(h));
+  costUpdateLabels();
+  costRenderDepartures();
+  costRenderDocs();
+  costCalc();
+}
+
+function costAddHotel(){costAddHotelRow({name:'',twin:0,single:0,nights:1});costCalc();}
+function costAddHotelRow(h){
   const div=document.createElement('div');
-  div.className='cost-item-row';
+  div.className='hotel-row';
+  const t=h.twin||0,s=h.single||(t*2)||0;
   div.innerHTML=`
-    <input type="text" placeholder="Item description" value="${item?item.desc||'':''}">
-    <select>
-      ${['accommodation','transport','experience','meals','guide','other'].map(c=>`<option value="${c}" ${item&&item.cat===c?'selected':''}>${c.charAt(0).toUpperCase()+c.slice(1)}</option>`).join('')}
-    </select>
-    <input type="number" placeholder="Total AUD" value="${item?item.total||'':''}" oninput="recalcCosting()">
-    <input type="number" placeholder="Per person" readonly style="background:#f4f1eb;color:#888">
-    <button class="btn-icon" onclick="this.parentElement.remove();recalcCosting()" title="Remove">✕</button>
-  `;
-  document.getElementById('costItems').appendChild(div);
-  recalcCosting();
+    <input type="text" placeholder="Hotel name / region" value="${h.name||''}">
+    <input type="number" placeholder="0" value="${t}" step="5" min="0" oninput="costAutoSingle(this);costCalc()">
+    <input type="number" placeholder="0" value="${s}" step="5" min="0" oninput="costCalc()">
+    <input type="number" placeholder="1" value="${h.nights||1}" min="1" oninput="costCalc()">
+    <button class="btn-icon" onclick="this.parentElement.remove();costCalc()" title="Remove">✕</button>`;
+  document.getElementById('ctHotels').appendChild(div);
 }
 
-function recalcCosting(){
-  const pax=Number(document.getElementById('costPax').value)||1;
-  const margin=(Number(document.getElementById('costMargin').value)||0)/100;
-  let grandTotal=0;
-  document.querySelectorAll('#costItems .cost-item-row').forEach(row=>{
-    const inputs=row.querySelectorAll('input');
-    const total=Number(inputs[1].value)||0;
-    const pp=pax>0?total/pax:0;
-    inputs[2].value=pp.toFixed(2);
-    grandTotal+=total;
+function costAutoSingle(inp){
+  const row=inp.parentElement;
+  const si=row.querySelectorAll('input')[2];
+  if(!si._manuallySet||si._manuallySet===0){si.value=Math.round(Number(inp.value)*2);si._auto=1;}
+}
+
+function costUpdateLabels(){
+  const c=document.getElementById('ctCurrency').value;
+  document.getElementById('ctRateLabel').textContent=`${c} → AUD Rate`;
+  document.getElementById('ctDriverVanLbl').textContent=`Driver & Van (${c} total)`;
+  document.getElementById('ctDriverAccommLbl').textContent=`Driver Accommodation (${c})`;
+  document.getElementById('ctPreTourLbl').textContent=`Pre-Tour Host Accom. (${c})`;
+  document.getElementById('ctHotelTwinHdr').textContent=`Twin/Night (${c})`;
+  document.getElementById('ctHotelSingleHdr').textContent=`Single/Night (${c})`;
+  document.getElementById('ctFoodLbl').textContent=`Food per Day (${c}/person)`;
+  document.getElementById('ctToursLbl').textContent=`Aggregate Tour Costs (${c}/person)`;
+  document.getElementById('ctDrinksLbl').textContent=`Drinks per Glass (${c})`;
+  document.getElementById('ctVarMiscLbl').textContent=`Misc per Day (${c}/person)`;
+  if(costLiveRates&&costLiveRates[c]){
+    const lr=(1/costLiveRates[c]).toFixed(4);
+    document.getElementById('ctLiveHint').textContent=`Live: 1 ${c} = ${lr} AUD`;
+    document.getElementById('costLiveRateText').textContent=`1 ${c} = ${lr} AUD`;
+    document.getElementById('costLiveRateDisplay').style.display='';
+  }
+}
+
+/* Core pricing engine — exact logic from reference tool */
+function costCalculate(d){
+  const rate=d.eurAudRate||1;
+  const nHosts=d.numHosts||0;
+  const h2p=d.hasOwnProperty('hostsToPrice')?d.hostsToPrice:nHosts;
+  const tpax=d.targetPax||1;
+  const margin=(d.margin/100)||0;
+  const nights=d.tourNights||1;
+
+  const foodPP=(d.foodCost||0)*nights*rate;
+  const drinksPP=(d.drinksGlasses||0)*nights*(d.drinksCost||0)*rate;
+  const toursPP=(d.toursCost||0)*rate;
+  const vmiscPP=(d.varMisc||0)*nights*rate;
+
+  let hotelTwinPP_f=0,hotelSingle_f=0;
+  (d.hotels||[]).forEach(h=>{hotelTwinPP_f+=(h.twin||0)*(h.nights||0);hotelSingle_f+=(h.single||0)*(h.nights||0);});
+  const hotelTwinPP=hotelTwinPP_f*rate;
+  const hotelSingle=hotelSingle_f*rate;
+
+  const guestVarMarkup=hotelTwinPP+foodPP+drinksPP+toursPP+vmiscPP;
+  const transferFixed=(d.driverVan||0)*rate;
+  const otherFixed=((d.driverAccomm||0)*rate)+(d.marketing||0)+(d.fixedMisc||0);
+  const hostFixed=(d.hostWages||0)+((d.hostAirfares||0)*nHosts)+((d.preTourAccomm||0)*rate);
+  const hostVarPP=hotelSingle+foodPP+drinksPP+toursPP+vmiscPP;
+  const hostVarTotal=hostVarPP*nHosts;
+  const totalCosts=transferFixed+otherFixed+hostFixed+hostVarTotal;
+  const varCostPP=hotelTwinPP+foodPP+drinksPP+toursPP+vmiscPP;
+
+  let hostContrib=0;
+  if(nHosts>0){const ratio=h2p/nHosts;hostContrib=(hostFixed*ratio)+(hostVarTotal*ratio);}
+  const passThruTotal=otherFixed+hostContrib;
+  const passThruPP=passThruTotal/tpax;
+  const markupBase=(transferFixed/tpax)+guestVarMarkup;
+  const saleMkup=margin>=1?markupBase:markupBase/(1-margin);
+  const salePrice=saleMkup+passThruPP;
+  const hotelDiff=hotelSingle-hotelTwinPP;
+  const singleSupp=margin>=1?hotelDiff:hotelDiff/(1-margin);
+  const costPP=(totalCosts/tpax)+varCostPP;
+  const totalFixed=transferFixed+otherFixed+hostFixed;
+  const breakEven=salePrice>varCostPP?Math.ceil(totalCosts/(salePrice-varCostPP)):Infinity;
+
+  return{salePrice,singleSupp,varCostPP,costPP,totalFixed,totalCosts,breakEven,
+    hotelTwinPP,hotelSingle,foodPP,drinksPP,toursPP,vmiscPP,
+    hostFixed,hostVarTotal,otherFixed,transferFixed,rate,d};
+}
+
+function costCalc(){
+  const tHeader=document.getElementById('costTourHeader');
+  if(!tHeader||tHeader.style.display==='none')return;
+  const d=costCollectInputs();
+  const r=costCalculate(d);
+
+  // Results panel
+  document.getElementById('crSalePrice').textContent=fmt(r.salePrice);
+  document.getElementById('crSingleSupp').textContent=fmt(r.singleSupp);
+  document.getElementById('crCostPP').textContent=fmt(r.costPP);
+  document.getElementById('crVarCost').textContent=fmt(r.varCostPP);
+  document.getElementById('crFixedTotal').textContent=fmt(r.totalCosts);
+  document.getElementById('crBreakEven').textContent=r.breakEven===Infinity?'∞':r.breakEven;
+
+  // Profitability table
+  const maxPax=d.maxPax||20;
+  const tbody=document.getElementById('costProfitBody');
+  tbody.innerHTML='';
+  const paxList=[];
+  for(let n=2;n<=maxPax;n+=2)paxList.push(n);
+  if(maxPax>0&&maxPax%2!==0&&!paxList.includes(maxPax))paxList.push(maxPax);
+  if(!paxList.includes(d.targetPax)&&d.targetPax>=2)paxList.push(d.targetPax);
+  paxList.sort((a,b)=>a-b);
+  paxList.forEach(n=>{
+    const rev=r.salePrice*n;
+    const totC=r.varCostPP*n+r.totalCosts;
+    const contrib=rev-(r.varCostPP*n);
+    const profit=rev-totC;
+    const pct=rev>0?(profit/rev*100):0;
+    const isTgt=n===d.targetPax;
+    const isPos=profit>=0;
+    const tr=document.createElement('tr');
+    tr.className=isTgt?'pt':(isPos?'pp':'pn');
+    tr.innerHTML=`<td>${n}${isTgt?' ★':''}</td><td>${fmt(rev)}</td><td>${fmt(totC)}</td><td>${fmt(contrib)}</td><td style="color:${isPos?'#2e7d32':'#c62828'};font-weight:600">${fmt(profit)}</td><td style="color:${isPos?'#2e7d32':'#c62828'}">${pct.toFixed(1)}%</td>`;
+    tbody.appendChild(tr);
   });
-  const perPerson=pax>0?grandTotal/pax:0;
-  const perPersonWithMargin=margin>0?perPerson/(1-margin):perPerson;
-  document.getElementById('costTotals').innerHTML=`
-    <div class="total-item"><div class="total-label">Total Cost</div><div class="total-value">${fmt(grandTotal)}</div></div>
-    <div class="total-item"><div class="total-label">Per Person (cost)</div><div class="total-value">${fmt(perPerson)}</div></div>
-    <div class="total-item"><div class="total-label">Per Person (with ${Math.round(margin*100)}% margin)</div><div class="total-value" style="color:#8b6914">${fmt(perPersonWithMargin)}</div></div>
-  `;
+
+  // Budget breakdown
+  const ng=d.targetPax||0,ns=d.numHosts||0;
+  const bud={
+    'Flights': (d.hostAirfares||0)*ns,
+    'Guest Accommodation': r.hotelTwinPP*ng,
+    'Host Accommodation': (r.hotelSingle*ns)+((d.preTourAccomm||0)*r.rate),
+    'Food': r.foodPP*(ng+ns),
+    'Drinks': r.drinksPP*(ng+ns),
+    'Tours & Experiences': r.toursPP*(ng+ns),
+    'Driver & Transport': r.transferFixed,
+    'Host Wages': d.hostWages||0,
+    'Marketing': d.marketing||0,
+    'Miscellaneous': (d.fixedMisc||0)+(r.vmiscPP*(ng+ns))
+  };
+  const totBud=Object.values(bud).reduce((a,b)=>a+b,0);
+  document.getElementById('costBudgetBody').innerHTML=
+    Object.entries(bud).filter(([,v])=>v>0).map(([cat,amt])=>{
+      const pct=totBud>0?(amt/totBud*100).toFixed(1):'0.0';
+      return`<tr><td>${cat}</td><td>${fmt(amt)}</td><td>${pct}%</td></tr>`;
+    }).join('')+
+    `<tr style="font-weight:700;background:#faf8f3"><td>Total</td><td>${fmt(totBud)}</td><td>100%</td></tr>`;
+}
+
+/* Departures */
+function costRenderDepartures(){
+  if(!costCurrData)return;
+  const deps=costCurrData.departures||[];
+  const el=document.getElementById('costDepartures');
+  if(deps.length===0){el.innerHTML='<p style="font-size:12px;color:#aaa;padding:4px 0">No departure dates added yet</p>';return;}
+  el.innerHTML=deps.map((dep,i)=>`
+    <div class="departure-row">
+      <div>
+        <strong style="font-size:13.5px">${costFmtDate(dep.date)}</strong>
+        ${dep.note?`<span style="font-size:12px;color:#888;margin-left:8px">· ${dep.note}</span>`:''}
+      </div>
+      <button class="btn btn-danger btn-sm" onclick="costRemoveDeparture(${i})">Remove</button>
+    </div>`).join('');
+}
+
+function costAddDeparture(){
+  const date=document.getElementById('ctNewDep').value;
+  if(!date){toast('Please select a departure date');return;}
+  if(!costCurrData){toast('Create or load a tour first');return;}
+  costCurrData.departures=costCurrData.departures||[];
+  if(costCurrData.departures.find(d=>d.date===date)){toast('That date already exists');return;}
+  const note=document.getElementById('ctNewDepNote').value.trim();
+  costCurrData.departures.push({date,note,bookings:[],incurredCosts:[]});
+  costCurrData.departures.sort((a,b)=>a.date.localeCompare(b.date));
+  document.getElementById('ctNewDep').value='';
+  document.getElementById('ctNewDepNote').value='';
+  costRenderDepartures();
+  costSaveSilent();
+}
+
+function costRemoveDeparture(i){
+  if(!confirm('Remove this departure date?'))return;
+  costCurrData.departures.splice(i,1);
+  costRenderDepartures();
+  costSaveSilent();
+}
+
+function costSaveSilent(){
+  if(!costCurrentId)return;
+  const data=costCollectInputs();
+  data.departures=costCurrData.departures||[];
+  data.documents=costCurrData.documents||[];
+  const tours=getCostTours();
+  tours[costCurrentId]=data;
+  saveCostTours(tours);
+}
+
+/* Documents */
+function costUploadDocs(input){
+  if(!costCurrData){toast('Create or load a tour first');return;}
+  const files=Array.from(input.files);
+  if(!files.length)return;
+  costCurrData.documents=costCurrData.documents||[];
+  let done=0;
+  files.forEach(f=>{
+    const reader=new FileReader();
+    reader.onload=e=>{
+      costCurrData.documents.push({name:f.name,type:f.type,size:f.size,data:e.target.result,uploadedAt:new Date().toISOString()});
+      done++;
+      if(done===files.length){costRenderDocs();costSaveSilent();toast(`${done} file${done>1?'s':''} attached`);}
+    };
+    reader.readAsDataURL(f);
+  });
+  input.value='';
+}
+
+function costRenderDocs(){
+  if(!costCurrData)return;
+  const docs=costCurrData.documents||[];
+  const el=document.getElementById('costDocs');
+  if(docs.length===0){el.innerHTML='<p style="font-size:12px;color:#aaa;padding:4px 0">No documents attached yet</p>';return;}
+  el.innerHTML=docs.map((doc,i)=>{
+    const sz=doc.size>1048576?(doc.size/1048576).toFixed(1)+' MB':Math.round(doc.size/1024)+' KB';
+    const ico=doc.type.includes('pdf')?'📄':doc.type.includes('image')?'🖼':doc.type.includes('word')||doc.type.includes('document')?'📝':doc.type.includes('sheet')||doc.type.includes('excel')?'📊':'📎';
+    const d=new Date(doc.uploadedAt).toLocaleDateString('en-AU');
+    return`<div class="cost-doc-item">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="font-size:22px">${ico}</span>
+        <div><div style="font-weight:600">${doc.name}</div><div style="font-size:11px;color:#aaa">${sz} · ${d}</div></div>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-outline btn-sm" onclick="costDownloadDoc(${i})">⬇ Download</button>
+        <button class="btn btn-danger btn-sm" onclick="costRemoveDoc(${i})">Remove</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function costDownloadDoc(i){
+  const doc=costCurrData&&costCurrData.documents[i];
+  if(!doc)return;
+  const a=document.createElement('a');a.href=doc.data;a.download=doc.name;a.click();
+}
+
+function costRemoveDoc(i){
+  if(!confirm('Remove this document?'))return;
+  costCurrData.documents.splice(i,1);
+  costRenderDocs();costSaveSilent();toast('Document removed');
+}
+
+/* Live rates */
+async function costFetchRates(){
+  toast('Fetching live exchange rates…');
+  try{
+    const res=await fetch('https://api.exchangerate-api.com/v4/latest/AUD');
+    if(!res.ok)throw new Error();
+    const data=await res.json();
+    costLiveRates=data.rates;
+    costUpdateLabels();
+    toast('Live rates updated ✓');
+  }catch(e){toast('Could not load live rates');}
+}
+
+function costFmtDate(s){
+  try{return new Date(s+'T00:00:00').toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short',year:'numeric'});}
+  catch(e){return s;}
 }
 
 /* =========================================================
