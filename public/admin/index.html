@@ -166,7 +166,65 @@ tr:hover td{background:#faf8f3}
 /* RESPONSIVE TWEAKS */
 @media(max-width:900px){.stat-grid{grid-template-columns:1fr 1fr}.main{padding:20px}.tour-grid-admin{grid-template-columns:1fr 1fr}}
 @media(max-width:650px){.stat-grid{grid-template-columns:1fr}.sidebar{width:100%;position:relative;height:auto}.main{margin-left:0}}
-/* TOUR COSTING — styles to be added during rebuild */
+/* ── TOUR COSTING ── */
+#wjc{display:grid;grid-template-columns:220px 1fr;gap:20px;align-items:start}
+#wjc-sidebar{background:#fff;border-radius:12px;padding:16px;box-shadow:0 1px 6px rgba(0,0,0,.06);position:sticky;top:20px}
+#wjc-sidebar h4{font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px}
+.wjc-tour-item{padding:8px 10px;border-radius:7px;cursor:pointer;font-size:13px;color:#444;margin-bottom:4px;transition:background .15s}
+.wjc-tour-item:hover{background:#f4f1eb}
+.wjc-tour-item.active{background:#f4f1eb;font-weight:600;color:#1a0a00}
+.wjc-tour-item .wjc-tour-date{font-size:11px;color:#aaa;margin-top:1px}
+#wjc-main *{box-sizing:border-box}
+#wjc-main{min-width:0}
+.wjc-header{padding-bottom:1rem;border-bottom:.5px solid rgba(0,0,0,.1);margin-bottom:1.25rem}
+.wjc-header h3{font-size:18px;font-weight:600;color:#1a0a00}
+.wjc-header p{font-size:13px;color:#666;margin-top:3px}
+.wjc-controls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-bottom:1.25rem}
+.wjc-controls .cg{display:flex;align-items:center;gap:8px}
+.wjc-controls label{font-size:13px;color:#666;white-space:nowrap}
+.wjc-controls input[type=number]{width:80px;padding:5px 8px;font-size:13px;border:.5px solid rgba(0,0,0,.18);border-radius:8px;background:#fff;color:#1a0a00;outline:none}
+.wjc-controls input[type=number]:focus{outline:2px solid #8b6914;outline-offset:1px}
+.wjc-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:1.5rem}
+.wjc-metric{background:#f4f1eb;border-radius:8px;padding:.875rem 1rem}
+.wjc-metric.bold{border:1px solid rgba(0,0,0,.12)}
+.wjc-metric .lbl{font-size:11px;color:#666;margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em}
+.wjc-metric .val{font-size:20px;font-weight:600;color:#1a0a00}
+.wjc-metric.bold .val{font-size:22px}
+.wjc-metric .sub{font-size:11px;color:#aaa;margin-top:3px}
+.wjc-section{margin-bottom:10px}
+.wjc-sec-hdr{display:flex;align-items:center;gap:10px;padding:.6rem .875rem;background:#f4f1eb;border-radius:8px;cursor:pointer;user-select:none}
+.wjc-sec-hdr:hover{filter:brightness(.97)}
+.wjc-sec-hdr h2{font-size:14px;font-weight:500;color:#1a0a00;flex:1;margin:0;padding:0}
+.wjc-sec-hdr .wjc-day{font-size:12px;color:#666}
+.wjc-sec-hdr .wjc-tot{font-size:13px;font-weight:600;color:#1a0a00}
+.wjc-sec-hdr .wjc-chev{font-size:11px;color:#aaa}
+.wjc-sec-body{border:.5px solid rgba(0,0,0,.1);border-top:none;border-radius:0 0 8px 8px;overflow:hidden}
+.wjc-sec-body.collapsed{display:none}
+.wjc-tbl{width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed}
+.wjc-tbl thead th{font-size:11px;font-weight:500;color:#aaa;padding:5px 8px;border-bottom:.5px solid rgba(0,0,0,.1);text-align:left;text-transform:uppercase;letter-spacing:.04em}
+.wjc-tbl thead th.r{text-align:right}
+.wjc-tbl tbody td{padding:6px 8px;border-bottom:.5px solid rgba(0,0,0,.08);vertical-align:middle;color:#1a0a00}
+.wjc-tbl tbody tr:last-child td{border-bottom:none}
+.wjc-tbl tbody tr:hover td{background:#faf5e9}
+.wjc-tbl td.r{text-align:right;font-variant-numeric:tabular-nums}
+.wjc-detail{font-size:11px;color:#666;margin-top:2px}
+.wjc-badge{display:inline-block;font-size:10px;padding:1px 5px;border-radius:3px;margin-right:4px;vertical-align:middle;font-weight:500}
+.wjc-badge-day{background:#f4f1eb;color:#666}
+.wjc-badge-est{background:#fff8e1;color:#854F0B}
+.wjc-price-wrap{display:flex;align-items:center;justify-content:flex-end;gap:3px}
+.wjc-cur{font-size:12px;color:#aaa}
+.wjc-inp{width:76px;text-align:right;font-size:13px;font-variant-numeric:tabular-nums;border:.5px solid rgba(0,0,0,.18);border-radius:4px;padding:3px 5px;background:#fff;color:#1a0a00;outline:none}
+.wjc-inp:focus{outline:2px solid #8b6914;outline-offset:1px}
+.wjc-inp.ov{color:#185FA5}
+.wjc-night{font-size:11px;color:#aaa}
+.wjc-footer{margin-top:1.5rem;padding-top:1rem;border-top:.5px solid rgba(0,0,0,.1);font-size:12px;color:#aaa;line-height:1.8}
+.wjc-edit-panel{background:#fff;border-radius:12px;padding:20px;box-shadow:0 1px 6px rgba(0,0,0,.06);margin-bottom:16px}
+.wjc-edit-panel textarea{width:100%;font-size:12px;font-family:monospace;padding:10px;border:1.5px solid #e0d5c5;border-radius:8px;outline:none;resize:vertical;min-height:300px;color:#1a0a00;line-height:1.5}
+.wjc-edit-panel textarea:focus{border-color:#8b6914}
+.wjc-meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.wjc-meta-grid input{padding:7px 10px;border:1.5px solid #e0d5c5;border-radius:6px;font-size:13px;outline:none;width:100%}
+.wjc-meta-grid input:focus{border-color:#8b6914}
+.wjc-meta-grid label{font-size:10.5px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.8px;display:block;margin-bottom:3px}
 </style>
 </head>
 <body>
@@ -294,11 +352,81 @@ tr:hover td{background:#faf8f3}
     <div id="sec-costing" class="section">
       <div class="page-header">
         <div><h2>Tour Costing</h2><p>Pricing by supplier</p></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-outline" onclick="wjcEditTour()" id="wjc-btn-edit" style="display:none">✏️ Edit Data</button>
+          <button class="btn btn-outline" onclick="wjcDeleteTour()" id="wjc-btn-delete" style="display:none">🗑 Delete</button>
+          <button class="btn btn-primary" onclick="wjcNewTour()">+ New Tour</button>
+        </div>
       </div>
-      <div style="text-align:center;padding:80px 20px;color:#aaa">
-        <div style="font-size:48px;margin-bottom:16px">🧮</div>
-        <p style="font-size:15px;font-weight:600;color:#555">Coming soon</p>
-        <p style="font-size:13px;margin-top:6px">Tour costing will be rebuilt here</p>
+      <div id="wjc">
+        <!-- Left sidebar: tour list -->
+        <div id="wjc-sidebar">
+          <h4>Saved Tours</h4>
+          <div id="wjc-tour-list"><p style="font-size:12px;color:#aaa;text-align:center;padding:8px 0">No tours yet</p></div>
+        </div>
+        <!-- Right: planner -->
+        <div id="wjc-main">
+          <!-- Empty state -->
+          <div id="wjc-empty" style="text-align:center;padding:80px 20px;color:#aaa;background:#fff;border-radius:12px;box-shadow:0 1px 6px rgba(0,0,0,.06)">
+            <div style="font-size:48px;margin-bottom:12px">🧮</div>
+            <p style="font-size:15px;font-weight:600;color:#555">No tour selected</p>
+            <p style="font-size:13px;margin-top:6px">Click <strong>+ New Tour</strong> to start, or select a saved tour</p>
+          </div>
+          <!-- Edit mode -->
+          <div id="wjc-editor" style="display:none">
+            <div class="wjc-edit-panel">
+              <div style="font-size:13px;font-weight:700;color:#1a0a00;margin-bottom:12px">Tour Details</div>
+              <div class="wjc-meta-grid">
+                <div><label>Tour Name</label><input type="text" id="wjc-m-title" placeholder="e.g. South Africa 2027"></div>
+                <div><label>Dates</label><input type="text" id="wjc-m-dates" placeholder="e.g. 12–25 April 2027"></div>
+                <div><label>Subtitle</label><input type="text" id="wjc-m-subtitle" placeholder="Optional tagline"></div>
+                <div><label>Days</label><input type="number" id="wjc-m-days" placeholder="14" min="1"></div>
+              </div>
+              <div style="font-size:13px;font-weight:700;color:#1a0a00;margin-bottom:8px">Suppliers &amp; Items <span style="font-size:11px;font-weight:400;color:#aaa">(JSON array)</span></div>
+              <textarea id="wjc-json" spellcheck="false" placeholder='[
+  {
+    "id": "supplier_slug",
+    "name": "Supplier Name",
+    "day": "1",
+    "items": [
+      {
+        "id": "item1",
+        "cat": "dining",
+        "day": "1",
+        "name": "Dinner — 3 course",
+        "audBase": 120,
+        "est": true
+      }
+    ]
+  }
+]'></textarea>
+              <div id="wjc-json-err" style="font-size:12px;color:#c62828;margin-top:6px;display:none"></div>
+              <div style="display:flex;gap:8px;margin-top:12px">
+                <button class="btn btn-primary" onclick="wjcSaveTour()">💾 Save Tour</button>
+                <button class="btn btn-outline" onclick="wjcCancelEdit()">Cancel</button>
+              </div>
+            </div>
+          </div>
+          <!-- Planner view -->
+          <div id="wjc-planner" style="display:none">
+            <div class="wjc-header">
+              <h3 id="wjc-title">Tour</h3>
+              <p id="wjc-subtitle"></p>
+            </div>
+            <div class="wjc-controls">
+              <div class="cg"><label>Guests</label><input type="number" id="wjc-guests" value="10" min="1" max="100" step="1"></div>
+              <div class="cg"><label id="wjc-fx-label">ZAR → AUD rate</label><input type="number" id="wjc-fx" value="0.085" min="0.001" max="10" step="0.001"></div>
+              <div class="cg"><label>Markup %</label><input type="number" id="wjc-mk" value="15" min="0" max="100" step="1"></div>
+            </div>
+            <div class="wjc-summary" id="wjc-summary-grid"></div>
+            <div id="wjc-sections"></div>
+            <div class="wjc-footer">
+              * Click any per-person amount to override. Double-click to reset. Blue = overridden.<br>
+              † Per-night rates shown per room/night; group total covers all nights.<br>
+              ‡ Flat group fees divided by guest count. Per-car rates divided by 2.
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1123,9 +1251,319 @@ function exportLeadsCSV(){
 }
 
 /* =========================================================
-   TOUR COSTING — to be rebuilt
+   TOUR COSTING
    ========================================================= */
-function initCosting(){}
+
+// ── Storage ──────────────────────────────────────────────
+function wjcGetTours(){return JSON.parse(localStorage.getItem('wj_cost_tours')||'{}');}
+function wjcSaveTours(d){localStorage.setItem('wj_cost_tours',JSON.stringify(d));}
+
+// ── State ─────────────────────────────────────────────────
+let wjcCurrentId=null;
+const wjcOverrides={};
+
+// ── Category config (matches reference tool) ──────────────
+const WJC_CAT={
+  accommodation:{label:'Accommodation',color:'#185FA5'},
+  tasting:      {label:'Wine Tastings', color:'#3B6D11'},
+  dining:       {label:'Dining & Drinks',color:'#993C1D'},
+  experience:   {label:'Transport / Exp',color:'#534AB7'},
+};
+
+// ── Helpers ───────────────────────────────────────────────
+function wjcGuests(){return parseInt(document.getElementById('wjc-guests')?.value)||10;}
+function wjcFX()    {return parseFloat(document.getElementById('wjc-fx')?.value)||0.085;}
+function wjcMK()    {return parseFloat(document.getElementById('wjc-mk')?.value)||15;}
+
+function wjcCalcDefault(item,fx,mk,guests){
+  let pp=null;
+  if(item.audBase!=null){pp=item.audBase*(1+mk/100);}
+  else if(item.zarBase!=null){
+    pp=item.zarBase*fx*(1+mk/100);
+    if(item.groupFlat)pp=pp/guests;
+    if(item.perCar)pp=pp/2;
+  }
+  return pp;
+}
+
+function wjcMoney(v){
+  if(v==null)return'—';
+  return'$'+Math.round(v).toLocaleString('en-AU');
+}
+
+// ── Recalc ────────────────────────────────────────────────
+function wjcRecalc(){
+  const tours=wjcGetTours();
+  const tour=tours[wjcCurrentId];
+  if(!tour)return;
+  const suppliers=tour.suppliers||[];
+  const guests=wjcGuests(),fx=wjcFX(),mk=wjcMK();
+  const catTotals={accommodation:0,tasting:0,dining:0,experience:0};
+
+  suppliers.forEach(sup=>{
+    let supPP=0;
+    (sup.items||[]).forEach(item=>{
+      const def=wjcCalcDefault(item,fx,mk,guests);
+      const ov=wjcOverrides[item.id];
+      const pp=(ov!==undefined&&ov!=='')?parseFloat(ov):def;
+      if(!item.perNight&&pp!=null){
+        supPP+=pp;
+        catTotals[item.cat]=(catTotals[item.cat]||0)+pp;
+      }
+      const inp=document.getElementById('wjci-'+item.id);
+      const grp=document.getElementById('wjcg-'+item.id);
+      if(inp){
+        const defR=def!=null?Math.round(def):null;
+        if(ov===undefined||ov===''){
+          inp.value=defR!=null?defR:'';
+          inp.placeholder=defR!=null?defR:'TBC';
+          inp.classList.remove('ov');
+        } else {inp.classList.add('ov');}
+      }
+      if(grp){
+        if(item.perNight){grp.textContent=pp!=null?`${item.nights} nts = ${wjcMoney(pp*item.nights)}`:'—';}
+        else{grp.textContent=pp!=null?wjcMoney(pp*guests):'—';}
+      }
+    });
+    const totEl=document.getElementById('wjct-'+sup.id);
+    if(totEl)totEl.textContent=supPP>0?wjcMoney(supPP)+' pp':'—';
+  });
+
+  const grandPP=Object.values(catTotals).reduce((a,b)=>a+b,0);
+  const summaryEl=document.getElementById('wjc-summary-grid');
+  if(summaryEl){
+    summaryEl.innerHTML=[
+      {label:'Accommodation',value:catTotals.accommodation,sub:'excl. per-night'},
+      {label:'Wine Tastings', value:catTotals.tasting},
+      {label:'Dining & Drinks',value:catTotals.dining},
+      {label:'Experiences',   value:catTotals.experience},
+      {label:'Total per person',value:grandPP,bold:true},
+      {label:`Total (${guests} guests)`,value:grandPP*guests,bold:true},
+    ].map(m=>`<div class="wjc-metric${m.bold?' bold':''}">
+      <div class="lbl">${m.label}</div>
+      <div class="val">${wjcMoney(m.value)}</div>
+      ${m.sub?`<div class="sub">${m.sub}</div>`:''}
+    </div>`).join('');
+  }
+  // Persist guest/fx/mk back to tour
+  tour.guests=guests; tour.fxrate=fx; tour.markup=mk;
+  wjcSaveTours(tours);
+}
+
+// ── Build planner DOM ─────────────────────────────────────
+function wjcBuild(tour){
+  Object.keys(wjcOverrides).forEach(k=>delete wjcOverrides[k]);
+  if(tour.overrides)Object.assign(wjcOverrides,tour.overrides);
+
+  const meta=tour.meta||{};
+  document.getElementById('wjc-title').textContent=meta.title||'Tour';
+  document.getElementById('wjc-subtitle').textContent=
+    [meta.subtitle,meta.dates,meta.days?meta.days+' days':null].filter(Boolean).join(' · ')+
+    ' · Click any amount to edit';
+  document.getElementById('wjc-guests').value=tour.guests||10;
+  document.getElementById('wjc-fx').value=tour.fxrate||0.085;
+  document.getElementById('wjc-mk').value=tour.markup||15;
+
+  const wrap=document.getElementById('wjc-sections');
+  const guests=tour.guests||10,fx=tour.fxrate||0.085,mk=tour.markup||15;
+  const suppliers=tour.suppliers||[];
+  wrap.innerHTML='';
+
+  suppliers.forEach(sup=>{
+    const rows=(sup.items||[]).map(item=>{
+      const def=wjcCalcDefault(item,fx,mk,guests);
+      const defR=def!=null?Math.round(def):null;
+      const cat=WJC_CAT[item.cat]||{label:item.cat,color:'#888'};
+      const catBadge=`<span class="wjc-badge" style="background:${cat.color}18;color:${cat.color}">${cat.label}</span>`;
+      const estBadge=item.est?`<span class="wjc-badge wjc-badge-est">est</span>`:'';
+      const nightNote=item.perNight?`<span class="wjc-night">/night</span>`:'';
+      const detail=item.detail?`<div class="wjc-detail">${item.detail}</div>`:'';
+      const grpDisplay=item.perNight
+        ?(def!=null?`${item.nights} nts = ${wjcMoney(def*item.nights)}`:'—')
+        :(def!=null?wjcMoney(def*guests):'—');
+      const eid=item.id.replace(/[^a-z0-9_-]/gi,'_');
+      return`<tr>
+        <td style="width:52px"><span class="wjc-badge wjc-badge-day">D${item.day}</span></td>
+        <td>${catBadge}${estBadge} ${item.name}${detail}</td>
+        <td class="r" style="width:120px">
+          <div class="wjc-price-wrap">
+            <span class="wjc-cur">$</span>
+            <input class="wjc-inp" id="wjci-${eid}" type="number" min="0" step="1"
+              value="${defR!=null?defR:''}" placeholder="${defR!=null?defR:'TBC'}"
+              title="Double-click to reset"
+              oninput="wjcOverrides['${item.id}']=this.value;wjcRecalc()"
+              ondblclick="delete wjcOverrides['${item.id}'];this.classList.remove('ov');wjcRecalc()"
+            >${nightNote}
+          </div>
+        </td>
+        <td class="r" style="width:140px" id="wjcg-${eid}">${grpDisplay}</td>
+      </tr>`;
+    }).join('');
+
+    const sec=document.createElement('div');
+    sec.className='wjc-section';
+    const sid=sup.id.replace(/[^a-z0-9_-]/gi,'_');
+    sec.innerHTML=`
+      <div class="wjc-sec-hdr" onclick="wjcToggle('${sid}')">
+        <h2>${sup.name}</h2>
+        <span class="wjc-day">Day ${sup.day}</span>
+        <span class="wjc-tot" id="wjct-${sup.id}">—</span>
+        <span class="wjc-chev" id="wjcv-${sid}">▾</span>
+      </div>
+      <div class="wjc-sec-body" id="wjcb-${sid}">
+        <table class="wjc-tbl">
+          <thead><tr>
+            <th style="width:52px">Day</th><th>Item</th>
+            <th class="r" style="width:120px">Per person</th>
+            <th class="r" style="width:140px">Group total</th>
+          </tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>`;
+    wrap.appendChild(sec);
+  });
+
+  ['wjc-guests','wjc-fx','wjc-mk'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el){el.oninput=wjcRecalc;}
+  });
+  wjcRecalc();
+}
+
+function wjcToggle(sid){
+  const body=document.getElementById('wjcb-'+sid);
+  const chev=document.getElementById('wjcv-'+sid);
+  if(!body)return;
+  const open=!body.classList.contains('collapsed');
+  body.classList.toggle('collapsed',open);
+  if(chev)chev.textContent=open?'▸':'▾';
+}
+
+// ── Load tour ─────────────────────────────────────────────
+function wjcLoadTour(id){
+  const tours=wjcGetTours();
+  const tour=tours[id];
+  if(!tour)return;
+  wjcCurrentId=id;
+  document.getElementById('wjc-empty').style.display='none';
+  document.getElementById('wjc-editor').style.display='none';
+  document.getElementById('wjc-planner').style.display='block';
+  document.getElementById('wjc-btn-edit').style.display='';
+  document.getElementById('wjc-btn-delete').style.display='';
+  wjcBuild(tour);
+  wjcRenderList();
+}
+
+// ── New tour ──────────────────────────────────────────────
+function wjcNewTour(){
+  const id='tour_'+Date.now();
+  const tours=wjcGetTours();
+  tours[id]={
+    meta:{title:'New Tour',subtitle:'',dates:'',days:8},
+    suppliers:[],
+    guests:10,fxrate:0.085,markup:15,overrides:{}
+  };
+  wjcSaveTours(tours);
+  wjcCurrentId=id;
+  wjcRenderList();
+  wjcOpenEditor(tours[id]);
+}
+
+// ── Edit tour ─────────────────────────────────────────────
+function wjcEditTour(){
+  if(!wjcCurrentId)return;
+  const tour=wjcGetTours()[wjcCurrentId];
+  if(tour)wjcOpenEditor(tour);
+}
+
+function wjcOpenEditor(tour){
+  document.getElementById('wjc-empty').style.display='none';
+  document.getElementById('wjc-planner').style.display='none';
+  document.getElementById('wjc-editor').style.display='block';
+  const meta=tour.meta||{};
+  document.getElementById('wjc-m-title').value=meta.title||'';
+  document.getElementById('wjc-m-subtitle').value=meta.subtitle||'';
+  document.getElementById('wjc-m-dates').value=meta.dates||'';
+  document.getElementById('wjc-m-days').value=meta.days||'';
+  document.getElementById('wjc-json').value=JSON.stringify(tour.suppliers||[],null,2);
+  document.getElementById('wjc-json-err').style.display='none';
+}
+
+function wjcCancelEdit(){
+  if(!wjcCurrentId)return;
+  const tours=wjcGetTours();
+  const tour=tours[wjcCurrentId];
+  if(tour&&(tour.suppliers||[]).length>0){
+    wjcLoadTour(wjcCurrentId);
+  } else {
+    document.getElementById('wjc-editor').style.display='none';
+    document.getElementById('wjc-empty').style.display='block';
+    document.getElementById('wjc-btn-edit').style.display='none';
+    document.getElementById('wjc-btn-delete').style.display='none';
+  }
+}
+
+function wjcSaveTour(){
+  let suppliers;
+  try{
+    suppliers=JSON.parse(document.getElementById('wjc-json').value||'[]');
+    if(!Array.isArray(suppliers))throw new Error('Must be a JSON array');
+  } catch(e){
+    const err=document.getElementById('wjc-json-err');
+    err.textContent='JSON error: '+e.message;
+    err.style.display='block';
+    return;
+  }
+  document.getElementById('wjc-json-err').style.display='none';
+  const tours=wjcGetTours();
+  const tour=tours[wjcCurrentId]||{};
+  tour.meta={
+    title:document.getElementById('wjc-m-title').value.trim()||'New Tour',
+    subtitle:document.getElementById('wjc-m-subtitle').value.trim(),
+    dates:document.getElementById('wjc-m-dates').value.trim(),
+    days:parseInt(document.getElementById('wjc-m-days').value)||0,
+  };
+  tour.suppliers=suppliers;
+  tours[wjcCurrentId]=tour;
+  wjcSaveTours(tours);
+  toast('Tour saved ✓');
+  wjcLoadTour(wjcCurrentId);
+}
+
+// ── Delete tour ───────────────────────────────────────────
+function wjcDeleteTour(){
+  if(!wjcCurrentId)return;
+  if(!confirm('Delete this tour?'))return;
+  const tours=wjcGetTours();
+  delete tours[wjcCurrentId];
+  wjcSaveTours(tours);
+  wjcCurrentId=null;
+  document.getElementById('wjc-editor').style.display='none';
+  document.getElementById('wjc-planner').style.display='none';
+  document.getElementById('wjc-empty').style.display='block';
+  document.getElementById('wjc-btn-edit').style.display='none';
+  document.getElementById('wjc-btn-delete').style.display='none';
+  wjcRenderList();
+}
+
+// ── Render sidebar list ───────────────────────────────────
+function wjcRenderList(){
+  const tours=wjcGetTours();
+  const el=document.getElementById('wjc-tour-list');
+  if(!el)return;
+  const ids=Object.keys(tours);
+  if(!ids.length){el.innerHTML='<p style="font-size:12px;color:#aaa;text-align:center;padding:8px 0">No tours yet</p>';return;}
+  el.innerHTML=ids.map(id=>{
+    const t=tours[id];
+    const meta=t.meta||{};
+    return`<div class="wjc-tour-item${id===wjcCurrentId?' active':''}" onclick="wjcLoadTour('${id}')">
+      <div>${meta.title||'Untitled'}</div>
+      <div class="wjc-tour-date">${meta.dates||''}</div>
+    </div>`;
+  }).join('');
+}
+
+function initCosting(){wjcRenderList();}
 
 /* =========================================================
    BOOT
